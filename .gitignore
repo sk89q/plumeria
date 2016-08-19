@@ -1,0 +1,11 @@
+/.idea
+*.iws
+*.iml
+/out/
+__pycache__/
+*.py[cod]
+*$py.class
+venv
+/*.ini
+.cache
+.venv
