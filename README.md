@@ -110,7 +110,8 @@ from PIL import Image
 from plumeria.message import ImageAttachment, Response
 
 im = Image.open("lena.ppm")
-return Response("", attachments=[ImageAttachment(im, "example.png)])
+return Response("", attachments=[ImageAttachment(im, "example.png"),
+                                 MemoryAttachment("hello world", "new.txt", "text/plain")])
 ```
 
 #### Reading Attachments
