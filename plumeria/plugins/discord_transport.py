@@ -19,7 +19,10 @@ logger = logging.getLogger(__name__)
 
 class DiscordChannel(Channel):
     def __init__(self, delegate):
-        super().__init__(**delegate.__dict__)
+        kwargs = {key: getattr(delegate, key) for key in (
+            "name", "server", "id", "topic", "is_private", "position", "type", "bitrate", "voice_members", "user_limit",
+            "is_default", "mention", "created_at")}
+        super().__init__(**kwargs)
         self.delegate = delegate
 
     async def send_file(self, fp, filename=None, content=None):
