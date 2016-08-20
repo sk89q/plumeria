@@ -109,7 +109,8 @@ Return values can be strings or `Response` objects if you want to provide attach
 from PIL import Image
 from plumeria.message import ImageAttachment, Response
 
-im = Image.open("lena.ppm")
+im = Image.open("lena.ppm") # remember that this call should not happen in the asyncio event loop
+                            # and instead in a thread
 return Response("", attachments=[ImageAttachment(im, "example.png"),
                                  MemoryAttachment("hello world", "new.txt", "text/plain")])
 ```
@@ -132,7 +133,7 @@ async def read_image(message):
     return await locator.first_value("message.read_image", message)
 ```
 
-The method seen above helps with reading image files from attachments, because they could be of a wide assortment of image types, including the internal type provided by PIL/Pillow (the Python image manipulatipn library) if the image came from a piped command.
+The method seen above helps with reading image files from attachments, because they could be of a wide assortment of image types, including the internal type provided by PIL/Pillow (the Python image manipulation library) if the image came from a piped command.
 
 You can find that method in `plumeria.message`:
 
