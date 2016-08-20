@@ -255,6 +255,7 @@ Start any background tasks in the `preinit` or `init` events. You can either run
 ### Developed
 
 * Alias
+* Bing image search
 * BreweryDB
 * Cheapshark
 * DuckDuckGo
