@@ -12,7 +12,7 @@ Works on Windows, Mac OS X, and Linux.
 * Asynchronous
 * Extensible
 * Command piping (`.tagtop rock | youtube`)
-* Attachment ingress, piping, and egress (`.image plumes | fetchimage | blur | memetext meme text`)
+* Attachment ingress, piping, and egress (`.image harambe | fetchimage | memetext2 screw this zoo, man`)
 * Command piping from and to other bots (`.tagtop rock | youtube | say .play`)
 * Embedded web server
 * Per server, per channel, per user, per command pipeline, per time period rate limiting
