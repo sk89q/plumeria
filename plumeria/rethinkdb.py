@@ -1,8 +1,11 @@
+import logging
 from queue import Queue, Empty
 import rethinkdb as r
 from . import config
 
 MIGRATIONS_TABLE = "plumeria_migrations"
+
+logger = logging.getLogger(__name__)
 
 r.set_loop_type('asyncio')
 
@@ -45,6 +48,7 @@ class RethinkDBPool:
                 if conn.is_open():
                     return conn
             except Empty as e:
+                logger.debug("Trying to create a new RethinkDB connection...")
                 conn = await r.connect(host=host(), port=port(), db=db_name(), user=username(), password=password(),
                                        timeout=timeout())
                 conn.use(db_name())
