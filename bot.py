@@ -5,6 +5,7 @@ import sys
 import argparse
 import logging
 from plumeria import config
+from plumeria.config import boolstr
 from plumeria.event import bus
 import plumeria.plugins
 
@@ -12,7 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 async def startup():
+    logging.info("Calling all pre-init handlers...")
     await bus.post('preinit')
+    logging.info("Starting...")
     await bus.post('init')
 
 
@@ -32,13 +35,28 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
 
-    for importer, modname, ispkg in pkgutil.iter_modules(
-            plumeria.plugins.__path__):
-        logging.info("Loading plumeria.plugins.{}...".format(modname))
-        __import__("plumeria.plugins." + modname)
+    discovered_modules = list(pkgutil.iter_modules(plumeria.plugins.__path__))
+    modules_to_load = []
+
+    # Discover list of modules to load and save it to config
+    config.load()
+    for importer, modname, ispkg in discovered_modules:
+        path = "plumeria.plugins." + modname
+        enabled = config.create("plugins", path, type=boolstr, fallback=True)
+        if enabled():
+            modules_to_load.append(path)
+    config.save()
+
+    for path in modules_to_load:
+        logging.info("Loading {}...".format(path))
+        __import__(path)
 
     config.load()
     config.save()
 
-    loop.run_until_complete(startup())
-    loop.run_forever()
+    if len(modules_to_load):
+        loop.run_until_complete(startup())
+        loop.run_forever()
+    else:
+        logging.warning("Please enable at least one plugin in the configuration file")
+

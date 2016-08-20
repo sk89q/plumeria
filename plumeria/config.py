@@ -1,8 +1,12 @@
 import collections
 import configparser
+from distutils.util import strtobool
 import logging
 import re
 from .util.collections import DefaultOrderedDict
+
+__all__ = ('boolstr', 'Config', 'Value', 'Parser', 'ParseError', 'ConfigReader', 'Setting', 'ManagedConfig', 'list_of',
+           'set_of')
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +22,13 @@ def append(prev, new):
         return prev + "\n" + new
     else:
         return new
+
+
+def boolstr(d):
+    if isinstance(d, bool):
+        return d
+    else:
+        return strtobool(d)
 
 
 class Config:
