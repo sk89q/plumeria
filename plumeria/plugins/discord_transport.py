@@ -100,4 +100,4 @@ async def on_message(message):
 
 @bus.event("init")
 async def init():
-    await client.start(discord_user(), discord_pass())
+    asyncio.get_event_loop().create_task(client.start(discord_user(), discord_pass()))
