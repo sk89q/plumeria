@@ -1,46 +1,51 @@
 import collections
-import discord
+
+import rethinkdb as r
+
+from plumeria.command import commands, Command, Context, CommandError, Mapping, channel_only
 from plumeria.event import bus
 from plumeria.message import ProxyMessage, Response
-from plumeria.command import commands, Command, Context, CommandError, Mapping, channel_only
 from plumeria.perms import server_admins_only
-from plumeria.storage import Session
+from plumeria.rethinkdb import pool, migrations
+
+
+@bus.event('preinit')
+async def preinit():
+    async def initial(conn):
+        await r.table_create("aliases").run(conn)
+        await r.table("aliases").index_create("server_id_alias", [r.row["server_id"], r.row["alias"]]).run(conn)
+
+    await migrations.migrate("alias",
+                             (("initial", initial), ))
 
 
 class AliasManager:
     def __init__(self):
         self.aliases = collections.defaultdict(lambda: {})
 
-    def load(self):
+    async def load(self):
         self.aliases.clear()
-        session = Session()
-        try:
-            for row in session.execute("SELECT server_id, alias, command FROM alias").fetchall():
-                server_id, alias, command = row
-                self.aliases[server_id][alias] = command
-        finally:
-            session.close()
+        async with pool.open() as conn:
+            cursor = await r.table("aliases").run(conn)
+            while await cursor.fetch_next():
+                row = await cursor.next()
+                self.aliases[row['server_id']][row['alias']] = row['command']
 
-    def create(self, server, alias, command):
+    async def create(self, server, alias, command):
         alias = alias.lower()
-        session = Session()
-        try:
-            session.execute("REPLACE INTO alias (server_id, alias, command) VALUES (%s, %s, %s)",
-                           [server.id, alias, command])
-            session.commit()
-        finally:
-            session.rollback()
+        id = "{}_{}".format(server.id, alias)
+        async with pool.open() as conn:
+            await r.table("aliases").get(id).replace({
+                "id": id,
+                "server_id": server.id,
+                "alias": alias,
+                "command": command}).run(conn)
         self.aliases[server.id][alias] = command
 
-    def delete(self, server, alias):
+    async def delete(self, server, alias):
         alias = alias.lower()
-        session = Session()
-        try:
-            session.execute("DELETE FROM alias WHERE server_id = %s AND alias = %s",
-                           [server.id, alias])
-            session.commit()
-        finally:
-            session.rollback()
+        async with pool.open() as conn:
+            await r.table("aliases").filter(id == "{}_{}".format(server.id, alias)).delete().run(conn)
         if alias in self.aliases[server.id]:
             del self.aliases[server.id][alias]
 
@@ -65,7 +70,7 @@ aliases = AliasManager()
 
 @bus.event('init')
 async def init():
-    aliases.load()
+    await aliases.load()
 
 
 @commands.register('echo', cost=0.2, category="Utility")
@@ -97,7 +102,7 @@ async def alias(message):
     """
     parts = message.content.split(" ", 1)
     if len(parts) == 2:
-        aliases.create(message.channel.server, parts[0], parts[1])
+        await aliases.create(message.channel.server, parts[0], parts[1])
         await message.respond("Created the command alias *{}*.".format(parts[0]))
     else:
         raise CommandError("<alias> <command>")
@@ -111,7 +116,7 @@ async def deletealias(message):
     Deletes an alias by name.
     """
     if len(message.content):
-        aliases.delete(message.channel.server, message.content)
+        await aliases.delete(message.channel.server, message.content)
         await message.respond("Deleted the command alias *{}*.".format(message.content))
     else:
         raise CommandError("<alias>")
