@@ -1,7 +1,10 @@
 import collections
 import configparser
+import logging
 import re
 from .util.collections import DefaultOrderedDict
+
+logger = logging.getLogger(__name__)
 
 _UNSET = object()
 
@@ -268,12 +271,12 @@ class ManagedConfig:
                         setting.validate(reader)
                     except ValueError as e:
                         value = reader.get(section, key, fallback='(undefined)')
-                        raise ValueError(
+                        logger.warning(
                             "config key '{}' in section '{}' has the invalid configuration value '{}': {}".format(
                                 key, section, value, str(e)
                             ))
                     except KeyError as e:
-                        raise ValueError("config key '{}' in section '{}' needs to be set")
+                        logger.warning("config key '{}' in section '{}' needs to be set".format(key, section))
             self.reader = reader
         except FileNotFoundError as e:
             pass
@@ -282,7 +285,7 @@ class ManagedConfig:
         with open(self.file, "w", encoding="utf-8", newline="\r\n") as f:
             for section, settings in self.settings.items():
                 for key, setting in settings.items():
-                    if setting.fallback:
+                    if setting.fallback != _UNSET:
                         value = self.reader.at(section, key)
                         if value is not None:
                             if not value.comment:

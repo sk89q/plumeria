@@ -3,6 +3,7 @@ from .. import config
 from ..util.http import BaseRestClient
 
 default_api_key = config.create("youtube", "key",
+                                fallback="unset",
                                 comment="A YouTube API key. API keys can be registered at "
                                 "https://console.developers.google.com/")
 

@@ -9,8 +9,8 @@ from plumeria.message import Message, Attachment
 from plumeria.util import to_mimetype
 from plumeria.util.http import DefaultClientSession
 
-discord_user = config.create("discord", "username", comment="The Discord username to login to.")
-discord_pass = config.create("discord", "password", comment="The Discord password to login with.")
+discord_user = config.create("discord", "username", fallback="", comment="The Discord username to login to.")
+discord_pass = config.create("discord", "password", fallback="", comment="The Discord password to login with.")
 
 client = discord.Client()
 
@@ -100,4 +100,8 @@ async def on_message(message):
 
 @bus.event("init")
 async def init():
-    asyncio.get_event_loop().create_task(client.start(discord_user(), discord_pass()))
+    username = discord_user()
+    if username != "":
+        asyncio.get_event_loop().create_task(client.start(username, discord_pass()))
+    else:
+        logger.warning("No Discord username/password set! Not connecting to Discord...")

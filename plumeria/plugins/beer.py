@@ -4,7 +4,9 @@ from plumeria.message import Response
 from plumeria.util.ratelimit import rate_limit
 import plumeria.util.http as http
 
-api_key = config.create("brewerydb", "key", comment="An API key from brewerydb.com")
+api_key = config.create("brewerydb", "key",
+                        fallback="unset",
+                        comment="An API key from brewerydb.com")
 
 
 @commands.register("beer", category="Search")

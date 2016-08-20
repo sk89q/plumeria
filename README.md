@@ -2,7 +2,9 @@
 
 Plumeria is a Discord bot used on the [SKCraft](https://www.skcraft.com) Discord channel.
 
-Now that Discord has an official API, Plumeria will need to be updated.
+NOTE: Plumeria predates Discord's official API and currently does not support bot accounts yet.
+
+Works on Windows, Mac OS X, and Linux.
 
 ## The Good
 
@@ -26,6 +28,15 @@ Now that Discord has an official API, Plumeria will need to be updated.
 ## The Ugly
 
 * Plumeria isn't worked on very often
+* No way yet to disable modules
+
+## Usage
+
+1. Install Python 3.5
+2. Install requirements.txt (`pip install -r requirements.txt`)
+3. `./bot.py --config path_to_config.ini`
+
+A configuration file will be generated if one does not exist. Change the configuration and restart the bot.
 
 ## Writing Plugins
 

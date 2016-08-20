@@ -3,7 +3,7 @@ from . import config
 from .config import set_of
 from .command import AuthorizationError
 
-owner_ids = config.create("perms", "admin_users", set_of(str))
+owner_ids = config.create("perms", "admin_users", set_of(str), fallback="")
 
 
 def is_owner(user):

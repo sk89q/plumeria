@@ -2,7 +2,9 @@ import collections
 from .. import config
 from ..util.http import BaseRestClient, APIError
 
-default_api_key = config.create("lastfm", "key", comment="An API key from last.fm")
+default_api_key = config.create("lastfm", "key",
+                                fallback="unset",
+                                comment="An API key from last.fm")
 
 Track = collections.namedtuple("Track", "artist title url")
 
