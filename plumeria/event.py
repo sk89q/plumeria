@@ -23,7 +23,7 @@ class EventBus:
             try:
                 await handler(*args, **kwargs)
             except:
-                logging.warning("Error thrown in event handler for event '{}'".format(event), exc_info=True)
+                logger.warning("Error thrown in event handler for event '{}'".format(event), exc_info=True)
 
 
 bus = EventBus()
