@@ -1,3 +1,5 @@
+Plumeria
+Copyright (c) Albert Pham
 Copyright (c) Plumeria contributors
 
 Permission is hereby granted, free of charge, to any person obtaining
