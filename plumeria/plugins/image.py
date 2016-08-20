@@ -106,3 +106,14 @@ def sharpen(message, im):
     Requires an input image.
     """
     return im.filter(ImageFilter.SHARPEN)
+
+
+@commands.register('bw', 'blackandwhite', 'blacknwhite', 'blackwhite', category='Image')
+@image_filter
+def bw(message, im):
+    """
+    Applies a black and white effect.
+
+    Requires an input image.
+    """
+    return im.convert('1').convert("RGB")
