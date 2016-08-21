@@ -266,6 +266,7 @@ Start any background tasks in the `preinit` or `init` events. You can either run
 * Help
 * Image processing (fetch, blur, sharpen, etc.)
 * IMDB
+* GitLab hooks
 * Last.fm
 * Minecraft
 * QRCode
@@ -284,7 +285,7 @@ Start any background tasks in the `preinit` or `init` events. You can either run
 
 * Channel management
 * VOIP event logging
-* GitLab/GitHub hooks
+* GitHub hooks
 
 ### Low priority
 
