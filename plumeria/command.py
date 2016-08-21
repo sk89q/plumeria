@@ -75,9 +75,15 @@ class Context:
 Mapping = namedtuple("Mapping", "aliases command")
 
 
+class PrefixTree:
+    def __init__(self):
+        self.content = None
+        self.children = {}
+
+
 class CommandManager:
     def __init__(self, prefixes):
-        self.commands = {}
+        self.commands = PrefixTree()
         self.mappings = []
         self.interceptors = []
         self.enumerators = []
@@ -103,12 +109,18 @@ class CommandManager:
         def decorator(f):
             command = Command(f, **kwargs)
             for alias in aliases:
-                test_command = alias.lower()
-                if test_command in self.commands:
-                    existing = self.commands[test_command]
+                root = self.commands
+                alias_lower = alias.lower()
+                prefixes = alias_lower.split(" ")
+                while len(prefixes):
+                    prefix = prefixes.pop(0)
+                    if prefix not in root.children:
+                        root.children[prefix] = PrefixTree()
+                    root = root.children[prefix]
+                if root.content:
                     raise Exception("{} is already registered to {} -- cannot register to {}"
-                                    .format(alias.lower(), existing.executor, f))
-                self.commands[test_command] = command
+                                    .format(alias.lower(), root.content.executor, f))
+                root.content = command
             self.mappings.append(Mapping(aliases, command))
             return f
 
@@ -130,22 +142,35 @@ class CommandManager:
         return False
 
     async def execute_unprefixed(self, message, context):
+        # single prefix stuff for interceptors
         split = message.content.split(" ", 1)
         name = split[0].lower()
-        message = ProxyMessage(message)
-        message.content = split[1] if len(split) > 1 else ""
+        split_message = ProxyMessage(message)
+        split_message.content = split[1] if len(split) > 1 else ""
 
         # check with interceptors
         for interceptor in self.interceptors:
-            result = await interceptor(message, name, context)
+            result = await interceptor(split_message, name, context)
             if result:
                 return result
 
         # check registered commands
-        if name in self.commands:
-            command = self.commands[name]
+        root = self.commands
+        content = message.content
+        while True:
+            split = content.split(" ", 1)
+            name = split[0].lower()
+            if name in root.children:
+                root = root.children[name]
+                content = split[1] if len(split) > 1 else ""
+            else:
+                break
+
+        if root.content:
+            command = root.content
+            message.content = content
             context.consume(command.cost)
-            result = await self.commands[name].executor(message)
+            result = await command.executor(message)
             if result is None:
                 return None
             elif isinstance(result, Response):
