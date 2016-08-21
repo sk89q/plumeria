@@ -230,7 +230,6 @@ async def handle(request):
             "Received GitLab hook from {} with token '{}'".format(request.transport.get_extra_info('peername'), token))
 
     data = await request.text()
-    print(data)
     payload = json.loads(data)
     event = payload['event_name']
     project_path = payload['project']['path_with_namespace']
