@@ -268,6 +268,7 @@ Start any background tasks in the `preinit` or `init` events. You can either run
 * Minecraft
 * QRCode
 * Git update
+* Reddit
 * Statistics (mean, mode, etc.)
 * Steam Community
 * String manipulation (upper, lower, rot13, etc.)
