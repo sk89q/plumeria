@@ -12,6 +12,7 @@ from plumeria.rethinkdb import migrations, pool
 from plumeria.transport import transports
 from plumeria.webserver import app
 
+WEB_HOOK_URL = "/gitlab-webhooks/hook/"
 TOKENS_TABLE = "gitlabhooks_tokens"
 SUBSCRIPTIONS_TABLE = "gitlabhooks_subscriptions"
 
@@ -40,6 +41,16 @@ async def preinit():
                              (("initial", initial),))
 
 
+@commands.register('gitlab url', category='GitLab')
+@channel_only
+@server_admins_only
+async def url(message):
+    """
+    Get the webhook URL to use.
+    """
+    return "Send webhook POSTs to `{}{}`".format(await app.get_base_url(), WEB_HOOK_URL)
+
+
 @commands.register('gitlab addtoken', category='GitLab')
 @channel_only
 @server_admins_only
@@ -57,8 +68,8 @@ async def add_token(message):
             await r.table(TOKENS_TABLE).insert({
                 "server_id": message.channel.server.id,
                 "token": token}).run(conn)
-            return "\u2705 Token '{}' added. Send webhook POSTs to `{}/gitlab-webhooks/hook/`"\
-                .format(token, await app.get_base_url())
+            return "\u2705 Token '{}' added. Send webhook POSTs to `{}{}`" \
+                .format(token, await app.get_base_url(), WEB_HOOK_URL)
         else:
             raise CommandError("Token '{}' was already added.".format(token))
 
@@ -181,22 +192,34 @@ async def subscriptions(message):
 
 def format_message(payload):
     if payload['event_name'] == 'push':
-        commit_count = len(payload['commits'])
-        commits = "\n".join(map(lambda commit: "\u2022 {} {}"
-                                .format(commit['id'][:8], commit['message'].splitlines()[0]),
-                                payload['commits'][:5]))
-        return "\U0001F53C {count} commit{s} pushed to **{project}** by **{author}**:\n{commits}{more}".format(
-            count=commit_count,
-            s="s" if commit_count != 1 else "",
-            project=payload['project']['path_with_namespace'],
-            author=payload['user_name'],
-            hash=payload['after'][:8],
-            commits=commits,
-            more="\n+{} more".format(commit_count - 5) if commit_count > 5 else "",
-            url=payload['repository']['homepage'])
+        if payload['before'] == "0000000000000000000000000000000000000000":
+            return "\U0001F539 [**{project}**] New branch **{branch}** was pushed by {author}".format(
+                project=payload['project']['path_with_namespace'],
+                branch=re.sub("^refs/heads/", "", payload['ref']),
+                author=payload['user_name'])
+        elif payload['after'] == "0000000000000000000000000000000000000000":
+            return "\U0001F539 [**{project}**] Branch **{branch}** deleted by {author}".format(
+                project=payload['project']['path_with_namespace'],
+                branch=re.sub("^refs/heads/", "", payload['ref']),
+                author=payload['user_name'])
+        else:
+            commit_count = len(payload['commits'])
+            commits = "\n".join(map(lambda commit: "\u2022 {}: {}"
+                                    .format(commit['id'][:8], commit['message'].splitlines()[0]),
+                                    payload['commits'][:5]))
+            return "\U0001F539 [**{project}** on **{branch}**] {count} commit{s} by {author}:\n{commits}{more}".format(
+                count=commit_count,
+                s="s" if commit_count != 1 else "",
+                project=payload['project']['path_with_namespace'],
+                branch=re.sub("^refs/heads/", "", payload['ref']),
+                author=payload['user_name'],
+                hash=payload['after'][:8],
+                commits=commits,
+                more="\n+{} more".format(commit_count - 5) if commit_count > 5 else "",
+                url=payload['repository']['homepage'])
 
 
-@app.route('/gitlab-webhooks/hook/', methods=['POST'])
+@app.route(WEB_HOOK_URL, methods=['POST'])
 async def handle(request):
     token = request.headers.get("X-Gitlab-Token", "")
     if not len(token):
@@ -206,7 +229,9 @@ async def handle(request):
         logger.debug(
             "Received GitLab hook from {} with token '{}'".format(request.transport.get_extra_info('peername'), token))
 
-    payload = json.loads(await request.text())
+    data = await request.text()
+    print(data)
+    payload = json.loads(data)
     event = payload['event_name']
     project_path = payload['project']['path_with_namespace']
 
