@@ -273,6 +273,7 @@ Start any background tasks in the `preinit` or `init` events. You can either run
 * Steam Community
 * String manipulation (upper, lower, rot13, etc.)
 * Time
+* Urban Dictionary
 * USGS
 * UUIDs
 * YouTube
