@@ -222,6 +222,11 @@ def format_message(payload):
 @app.route(WEB_HOOK_URL, methods=['POST'])
 async def handle(request):
     token = request.headers.get("X-Gitlab-Token", "")
+    token_override = request.GET.get("__token", "")
+
+    if len(token_override):
+        token = token_override
+
     if not len(token):
         logger.debug("Received GitLab hook from {} with no token".format(request.transport.get_extra_info('peername')))
         return "no token"
