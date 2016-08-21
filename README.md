@@ -17,6 +17,8 @@ Works on Windows, Mac OS X, and Linux.
 * Embedded web server
 * Per server, per channel, per user, per command pipeline, per time period rate limiting
 * Rudimentary protection against SSRF and server-side DNS rebinding attacks
+* Flexible command parsing (use one of many prefixes)
+* Mobile keyboard-friendly command syntax supported (`. qr test`)
 
 ## Usage
 
