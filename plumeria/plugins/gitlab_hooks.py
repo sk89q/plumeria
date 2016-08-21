@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def valid_project_path(s):
-    if re.match("^[A-Za-z0-9\\-_]{1,100}/[A-Za-z0-9\\-_]{1,100}$", s):
+    if re.match("^[A-Za-z0-9\\-_\\.,]{1,100}/[A-Za-z0-9\\-_\\.,]{1,100}$", s):
         return s
     raise ValueError("Invalid project! Must match regex `^[A-Za-z0-9\\-_]{1,100}/[A-Za-z0-9\\-_]{1,100}$`")
 
