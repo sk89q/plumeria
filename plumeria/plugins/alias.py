@@ -25,7 +25,7 @@ class AliasManager:
 
     async def load(self):
         self.aliases.clear()
-        async with pool.open() as conn:
+        async with pool.acquire() as conn:
             cursor = await r.table("aliases").run(conn)
             while await cursor.fetch_next():
                 row = await cursor.next()
@@ -34,7 +34,7 @@ class AliasManager:
     async def create(self, server, alias, command):
         alias = alias.lower()
         id = "{}_{}".format(server.id, alias)
-        async with pool.open() as conn:
+        async with pool.acquire() as conn:
             await r.table("aliases").get(id).replace({
                 "id": id,
                 "server_id": server.id,
@@ -44,7 +44,7 @@ class AliasManager:
 
     async def delete(self, server, alias):
         alias = alias.lower()
-        async with pool.open() as conn:
+        async with pool.acquire() as conn:
             await r.table("aliases").filter(id == "{}_{}".format(server.id, alias)).delete().run(conn)
         if alias in self.aliases[server.id]:
             del self.aliases[server.id][alias]

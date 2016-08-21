@@ -38,7 +38,7 @@ class RethinkDBPool:
     def __init__(self):
         self.queue = Queue()
 
-    def open(self):
+    def acquire(self):
         return PooledConnection(self)
 
     async def get_connection(self):
@@ -61,7 +61,7 @@ class MigrationsManager:
         self.table_created = False
 
     async def migrate(self, module, plan):
-        async with pool.open() as conn:
+        async with pool.acquire() as conn:
             if not self.table_created:
                 if not await r.table_list().contains(MIGRATIONS_TABLE).run(conn):
                     await r.table_create(MIGRATIONS_TABLE).run(conn)
