@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 async def startup():
+    logging.info("Calling all setup handlers...")
+    await bus.post('setup')
     logging.info("Calling all pre-init handlers...")
     await bus.post('preinit')
     logging.info("Starting...")
@@ -20,12 +22,13 @@ async def startup():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO,
-                        format="%(levelname)s [%(name)s] %(message)s")
-
     parser = argparse.ArgumentParser()
+    parser.add_argument("--verbose", "-v", action='store_true', default=False)
     parser.add_argument("--config", type=str, default="config.ini")
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
+                        format="%(levelname)s [%(name)s] %(message)s")
 
     config.file = args.config
 
