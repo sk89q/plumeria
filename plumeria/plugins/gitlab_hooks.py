@@ -185,8 +185,9 @@ def format_message(payload):
         commits = "\n".join(map(lambda commit: "\u2022 {} {}"
                                 .format(commit['id'][:8], commit['message'].splitlines()[0]),
                                 payload['commits'][:5]))
-        return "\U0001F53C {count} commits pushed to **{project}** by **{author}**:\n{commits}{more}".format(
+        return "\U0001F53C {count} commit{s} pushed to **{project}** by **{author}**:\n{commits}{more}".format(
             count=commit_count,
+            s="s" if commit_count != 1 else "",
             project=payload['project']['path_with_namespace'],
             author=payload['user_name'],
             hash=payload['after'][:8],
