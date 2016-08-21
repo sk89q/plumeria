@@ -2,7 +2,8 @@ import asyncio
 
 from functools import wraps
 from ..command import CommandError
-from ..message import read_image, Response
+from ..message import Response
+from ..util.message import read_image
 from ..util.ratelimit import rate_limit
 
 

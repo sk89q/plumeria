@@ -12,7 +12,7 @@ Works on Windows, Mac OS X, and Linux.
 * Asynchronous
 * Extensible
 * Command piping (`.tagtop rock | youtube`)
-* Attachment ingress, piping, and egress (`.image harambe | fetchimage | memetext2 screw this zoo, man`)
+* Attachment ingress, piping, and egress (`.image harambe | memetext2 screw this zoo, man`)
 * Command piping from and to other bots (`.tagtop rock | youtube | say .play`)
 * Embedded web server
 * Per server, per channel, per user, per command pipeline, per time period rate limiting
@@ -107,7 +107,7 @@ Return values can be strings or `Response` objects if you want to provide attach
 
 ```python
 from PIL import Image
-from plumeria.message import ImageAttachment, Response
+from plumeria.message import ImageAttachment, MemoryAttachment, Response
 
 im = Image.open("lena.ppm") # remember that this call should not happen in the asyncio event loop
                             # and instead in a thread
@@ -135,10 +135,10 @@ async def read_image(message):
 
 The method seen above helps with reading image files from attachments, because they could be of a wide assortment of image types, including the internal type provided by PIL/Pillow (the Python image manipulation library) if the image came from a piped command.
 
-You can find that method in `plumeria.message`:
+You can find that method in `plumeria.util.message`:
 
 ```python
-from plumeria.message import read_image
+from plumeria.util.message import read_image
 
 attachment = await read_image(message)
 ```

@@ -1,11 +1,14 @@
 import asyncio
 import io
+import logging
 import re
 from datetime import datetime
 
 from PIL import Image
-from .service import locator
+
 from .util.http import DefaultClientSession
+
+logger = logging.getLogger(__name__)
 
 
 class Message:
@@ -113,17 +116,3 @@ class ImageAttachment(Attachment):
 
     def copy(self):
         return ImageAttachment(self.image.copy(), self.filename)
-
-
-async def read_image(message):
-    for attachment in message.attachments:
-        try:
-            if isinstance(attachment, ImageAttachment):
-                return attachment
-            elif attachment.mime_type.startswith("image/"):
-                im = Image.open(io.BytesIO(await attachment.read()))
-                return ImageAttachment(im, attachment.filename)
-        except IOError as e:
-            pass
-    return await locator.first_value("message.read_image", message)
-
