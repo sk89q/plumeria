@@ -1,11 +1,14 @@
 import asyncio
 import logging
 import os.path
+
 import discord
 from plumeria import config
 from plumeria.channel import Channel
 from plumeria.event import bus
 from plumeria.message import Message, Attachment
+from plumeria.server import Server
+from plumeria.transport import transports, Transport
 from plumeria.util import to_mimetype
 from plumeria.util.http import DefaultClientSession
 
@@ -19,11 +22,11 @@ logger = logging.getLogger(__name__)
 
 class DiscordChannel(Channel):
     def __init__(self, delegate):
-        kwargs = {key: getattr(delegate, key) for key in (
-            "name", "server", "id", "topic", "is_private", "position", "type", "bitrate", "voice_members", "user_limit",
-            "is_default", "mention", "created_at")}
-        super().__init__(**kwargs)
         self.delegate = delegate
+
+    @property
+    def server(self):
+        return DiscordServer(self.delegate.server)
 
     async def send_file(self, fp, filename=None, content=None):
         return await client.send_file(self.delegate, fp, filename=filename, content=content)
@@ -44,6 +47,21 @@ class DiscordChannel(Channel):
                 return DiscordMessage(await logs.__anext__())
 
         return HistoryWrapper()
+
+    def __getattr__(self, item):
+        return getattr(self.delegate, item)
+
+
+class DiscordServer(Server):
+    def __init__(self, delegate):
+        self.delegate = delegate
+
+    @property
+    def channels(self):
+        return [DiscordChannel(channel) for channel in self.delegate.channels]
+
+    def __getattr__(self, item):
+        return getattr(self.delegate, item)
 
 
 class DiscordMessage(Message):
@@ -74,6 +92,18 @@ class DiscordAttachment(Attachment):
         return self
 
 
+class DiscordTransport(Transport):
+    def __init__(self, delegate):
+        self.delegate = delegate
+
+    @property
+    def servers(self):
+        return [DiscordServer(server) for server in self.delegate.servers]
+
+    def __getattr__(self, item):
+        return getattr(self.delegate, item)
+
+
 @client.event
 async def on_ready():
     logger.info("Logged in as {} ({})".format(client.user.name, client.user.id))
@@ -102,6 +132,7 @@ async def on_message(message):
 async def init():
     username = discord_user()
     if username != "":
+        transports.register("discord", DiscordTransport(client))
         asyncio.get_event_loop().create_task(client.start(username, discord_pass()))
     else:
         logger.warning("No Discord username/password set! Not connecting to Discord...")
