@@ -57,7 +57,7 @@ async def add_token(message):
             await r.table(TOKENS_TABLE).insert({
                 "server_id": message.channel.server.id,
                 "token": token}).run(conn)
-            return "\u2705 Token '{}' added. Send webhook POSTs to `{}/gitlab-hooks/hook/`"\
+            return "\u2705 Token '{}' added. Send webhook POSTs to `{}/gitlab-webhooks/hook/`"\
                 .format(token, await app.get_base_url())
         else:
             raise CommandError("Token '{}' was already added.".format(token))
