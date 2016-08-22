@@ -3,6 +3,7 @@ beautifulsoup4==4.4.1
 cffi==1.7.0
 chardet==2.3.0
 colorama==0.3.7
+dice==1.0.2
 discord.py==0.11.0
 dnspython3==1.12.0
 docutils==0.12
