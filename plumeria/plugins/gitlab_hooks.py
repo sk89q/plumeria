@@ -207,7 +207,7 @@ def format_message(payload):
             commit_count = len(payload['commits'])
             commits = "\n".join(map(lambda commit: "\u2022 {}: {}"
                                     .format(commit['id'][:8], commit['message'].splitlines()[0]),
-                                    reversed(payload['commits'])[:MAX_COMMITS_PER_MESSAGE]))
+                                    list(reversed(payload['commits']))[:MAX_COMMITS_PER_MESSAGE]))
             return "\U0001F539 [**{project}** on **{branch}**] {count} commit{s} by {author}:\n{commits}{more}".format(
                 count=commit_count,
                 s="s" if commit_count != 1 else "",
