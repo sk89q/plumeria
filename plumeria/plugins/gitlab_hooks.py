@@ -15,6 +15,7 @@ from plumeria.webserver import app
 WEB_HOOK_URL = "/gitlab-webhooks/hook/"
 TOKENS_TABLE = "gitlabhooks_tokens"
 SUBSCRIPTIONS_TABLE = "gitlabhooks_subscriptions"
+MAX_COMMITS_PER_MESSAGE = 8
 
 logger = logging.getLogger(__name__)
 
@@ -206,7 +207,7 @@ def format_message(payload):
             commit_count = len(payload['commits'])
             commits = "\n".join(map(lambda commit: "\u2022 {}: {}"
                                     .format(commit['id'][:8], commit['message'].splitlines()[0]),
-                                    payload['commits'][:5]))
+                                    reversed(payload['commits'])[:MAX_COMMITS_PER_MESSAGE]))
             return "\U0001F539 [**{project}** on **{branch}**] {count} commit{s} by {author}:\n{commits}{more}".format(
                 count=commit_count,
                 s="s" if commit_count != 1 else "",
@@ -215,7 +216,7 @@ def format_message(payload):
                 author=payload['user_name'],
                 hash=payload['after'][:8],
                 commits=commits,
-                more="\n+{} more".format(commit_count - 5) if commit_count > 5 else "",
+                more="\n+{} more".format(commit_count - MAX_COMMITS_PER_MESSAGE) if commit_count > MAX_COMMITS_PER_MESSAGE else "",
                 url=payload['repository']['homepage'])
 
 
