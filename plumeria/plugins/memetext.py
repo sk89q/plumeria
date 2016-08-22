@@ -67,7 +67,7 @@ def render_meme_text(im, text, v_align):
                  border_size=max(1, min(int(w * h * 1e-5 * 2), 5)), v_align=v_align)
 
 
-@commands.register('memetext', category='Image')
+@commands.register('memetext', 'mt', category='Image')
 @image_filter
 def memetext(message, im):
     """
@@ -79,7 +79,7 @@ def memetext(message, im):
     return im
 
 
-@commands.register('memetext2', category='Image')
+@commands.register('memetext2', 'mb', category='Image')
 @image_filter
 def memetext2(message, im):
     """
