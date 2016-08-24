@@ -16,7 +16,7 @@ def valid_subreddit_name(s):
 
 def format_entry(post):
     data = post['data']
-    return "{title} - <{desc}>".format(
+    return "**{title}** <{desc}>".format(
         title=data['title'],
         desc=data['url']
     )
@@ -42,14 +42,14 @@ async def get_subreddit_post(q, top=False, count=5):
 @rate_limit()
 async def subreddit(message):
     """
-    Get the hottest postss from a subreddit.
+    Get the hottest posts from a subreddit.
 
     """
     parser = ArgumentParser()
     parser.add_argument("subreddit", type=valid_subreddit_name)
     parser.add_argument("count", type=int, nargs='?', default=5, choices=range(1, 10))
     args = parser.parse_args(shlex.split(message.content))
-    return "**/r/{}**\n{}".format(args.subreddit, await get_subreddit_post(args.subreddit, count=args.count))
+    return "/r/{}\n{}".format(args.subreddit, await get_subreddit_post(args.subreddit, count=args.count))
 
 
 @commands.register("reddittop", "topreddit", "subreddittop", "r/top", "r/top/", category="Reddit")
@@ -63,7 +63,7 @@ async def subreddit_top(message):
     parser.add_argument("subreddit", type=valid_subreddit_name)
     parser.add_argument("count", type=int, nargs='?', default=5, choices=range(1, 10))
     args = parser.parse_args(shlex.split(message.content))
-    return "**/r/top/{}**\n{}".format(args.subreddit, await get_subreddit_post(args.subreddit, count=args.count, top=True))
+    return "/r/top/{}\n{}".format(args.subreddit, await get_subreddit_post(args.subreddit, count=args.count, top=True))
 
 
 @commands.register("redditsearch", "rs", category="Reddit")
@@ -80,6 +80,6 @@ async def search_reddit(message):
             ('sort', 'relevance'),
             ('t', 'all')
         ])
-        return "**Search results:**\n" + format_entries(r.json()['data']['children'], 5)
+        return "Search results:\n" + format_entries(r.json()['data']['children'], 5)
     except BadStatusCodeError as e:
         raise CommandError("Got {} error code".format(e.http_code))
