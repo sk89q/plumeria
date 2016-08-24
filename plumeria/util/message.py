@@ -13,7 +13,7 @@ from plumeria.util.http import DefaultClientSession
 CHUNK_SIZE = 1024
 MAX_SIZE = 1024 * 1024 * 6
 MAX_LENGTH = 4000
-IMAGE_LINK_PATTERN = re.compile("((https?)://[^\s/$.?#].[^\s]*)", re.I)
+IMAGE_LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
 
 
 async def fetch_image(url):
