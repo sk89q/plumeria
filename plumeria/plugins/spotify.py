@@ -7,7 +7,7 @@ from plumeria.util.ratelimit import rate_limit
 RESULT_LIMIT = 8
 
 
-@commands.register("spotify artist", "spartist", category="Search")
+@commands.register("spotify artist", "spotify", "spartist", category="Search")
 @rate_limit()
 async def artist(message):
     """
@@ -23,7 +23,7 @@ async def artist(message):
     ])
     data = r.json()
     if len(data['artists']['items']):
-        results = map(lambda item: "\u2022 **{}**: {} `{}`".format(
+        results = map(lambda item: "\u2022 **{}**: {} <{}>".format(
             item['name'],
             item['genres'][0] if len(item['genres']) else "unknown genre",
             item['external_urls']['spotify']), data['artists']['items'][:RESULT_LIMIT])
@@ -48,7 +48,7 @@ async def track(message):
     ])
     data = r.json()
     if len(data['tracks']['items']):
-        results = map(lambda item: "\u2022 **{}** by *{}* `{}`".format(
+        results = map(lambda item: "\u2022 **{}** by *{}* <{}>".format(
             item['name'],
             item['artists'][0]['name'],
             item['external_urls']['spotify']), data['tracks']['items'][:RESULT_LIMIT])
@@ -73,7 +73,7 @@ async def album(message):
     ])
     data = r.json()
     if len(data['albums']['items']):
-        results = map(lambda item: "\u2022 **{}** `{}`".format(
+        results = map(lambda item: "\u2022 **{}** <{}>".format(
             item['name'],
             item['external_urls']['spotify']), data['albums']['items'][:RESULT_LIMIT])
         return "Spotify album search:\n{}".format("\n".join(results))
