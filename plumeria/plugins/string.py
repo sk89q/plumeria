@@ -1,10 +1,13 @@
+import re
 import urllib.parse
 
 import codecs
 import hashlib
-from plumeria.command import commands
+from plumeria.command import commands, CommandError
 from plumeria.util.ratelimit import rate_limit
 from plumeria.util.command import string_filter
+
+LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
 
 
 @commands.register('upper', category='String')
@@ -141,3 +144,16 @@ def length(text):
     Returns the length of the given string.
     """
     return str(len(text))
+
+
+@commands.register('findurl', category='String')
+@string_filter
+def find_url(text):
+    """
+    Returns the first URL in the string.
+    """
+    m = LINK_PATTERN.search(text)
+    if m:
+        return m.group(0)
+    else:
+        raise CommandError("No URL found in string")
