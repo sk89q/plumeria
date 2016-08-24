@@ -6,6 +6,8 @@ from plumeria.util import http
 from plumeria.util.http import BadStatusCodeError
 from plumeria.util.ratelimit import rate_limit
 
+REDDIT_TRIM_PATTERN = re.compile("^/?(r/[^/]+/comments/[^/]+/).*")
+
 
 def valid_subreddit_name(s):
     if re.match("^([A-Za-z0-9_]{1,50})$", s):
@@ -14,11 +16,15 @@ def valid_subreddit_name(s):
         raise ValueError("Invalid subreddit name")
 
 
+def trim_reddit_link(s):
+    return REDDIT_TRIM_PATTERN.sub("\\1", s)
+
+
 def format_entry(post):
     data = post['data']
-    return "**{title}** <{desc}>".format(
+    return "**{title}** <https://reddit.com/{desc}>".format(
         title=data['title'],
-        desc=data['url']
+        desc=trim_reddit_link(data['permalink'])
     )
 
 
@@ -32,7 +38,8 @@ def format_entries(posts, count=5):
 
 async def get_subreddit_post(q, top=False, count=5):
     try:
-        r = await http.get("https://www.reddit.com/r/{}/{}.json".format(q, "top/" if top else ""), params=([('t', 'all')] if top else []))
+        r = await http.get("https://www.reddit.com/r/{}/{}.json".format(q, "top/" if top else ""),
+                           params=([('t', 'all')] if top else []))
         return format_entries(r.json()['data']['children'], count)
     except BadStatusCodeError as e:
         raise CommandError("Got {} error code".format(e.http_code))
