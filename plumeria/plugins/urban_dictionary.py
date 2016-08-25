@@ -3,7 +3,7 @@ from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("urbandict", "urb", category="Search")
+@commands.register("urban", "urb", category="Search")
 @rate_limit()
 async def urban_dictionary(message):
     """
