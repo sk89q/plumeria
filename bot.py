@@ -52,7 +52,10 @@ if __name__ == "__main__":
 
     for path in modules_to_load:
         logging.info("Loading {}...".format(path))
-        __import__(path)
+        try:
+            __import__(path)
+        except:
+            logging.warning("Failed to load {}".format(path), exc_info=True)
 
     config.load()
     config.save()
