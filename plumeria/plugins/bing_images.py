@@ -12,7 +12,7 @@ api_key = config.create("bing", "key",
                         comment="An API key from Bing")
 
 
-@commands.register("image", "images", ""i", category="Search")
+@commands.register("image", "images", "i", category="Search")
 @rate_limit()
 async def image(message):
     """
