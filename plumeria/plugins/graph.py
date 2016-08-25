@@ -30,7 +30,7 @@ def generate_pie(labels, data):
         text.set_fontproperties(prop)
 
     buf = io.BytesIO()
-    plt.savefig(buf, bbox_inches='tight', transparent="True", pad_inches=0.1)
+    plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
 
     plt.clf()
 
