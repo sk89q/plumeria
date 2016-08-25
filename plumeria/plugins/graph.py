@@ -19,11 +19,14 @@ PERCENTAGE_PATTERN = re.compile("([0-9]+\\.?[0-9]*)%")
 font_path = pkg_resources.resource_filename("plumeria", 'fonts/FiraSans-Regular.ttf')
 
 
-def generate_pie(labels, data):
+def generate_pie(labels, data, title=None):
     plt.figure(1, figsize=(5, 5))
     ax = plt.axes([0.1, 0.1, 0.4, 0.4])
 
     plt.pie(data, labels=labels, autopct='%1.0f%%', startangle=90)
+
+    if title:
+        plt.title(title)
 
     prop = fm.FontProperties(fname=font_path, size=11)
     for text in ax.texts:
@@ -44,6 +47,7 @@ async def image(message):
     Generate a pie graph.
 
     """
+    title = None
     labels = []
     data = []
     total_pct = 0
@@ -63,12 +67,12 @@ async def image(message):
             data.append(pct)
             total_pct += pct
         else:
-            raise CommandError("Could not find a % in '{}'".format(part))
+            title = part.strip()
 
     data = list(map(lambda x: x / total_pct, data))
 
     def execute():
-        return generate_pie(labels, data)
+        return generate_pie(labels, data, title=title)
 
     buf = await asyncio.get_event_loop().run_in_executor(None, execute)
 
