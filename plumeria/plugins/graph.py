@@ -9,6 +9,7 @@ import pkg_resources
 
 from plumeria.command import commands, CommandError
 from plumeria.message import Response, MemoryAttachment
+from plumeria.util.message import split_array, split_numbers
 from plumeria.util.ratelimit import rate_limit
 
 matplotlib.use('Agg')
@@ -23,70 +24,13 @@ font_path = pkg_resources.resource_filename("plumeria", 'fonts/FiraSans-Regular.
 lock = threading.RLock()
 
 
-def generate_pie(labels, data, title=None):
-    with lock:
-        plt.figure(1, figsize=(5, 5))
-        ax = plt.axes([0.1, 0.1, 0.4, 0.4])
-
-        plt.pie(data, labels=labels, autopct='%1.0f%%', startangle=90)
-
-        if title:
-            plt.title(title)
-
-        prop = fm.FontProperties(fname=font_path, size=11)
-        for text in ax.texts:
-            text.set_fontproperties(prop)
-
-        buf = io.BytesIO()
-        plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
-
-        plt.clf()
-
-    return buf
-
-
-def generate_bar(labels, data, title=None):
-    width = 0.8
-    ind = np.arange(len(data)) - width
-
-    with lock:
-        plt.figure(1, figsize=(5, 5))
-        ax = plt.axes([0.1, 0.1, 0.4, 0.4])
-
-        plt.bar(ind, data, width, align='center')
-        plt.xticks(rotation=70)
-        ax.set_xticks(ind)
-        ax.set_xticklabels(labels)
-
-        if title:
-            plt.title(title)
-
-        prop = fm.FontProperties(fname=font_path, size=11)
-        for text in ax.texts:
-            text.set_fontproperties(prop)
-
-        buf = io.BytesIO()
-        plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
-
-        plt.clf()
-
-    return buf
-
-
 def extract_data(message, pattern, normalize=False):
     title = None
     labels = []
     data = []
     total_pct = 0
 
-    if ';' in message:
-        delimeter = ';'
-    elif ',' in message:
-        delimeter = ','
-    else:
-        raise CommandError("Split pie sections with ; or ,")
-
-    for part in message.strip().split(delimeter):
+    for part in split_array(message):
         m = pattern.search(part)
         if m:
             labels.append(pattern.sub("", part, 1).strip())
@@ -111,7 +55,24 @@ async def pie(message):
     title, labels, data = extract_data(message.content, pattern=PERCENTAGE_PATTERN, normalize=True)
 
     def execute():
-        return generate_pie(labels, data, title=title)
+        with lock:
+            plt.figure(1, figsize=(5, 5))
+            ax = plt.axes([0.1, 0.1, 0.4, 0.4])
+
+            plt.pie(data, labels=labels, autopct='%1.0f%%', startangle=90)
+
+            if title:
+                plt.title(title)
+
+            prop = fm.FontProperties(fname=font_path, size=11)
+            for text in ax.texts:
+                text.set_fontproperties(prop)
+
+            buf = io.BytesIO()
+            plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
+
+            plt.clf()
+        return buf
 
     buf = await asyncio.get_event_loop().run_in_executor(None, execute)
 
@@ -128,7 +89,62 @@ async def bar(message):
     title, labels, data = extract_data(message.content, pattern=NUMBER_PATTERN)
 
     def execute():
-        return generate_bar(labels, data, title=title)
+        width = 0.8
+        ind = np.arange(len(data)) - width
+
+        with lock:
+            plt.figure(1, figsize=(5, 5))
+            ax = plt.axes([0.1, 0.1, 0.4, 0.4])
+
+            plt.bar(ind, data, width, align='center')
+            plt.xticks(rotation=70)
+            ax.set_xticks(ind)
+            ax.set_xticklabels(labels)
+
+            if title:
+                plt.title(title)
+
+            prop = fm.FontProperties(fname=font_path, size=11)
+            for text in ax.texts:
+                text.set_fontproperties(prop)
+
+            buf = io.BytesIO()
+            plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
+
+            plt.clf()
+        return buf
+
+    buf = await asyncio.get_event_loop().run_in_executor(None, execute)
+
+    return Response("", attachments=[MemoryAttachment(buf, "graph.png", "image/png")])
+
+
+
+@commands.register("histogram", "hist", category="Graphing")
+@rate_limit()
+async def histogram(message):
+    """
+    Generate a histogram.
+
+    """
+    data = split_numbers(message.content)
+
+    def execute():
+        with lock:
+            plt.figure(1, figsize=(5, 5))
+            ax = plt.axes([0.1, 0.1, 0.4, 0.4])
+
+            plt.hist(data, bins=10)
+
+            prop = fm.FontProperties(fname=font_path, size=11)
+            for text in ax.texts:
+                text.set_fontproperties(prop)
+
+            buf = io.BytesIO()
+            plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
+
+            plt.clf()
+        return buf
 
     buf = await asyncio.get_event_loop().run_in_executor(None, execute)
 

@@ -88,3 +88,22 @@ async def read_image(message):
             return await fetch_image(url)
 
     return None
+
+
+def split_array(s):
+    if ';' in s:
+        delimiter = ';'
+    elif ',' in s:
+        delimiter = ','
+    else:
+        delimiter = " "
+
+    return list(filter(lambda s: s.strip(), s.split(delimiter)))
+
+
+def split_numbers(s):
+    numbers = split_array(s)
+    try:
+        return list(map(lambda x: float(x), numbers))
+    except ValueError as e:
+        raise CommandError("All the entries must be numbers")
