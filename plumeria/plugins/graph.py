@@ -1,6 +1,7 @@
 import asyncio
 import io
 import re
+import threading
 
 import matplotlib
 import pkg_resources
@@ -17,25 +18,27 @@ import matplotlib.font_manager as fm
 PERCENTAGE_PATTERN = re.compile("([0-9]+\\.?[0-9]*)%")
 
 font_path = pkg_resources.resource_filename("plumeria", 'fonts/FiraSans-Regular.ttf')
+lock = threading.RLock()
 
 
 def generate_pie(labels, data, title=None):
-    plt.figure(1, figsize=(5, 5))
-    ax = plt.axes([0.1, 0.1, 0.4, 0.4])
+    with lock:
+        plt.figure(1, figsize=(5, 5))
+        ax = plt.axes([0.1, 0.1, 0.4, 0.4])
 
-    plt.pie(data, labels=labels, autopct='%1.0f%%', startangle=90)
+        plt.pie(data, labels=labels, autopct='%1.0f%%', startangle=90)
 
-    if title:
-        plt.title(title)
+        if title:
+            plt.title(title)
 
-    prop = fm.FontProperties(fname=font_path, size=11)
-    for text in ax.texts:
-        text.set_fontproperties(prop)
+        prop = fm.FontProperties(fname=font_path, size=11)
+        for text in ax.texts:
+            text.set_fontproperties(prop)
 
-    buf = io.BytesIO()
-    plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
+        buf = io.BytesIO()
+        plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0.1)
 
-    plt.clf()
+        plt.clf()
 
     return buf
 
