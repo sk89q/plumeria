@@ -108,10 +108,10 @@ async def pie(message):
     Generate a pie graph.
 
     """
-    title, labels, data = extract_data(message.content, pattern=PERCENTAGE_PATTERN)
+    title, labels, data = extract_data(message.content, pattern=PERCENTAGE_PATTERN, normalize=True)
 
     def execute():
-        return generate_pie(labels, data, title=title, normalize=True)
+        return generate_pie(labels, data, title=title)
 
     buf = await asyncio.get_event_loop().run_in_executor(None, execute)
 
