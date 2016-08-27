@@ -8,6 +8,10 @@ from PIL import Image
 
 from .util.http import DefaultClientSession
 
+MAX_BODY_LENGTH = 1900
+MAX_LINES = 50
+CONTINUATION_STRING = "\n..."
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,7 +34,35 @@ class Message:
                                                     filename=content.attachments[0].filename,
                                                     content=content.content)
             else:
-                return await self.channel.send_message(content.content)
+                body = content.content.strip()
+                lines = body.splitlines()
+
+                if len(body) > MAX_BODY_LENGTH or len(lines) > MAX_LINES:
+                    buffer = io.StringIO()
+                    current_length = len(CONTINUATION_STRING)
+                    line_count = 0
+                    first = True
+
+                    for line in lines:
+                        line_length = len(line)
+                        if current_length + line_length > MAX_BODY_LENGTH or line_count > MAX_LINES - 1:
+                            break
+                        else:
+                            if first:
+                                first = False
+                            else:
+                                buffer.write("\n")
+                            buffer.write(line)
+                            current_length += line_length
+                            line_count += 1
+
+                    truncated_body = buffer.getvalue() + CONTINUATION_STRING
+
+                    return await self.channel.send_file(io.BytesIO(body.encode("utf-8")),
+                                                        filename="continued.txt",
+                                                        content=truncated_body)
+                else:
+                    return await self.channel.send_message(content.content)
         else:
             return await self.channel.send_message(content)
 
