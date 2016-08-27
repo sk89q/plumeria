@@ -1,5 +1,6 @@
 import io
 import re
+import urllib.parse
 
 import html2text
 
@@ -13,6 +14,34 @@ LOCATION_SPLIT_PATTERN = re.compile("\\bto\\b", re.IGNORECASE)
 api_key = config.create("google", "key",
                         fallback="",
                         comment="An API key from https://console.developers.google.com/ with the proper APIs enabled")
+
+
+@commands.register("latlng", "latlong", "lat lng", "lat long", category="Search")
+@rate_limit()
+async def lat_long(message):
+    """
+    Geocode an address and return latitude and longitude.
+
+    """
+    q = message.content.strip()
+    if not q:
+        raise CommandError("Address required")
+
+    r = await http.get("https://maps.googleapis.com/maps/api/geocode/json", params=[
+        ('key', api_key()),
+        ('address', q),
+    ])
+    data = r.json()
+    if data['status'] == "ZERO_RESULTS":
+        raise CommandError("Address could not be matched to any location")
+    elif data['status'] == "OK":
+        entry = data['results'][0]
+        return "{}, {} ({})".format(entry['geometry']['location']['lat'],
+                                    entry['geometry']['location']['lng'],
+                                    entry['formatted_address'])
+    else:
+        raise CommandError("Google Maps returned an error: {}".format(
+            data['error_message'] if 'error_message' in data else data['status']))
 
 
 @commands.register("directions", category="Search")
@@ -48,14 +77,13 @@ async def directions(message):
     elif data['status'] == "OK":
         buffer = io.StringIO()
         for leg in data['routes'][0]['legs']:
-            buffer.write(":map: {} ({})\n".format(leg['distance']['text'], leg['duration']['text']))
+            buffer.write(":map: {} ({}) <http://maps.google.com/?q={}>\n".format(
+                leg['distance']['text'], leg['duration']['text'], urllib.parse.urlencode(q)))
             for i, step in enumerate(leg['steps']):
                 buffer.write("{}. {} ({})\n".format(i + 1, html2text.html2text(step['html_instructions']).replace("\n",
                                                                                                                   " ").strip(),
                                                     step['duration']['text']))
         return buffer.getvalue().strip()
     else:
-        if 'error_message' in data:
-            raise CommandError("Google Maps returned an error: {}".format(data['error_message']))
-        else:
-            raise CommandError("Google Maps returned an error: {}".format(data['status']))
+        raise CommandError("Google Maps returned an error: {}".format(
+            data['error_message'] if 'error_message' in data else data['status']))
