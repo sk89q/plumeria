@@ -77,8 +77,8 @@ async def directions(message):
     elif data['status'] == "OK":
         buffer = io.StringIO()
         for leg in data['routes'][0]['legs']:
-            buffer.write(":map: {} ({}) <http://maps.google.com/?q={}>\n".format(
-                leg['distance']['text'], leg['duration']['text'], urllib.parse.urlencode(q)))
+            buffer.write(":map: {} ({}) <https://maps.google.com/?q={}>\n".format(
+                leg['distance']['text'], leg['duration']['text'], urllib.parse.quote(q)))
             for i, step in enumerate(leg['steps']):
                 buffer.write("{}. {} ({})\n".format(i + 1, html2text.html2text(step['html_instructions']).replace("\n",
                                                                                                                   " ").strip(),
