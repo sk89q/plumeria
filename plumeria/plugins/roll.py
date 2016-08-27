@@ -31,7 +31,7 @@ async def eight_ball(message):
     return "{} **{}**".format(message.content, random.choice(EIGHT_BALL_RESPONSES)).strip()
 
 
-@commands.register('roll', category='Utility')
+@commands.register('roll', 'dice', category='Utility')
 async def roll(message):
     """
     Rolls dice with support for NdM syntax.
@@ -59,3 +59,11 @@ async def choice(message):
         raise CommandError("Provide a comma-separated list of choices")
     else:
         raise CommandError("Provide a comma-separated list of choices")
+
+
+@commands.register('coin', category='Utility')
+async def coin(message):
+    if random.getrandbits(1):
+        return "heads"
+    else:
+        return "tails"
