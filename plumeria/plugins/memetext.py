@@ -1,3 +1,4 @@
+import os.path
 import re
 import statistics
 
@@ -7,6 +8,8 @@ from PIL import ImageFont
 
 from plumeria.command import commands
 from plumeria.util.command import image_filter
+
+IMPACT_FONT_PATH = os.path.join("fonts", "impact.ttf")
 
 
 def draw_textbox(im, left_x, top_y, box_width, text, font, border_size=2, v_align='top'):
@@ -59,12 +62,17 @@ def draw_textbox(im, left_x, top_y, box_width, text, font, border_size=2, v_alig
 def render_meme_text(im, text, v_align):
     text = text[:400] # limit text length
     w, h = im.size
+    font_size = max(15, min(int(h * 0.9e-1), 200))
 
-    with pkg_resources.resource_stream("plumeria", 'fonts/FiraSans-Regular.ttf') as f:
-        font = ImageFont.truetype(f, max(15, min(int(h * 0.9e-1), 120)))
+    if os.path.exists(IMPACT_FONT_PATH):
+        with open(IMPACT_FONT_PATH, "rb") as f:
+            font = ImageFont.truetype(f, font_size)
+    else:
+        with pkg_resources.resource_stream("plumeria", 'fonts/FiraSans-Regular.ttf') as f:
+            font = ImageFont.truetype(f, font_size)
 
     draw_textbox(im, 20, 20 if v_align == 'top' else h - 40, w - 40, text, font,
-                 border_size=max(1, min(int(w * h * 1e-5 * 2), 5)), v_align=v_align)
+                 border_size=max(1, min(int(w * h * 1e-5 * 2), 9)), v_align=v_align)
 
 
 @commands.register('memetext', 'mt', category='Image')
