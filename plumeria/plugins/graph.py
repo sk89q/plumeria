@@ -9,7 +9,7 @@ import pkg_resources
 
 from plumeria.command import commands, CommandError
 from plumeria.message import Response, MemoryAttachment
-from plumeria.util.message import split_array, split_numbers
+from plumeria.util.message import parse_list, parse_numer_list
 from plumeria.util.ratelimit import rate_limit
 
 matplotlib.use('Agg')
@@ -30,7 +30,7 @@ def extract_data(message, pattern, normalize=False):
     data = []
     total_pct = 0
 
-    for part in split_array(message):
+    for part in parse_list(message):
         m = pattern.search(part)
         if m:
             labels.append(pattern.sub("", part, 1).strip())
@@ -156,7 +156,7 @@ async def histogram(message):
         /roll 500d10 | hist
 
     """
-    data = split_numbers(message.content)
+    data = parse_numer_list(message.content)
 
     def execute():
         with lock:

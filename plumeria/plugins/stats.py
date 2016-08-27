@@ -2,7 +2,7 @@ import statistics
 
 from plumeria.command import commands
 from plumeria.util.command import string_filter
-from plumeria.util.message import split_numbers
+from plumeria.util.message import parse_numer_list
 
 
 def format_output(n):
@@ -19,7 +19,7 @@ def mean(text):
 
         /mean 33 54 43 65 43 62
     """
-    return format_output(statistics.mean(split_numbers(text)))
+    return format_output(statistics.mean(parse_numer_list(text)))
 
 
 @commands.register('median', category='Statistics')
@@ -32,7 +32,7 @@ def median(text):
 
         /median 33 54 43 65 43 62
     """
-    return format_output(statistics.median(split_numbers(text)))
+    return format_output(statistics.median(parse_numer_list(text)))
 
 
 @commands.register('median low', category='Statistics')
@@ -45,7 +45,7 @@ def median_low(text):
 
         /median low 33 54 43 65 43 62
     """
-    return format_output(statistics.median_low(split_numbers(text)))
+    return format_output(statistics.median_low(parse_numer_list(text)))
 
 
 @commands.register('median high', category='Statistics')
@@ -58,7 +58,7 @@ def median_high(text):
 
         /median high 33 54 43 65 43 62
     """
-    return format_output(statistics.median_high(split_numbers(text)))
+    return format_output(statistics.median_high(parse_numer_list(text)))
 
 
 @commands.register('median grouped', category='Statistics')
@@ -73,7 +73,7 @@ def median_grouped(text):
 
         /median grouped 33 54 43 65 43 62
     """
-    return format_output(statistics.median_grouped(split_numbers(text)))
+    return format_output(statistics.median_grouped(parse_numer_list(text)))
 
 
 @commands.register('mode', category='Statistics')
@@ -86,7 +86,7 @@ def mode(text):
 
         /mode 33 54 43 65 43 62
     """
-    return format_output(statistics.mode(split_numbers(text)))
+    return format_output(statistics.mode(parse_numer_list(text)))
 
 
 @commands.register('pstdev', category='Statistics')
@@ -99,7 +99,7 @@ def pstdev(text):
 
         /pstdev 33 54 43 65 43 62
     """
-    return format_output(statistics.pstdev(split_numbers(text)))
+    return format_output(statistics.pstdev(parse_numer_list(text)))
 
 
 @commands.register('pvariance', category='Statistics')
@@ -112,7 +112,7 @@ def pvariance(text):
 
         /pvariance 33 54 43 65 43 62
     """
-    return format_output(statistics.pvariance(split_numbers(text)))
+    return format_output(statistics.pvariance(parse_numer_list(text)))
 
 
 @commands.register('stdev', category='Statistics')
@@ -125,7 +125,7 @@ def stdev(text):
 
         /stdev 33 54 43 65 43 62
     """
-    return format_output(statistics.stdev(split_numbers(text)))
+    return format_output(statistics.stdev(parse_numer_list(text)))
 
 
 @commands.register('variance', category='Statistics')
@@ -138,4 +138,4 @@ def variance(text):
 
         /variance 33 54 43 65 43 62
     """
-    return format_output(statistics.variance(split_numbers(text)))
+    return format_output(statistics.variance(parse_numer_list(text)))

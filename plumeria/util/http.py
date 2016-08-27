@@ -35,7 +35,8 @@ class BadStatusCodeError(Exception):
 
 
 class Response:
-    def __init__(self, text):
+    def __init__(self, status_code, text):
+        self.status_code = status_code
         self._text = text
 
     def text(self):
@@ -45,12 +46,15 @@ class Response:
         return json.loads(self._text)
 
 
-async def request(*args, **kwargs):
+async def request(*args, require_success=True, **kwargs):
+    if 'data' in kwargs:
+        if isinstance(kwargs['data'], dict) or isinstance(kwargs['data'], list):
+            kwargs['data'] = json.dumps(kwargs['data'])
     with DefaultClientSession() as session:
         async with session.request(*args, **kwargs) as resp:
-            if resp.status != 200:
+            if require_success and resp.status != 200:
                 raise BadStatusCodeError(resp.status, "HTTP code is not 200; got {}".format(resp.status))
-            return Response(await resp.text())
+            return Response(resp.status, await resp.text())
 
 
 async def get(*args, **kwargs):

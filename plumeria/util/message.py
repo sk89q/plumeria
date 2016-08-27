@@ -95,7 +95,7 @@ async def read_image(message):
     return None
 
 
-def split_array(s):
+def parse_list(s, allow_spaces=True):
     s = s.strip()
     if '\n' in s:
         delimiter = '\n'
@@ -103,14 +103,16 @@ def split_array(s):
         delimiter = ';'
     elif ',' in s:
         delimiter = ','
-    else:
+    elif allow_spaces:
         delimiter = " "
+    else:
+        return [s]
 
     return list(filter(lambda s: len(s), map(lambda s: s.strip(), s.split(delimiter))))
 
 
-def split_numbers(s):
-    numbers = split_array(s)
+def parse_numer_list(s):
+    numbers = parse_list(s)
     try:
         return list(map(lambda x: float(x), numbers))
     except ValueError as e:
