@@ -17,8 +17,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-PERCENTAGE_PATTERN = re.compile("([0-9]+\\.?[0-9]*)%?")
-NUMBER_PATTERN = re.compile("([0-9]+\\.?[0-9]*)")
+PERCENTAGE_PATTERN = re.compile("\\b([0-9]+\\.?[0-9]*)%?\\b")
+NUMBER_PATTERN = re.compile("\\b([0-9]+\\.?[0-9]*)\\b")
 
 font_path = pkg_resources.resource_filename("plumeria", 'fonts/FiraSans-Regular.ttf')
 lock = threading.RLock()
