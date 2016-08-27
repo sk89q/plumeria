@@ -1,4 +1,4 @@
-{% extends "master.html" %}}
+{% extends "master.html" %}
 {% block content %}
   <div class="doc-nav">
     {% for category in categories %}
@@ -6,13 +6,13 @@
       <ul>
         {% for mapping in by_category[category] %}
           <li>
+            <a href="#{{ mapping.aliases[0] }}">{{ mapping.aliases[0] }}</a>
             {% if mapping.command.owners_only %}
-              <i class="fa fa-ban text-muted"></i>
+            <i class="fa fa-ban text-muted"></i>
             {% endif %}
             {% if mapping.command.server_admins_only %}
-              <i class="fa fa-lock text-muted"></i>
+            <i class="fa fa-lock text-muted"></i>
             {% endif %}
-            <a href="#{{ mapping.aliases[0] }}">.{{ mapping.aliases[0] }}</a>
           </li>
         {% endfor %}
       </ul>
@@ -20,26 +20,26 @@
   </div>
 
   <div class="doc-contents">
-    <h1>Bot Commands</h1>
+    <h1>Plumeria Commands</h1>
     {% for category in categories %}
       {% for mapping in by_category[category] %}
         <div class="command-block">
-          <h3 id="{{ mapping.aliases[0] }}">
-            .{{ mapping.aliases[0] }}
-          </h3>
           {% if mapping.command.server_admins_only %}
-            <div class="command-restrictions"><span class="label label-warning"><i class="fa fa-lock"></i> Server moderators only</span></div>
+          <div class="command-restrictions pull-right"><span class="label label-warning"><i class="fa fa-lock"></i> Server moderators only</span></div>
           {% endif %}
           {% if mapping.command.owners_only %}
-            <div class="command-restrictions"><span class="label label-danger"><i class="fa fa-ban"></i> Bot owners only</span></div>
+          <div class="command-restrictions pull-right"><span class="label label-danger"><i class="fa fa-ban"></i> Bot owners only</span></div>
           {% endif %}
-          {% if mapping.aliases|length > 1 %}
+          <h3 id="{{ mapping.aliases[0] }}">
+            {{ mapping.aliases[0] }}
+            {% if mapping.aliases|length > 1 %}
             <div class="command-aliases">
-              {% for alias in mapping.aliases[1:] %}
-                .{{ alias }}
+              Aliases: {% for alias in mapping.aliases[1:] %}
+              <span class="alias">{{ alias }}</span>{% if not loop.last %}, {% endif %}
               {% endfor %}
             </div>
-          {% endif %}
+            {% endif %}
+          </h3>
           {% if mapping.command.help %}
             {% autoescape false %}
             {{ mapping.command.help|rst2html }}

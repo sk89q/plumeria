@@ -26,8 +26,10 @@
 }
 
 body {
-  padding: 60px;
-  font-family: 'Open Sans', Helvetica, sans-serif;
+  padding: 30px;
+  background: #efefef;
+  font-family: Lato, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 15px;
 }
 
 a:link, a:visited {
@@ -53,13 +55,13 @@ h1 {
 h2 {
   margin: 60px 0 20px 0;
   padding: 0 0 15px 0;
-  text-transform: uppercase;
-  font-size: 150%;
+  font-size: 15px;
   color: #888;
 }
 
 h3 {
-  font-size: 150%;
+  font-size: 19px;
+  font-weight: bold;
 }
 
 .doc-nav {
@@ -67,18 +69,19 @@ h3 {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 300px;
-  padding: 60px 40px;
-  background: #efefef;
+  width: 250px;
+  padding: 30px;
   overflow: auto;
+  background: white;
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
 }
 
 .doc-nav h2 {
   margin: 0 0 10px 0;
   padding: 0;
-  font-size: 85%;
-  text-transform: uppercase;
-  color: #888;
+  font-size: 15px;
+  font-weight: bold;
+  color: #000;
 }
 
 .doc-nav ul, li {
@@ -89,32 +92,37 @@ h3 {
 }
 
 .doc-nav ul {
-  margin: 0 0 30px 0;
+  margin: 0 0 20px 0;
 }
 
 .doc-nav li {
-  margin: 5px 0;
+  margin: 3px 0 3px 7px;
 }
 
 .doc-contents {
-  margin-left: 300px;
-  max-width: 800px;
+  margin-left: 260px;
+  max-width: 600px;
 }
 
 .command-block {
-  margin: 40px 0;
 }
 
 .command-block .command-restrictions {
-  margin: 0 0 15px 0;
+  margin: 10px 0 15px 0;
 }
 
 .command-block .command-aliases {
-  margin: 15px -20px 15px -20px;
-  padding: 10px 20px;
-  background: #efefef;
+  margin: 10px 0 0 0;
+  color: #999;
+  font-size: 15px;
 }
 
 .command-block h3 {
-  margin: 5px 0 15px 0;
+  margin: 35px 0 15px 0;
+}
+
+pre {
+  background: #fefefe;
+  border: 0;
+  border-radius: 0;
 }

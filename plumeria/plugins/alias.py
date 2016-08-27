@@ -90,7 +90,9 @@ async def echo(message):
 @server_admins_only
 async def alias(message):
     """
-    Creates a new command alias.
+    Creates a new command alias, which can be triggered by any other user and run under the context of
+    the user that called the alias. Aliases can be updated or removed. Aliases also show up on this
+    help page.
 
     Example::
 
