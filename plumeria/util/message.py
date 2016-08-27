@@ -96,14 +96,17 @@ async def read_image(message):
 
 
 def split_array(s):
-    if ';' in s:
+    s = s.strip()
+    if '\n' in s:
+        delimiter = '\n'
+    elif ';' in s:
         delimiter = ';'
     elif ',' in s:
         delimiter = ','
     else:
         delimiter = " "
 
-    return list(filter(lambda s: s.strip(), s.split(delimiter)))
+    return list(filter(lambda s: len(s), map(lambda s: s.strip(), s.split(delimiter))))
 
 
 def split_numbers(s):
