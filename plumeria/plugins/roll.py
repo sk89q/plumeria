@@ -2,6 +2,7 @@ import random
 
 import dice
 from plumeria.command import commands, CommandError
+from plumeria.util.message import split_array
 
 EIGHT_BALL_RESPONSES = (
     "It is certain",
@@ -51,7 +52,7 @@ async def choice(message):
     Chooses a random entry for a list of comma-separated choices.:
     """
     if len(message.content):
-        split = message.content.split(",")
+        split = split_array(message.content)
         if len(split) > 1:
             choices = list(map(lambda x: x.strip(), split))
             return random.choice(choices)
