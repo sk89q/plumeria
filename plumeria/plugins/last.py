@@ -6,8 +6,8 @@ from plumeria.message import Response
 from plumeria.event import bus
 from plumeria.util.ratelimit import rate_limit
 
-LINK_PATTERN = re.compile("https?://([^ ]+)", re.I)
-IMAGE_PATTERN = re.compile("https?://([^ ]+)\\.(?:png|jpe?g|gif)", re.I)
+LINK_PATTERN = re.compile("https?://([^ ><]+)", re.I)
+IMAGE_PATTERN = re.compile("https?://([^ ><]+)\\.(?:png|jpe?g|gif)", re.I)
 
 
 class LastMessage:
@@ -22,10 +22,10 @@ class LastMessage:
         return self._loaded or (self.last_text and self.last_url and self.last_image)
 
     def read(self, message):
-        m = LINK_PATTERN.match(message.content)
+        m = LINK_PATTERN.search(message.content)
         if m:
             self.last_url = Response(m.group(0))
-        m = IMAGE_PATTERN.match(message.content)
+        m = IMAGE_PATTERN.search(message.content)
         if m:
             self.last_image = Response(m.group(0))
         else:
