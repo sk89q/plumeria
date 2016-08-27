@@ -26,7 +26,15 @@ async def price(message):
     Searches CheapShark.com for game deals for a search query.
 
     CheapShark gets pricing data from select game stores and does not have special deals at other websites. Prices
-    are returned in US Dollar.
+    are returned in US Dollars.
+
+    Example::
+
+        /cheapshark overwatch
+
+    Response::
+
+        Overwatch Origins Edition at $45.99 USD - http://www.cheapshark.com/[...]
     """
     if len(message.content.strip()):
         deal = await cheapshark.search(message.content)

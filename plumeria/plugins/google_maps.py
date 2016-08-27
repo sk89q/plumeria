@@ -22,6 +22,14 @@ async def lat_long(message):
     """
     Geocode an address and return latitude and longitude.
 
+    Example::
+
+        /latlng disneyworld
+
+    Response::
+
+        28.419185, -81.58211899999999 (Walt Disney World Monorail, Bay Lake, FL 32821, USA)
+
     """
     q = message.content.strip()
     if not q:
@@ -50,6 +58,24 @@ async def directions(message):
     """
     Get driving directions between two places using Google Maps.
     Separate origin and destination with the word "to".
+
+    Example::
+
+        /directions oakland, ca to los angeles, ca
+
+    The output can take up a lot of lines. If there are too many lines to fit into
+    a Discord message, the entire output will be attached as a text file.
+
+    Response::
+
+        372 mi (5 hours 24 mins)
+        1. Head southwest on Broadway toward 14th St (4 mins)
+        2. Turn left onto 5th St (1 min)
+        3. Take the ramp on the left onto I-880 S (10 mins)
+        4. Take exit 31 for I-238 toward Stockton/Fresno/I-580 (1 min)
+        5. Keep left to continue toward I-238 S (1 min)
+        6. Keep left at the fork, follow signs for I-238/I-880/Castro Valley/Stockton Fresno (1 min)
+        [...]
 
     """
     q = message.content.strip()

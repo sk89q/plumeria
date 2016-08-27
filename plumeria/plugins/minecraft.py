@@ -32,6 +32,14 @@ async def mc_status(message):
     """
     Get the status of Minecraft's services.
 
+    Example::
+
+        /mcstatus
+
+    Response::
+
+        Realms: OK, Login: OK, Skins: OK, Website: OK, Session: OK
+
     """
     r = await http.get(MINECRAFT_STATUS_URL, headers=HEADERS)
     data = r.json()['report']

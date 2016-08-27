@@ -17,6 +17,18 @@ async def wolfram(message):
     """
     Looks up information about a topic with Wolfram Alpha.
 
+    Example::
+
+        /wolfram 2+50
+        /wolfram Integrate[4x^2,x]
+        /wolfram pi
+
+    Response::
+
+        Decimal approximation: 3.14159265358...
+        Property: pi is a transcendental number
+        Continued fraction: [3; 7, 15, 1, 292, [...]
+
     """
     q = message.content.strip()
     if not q:

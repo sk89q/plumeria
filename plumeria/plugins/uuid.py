@@ -18,6 +18,14 @@ async def random_uuid(message):
 def dash_uuid(text):
     """
     Formats a UUID with dashes.
+
+    Example::
+
+        /dashuuid e0927e9a0339478b85c8188b6394243e
+
+    Response::
+
+        e0927e9a-0339-478b-85c8-188b6394243e
     """
     try:
         return str(uuid.UUID(text))
@@ -30,6 +38,14 @@ def dash_uuid(text):
 def hex_uuid(text):
     """
     Formats a UUID without dashes.
+
+    Example::
+
+        /hexuuid e0927e9a-0339-478b-85c8-188b6394243e
+
+    Response::
+
+        e0927e9a0339478b85c8188b6394243e
     """
     try:
         return uuid.UUID(text).hex

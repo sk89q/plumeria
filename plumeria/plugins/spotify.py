@@ -7,11 +7,15 @@ from plumeria.util.ratelimit import rate_limit
 RESULT_LIMIT = 8
 
 
-@commands.register("spotify artist", "spotify", "spartist", category="Search")
+@commands.register("spotify artist", "spartist", category="Search")
 @rate_limit()
 async def artist(message):
     """
     Search Spotify for artists.
+
+    Example::
+
+        /spotify twenty one pilots
 
     """
     q = message.content.strip()
@@ -32,11 +36,15 @@ async def artist(message):
         raise CommandError("no results found")
 
 
-@commands.register("spotify track", "sptrack", category="Search")
+@commands.register("spotify track", "spotify", "sptrack", category="Search")
 @rate_limit()
 async def track(message):
     """
     Search Spotify for tracks.
+
+    Example::
+
+        /spotify '68 - track 1 r
 
     """
     q = message.content.strip()

@@ -68,11 +68,15 @@ async def on_message(message):
     history[channel.server.id][channel.id].read(message)
 
 
-@commands.register('lasttext', 'last', category='Utility')
+@commands.register('last text', 'lasttext', 'last', category='Utility')
 @rate_limit()
 async def last_text(message):
     """
     Gets the last non-command message said in a channel.
+
+    Example::
+
+        /last
     """
     channel = message.channel
     last_data = history[channel.server.id][channel.id]
@@ -84,11 +88,15 @@ async def last_text(message):
         raise CommandError("No last value found.")
 
 
-@commands.register('lastimage', category='Utility')
+@commands.register('last image', 'lastimage', category='Utility')
 @rate_limit()
 async def last_image(message):
     """
-    Gets the last image posted in a channel.
+    Gets the last image posted in a channel, which could either be a URL or an attachment.
+
+    Example::
+
+        /last image
     """
     channel = message.channel
     last_data = history[channel.server.id][channel.id]
@@ -100,11 +108,15 @@ async def last_image(message):
         raise CommandError("No last value found.")
 
 
-@commands.register('lasturl', 'lastlink', category='Utility')
+@commands.register('last url', 'lasturl', 'last link', 'lastlink', category='Utility')
 @rate_limit()
 async def last_image(message):
     """
     Gets the last link posted in a channel.
+
+    Example::
+
+        /last url
     """
     channel = message.channel
     last_data = history[channel.server.id][channel.id]

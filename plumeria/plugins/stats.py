@@ -14,6 +14,10 @@ def format_output(n):
 def mean(text):
     """
     Finds the mean of a space-separated list of numbers.
+
+    Example::
+
+        /mean 33 54 43 65 43 62
     """
     return format_output(statistics.mean(split_numbers(text)))
 
@@ -23,35 +27,51 @@ def mean(text):
 def median(text):
     """
     Finds the median of a space-separated list of numbers.
+
+    Example::
+
+        /median 33 54 43 65 43 62
     """
     return format_output(statistics.median(split_numbers(text)))
 
 
-@commands.register('medianlow', category='Statistics')
+@commands.register('median low', category='Statistics')
 @string_filter
 def median_low(text):
     """
     Finds the low median of a space-separated list of numbers.
+
+    Example::
+
+        /median low 33 54 43 65 43 62
     """
     return format_output(statistics.median_low(split_numbers(text)))
 
 
-@commands.register('medianhigh', category='Statistics')
+@commands.register('median high', category='Statistics')
 @string_filter
 def median_high(text):
     """
     Finds the high median of a space-separated list of numbers.
+
+    Example::
+
+        /median high 33 54 43 65 43 62
     """
     return format_output(statistics.median_high(split_numbers(text)))
 
 
-@commands.register('mediagrouped', category='Statistics')
+@commands.register('median grouped', category='Statistics')
 @string_filter
 def median_grouped(text):
     """
     Finds the grouped median of a space-separated list of numbers.
 
     Calculates the median of grouped continuous data, calculated as the 50th percentile, using interpolation.
+
+    Example::
+
+        /median grouped 33 54 43 65 43 62
     """
     return format_output(statistics.median_grouped(split_numbers(text)))
 
@@ -61,6 +81,10 @@ def median_grouped(text):
 def mode(text):
     """
     Finds the mode of a space-separated list of numbers.
+
+    Example::
+
+        /mode 33 54 43 65 43 62
     """
     return format_output(statistics.mode(split_numbers(text)))
 
@@ -70,6 +94,10 @@ def mode(text):
 def pstdev(text):
     """
     Finds the population standard deviation of a space-separated list of numbers.
+
+    Example::
+
+        /pstdev 33 54 43 65 43 62
     """
     return format_output(statistics.pstdev(split_numbers(text)))
 
@@ -79,6 +107,10 @@ def pstdev(text):
 def pvariance(text):
     """
     Finds the population variance of a space-separated list of numbers.
+
+    Example::
+
+        /pvariance 33 54 43 65 43 62
     """
     return format_output(statistics.pvariance(split_numbers(text)))
 
@@ -88,6 +120,10 @@ def pvariance(text):
 def stdev(text):
     """
     Finds the standard deviation of a space-separated list of numbers.
+
+    Example::
+
+        /stdev 33 54 43 65 43 62
     """
     return format_output(statistics.stdev(split_numbers(text)))
 
@@ -97,5 +133,9 @@ def stdev(text):
 def variance(text):
     """
     Finds the variance of a space-separated list of numbers.
+
+    Example::
+
+        /variance 33 54 43 65 43 62
     """
     return format_output(statistics.variance(split_numbers(text)))

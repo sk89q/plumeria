@@ -24,6 +24,16 @@ async def get_git_id():
 async def update(message):
     """
     Updates the bot software and restart it.
+
+    This only works if a Git repo is setup and the bot is running from that repo.
+    After a ``git pull --rebase`` completes, the bot simply quits so there
+    needs to be a restart script to reboot the bot. It's also recommended
+    to install dependencies listed in ``requirements.txt`` on update from
+    the restart script.
+
+    Example::
+
+        /update
     """
     old_id = await get_git_id()
     await message.respond("Updating from {}...".format(old_id))

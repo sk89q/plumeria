@@ -16,7 +16,7 @@ async def abstract(message):
 
         .about knuckle puck
 
-    might return:
+    Response::
 
         Knuckle Puck is an American rock band from the south suburbs of Chicago, Illinois. The group started...
 

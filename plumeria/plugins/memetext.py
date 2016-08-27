@@ -73,6 +73,10 @@ def memetext(message, im):
     """
     Renders meme text at the top of the image.
 
+    Example::
+
+        /image awkward penguin template | mt Tried to use another bot
+
     Requires an input image.
     """
     render_meme_text(im, message.content, 'top')
@@ -84,6 +88,10 @@ def memetext(message, im):
 def memetext2(message, im):
     """
     Renders meme text at the bottom of the image.
+
+    Example::
+
+        /lastimage | mb Rejected
 
     Requires an input image.
     """

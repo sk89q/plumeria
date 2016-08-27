@@ -16,8 +16,11 @@ api_key = config.create("bing", "key",
 @rate_limit()
 async def image(message):
     """
-    Search Bing for an image.
+    Search Bing for an image and returns a URL to that image.
 
+    Example::
+
+        /image socially awkward penguin
     """
     q = message.content.strip()
     if not q:

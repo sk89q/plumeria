@@ -18,7 +18,7 @@ async def a2squery(message):
 
     Example::
 
-        a2squery example.com:27015
+        /a2squery example.com:27015
     """
     try:
         address = await resolver.resolve(message.content, 27015)

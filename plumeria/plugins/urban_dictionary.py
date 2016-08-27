@@ -9,6 +9,10 @@ async def urban_dictionary(message):
     """
     Search Urban Dictionary for a word.
 
+    Example::
+
+        /urban hello
+
     """
     q = message.content.strip()
     if not q:

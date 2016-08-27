@@ -16,6 +16,18 @@ async def soundcloud(message):
     """
     Search SoundCloud for tracks.
 
+    Example::
+
+        /soundcloud nujabes
+
+    Response::
+
+        \u2022 Nujabes - Aruarian Dance https://soundcl[...]
+        \u2022 Feather - Nujabes https://soundcloud.com[...]
+        \u2022 Nujabes - Counting Stars https://soundcl[...]
+        \u2022 Nujabes/Minmi - Shiki No Uta (Audiodocto[...]
+        \u2022 Nujabes - Lady Brown (feat. Cise Starr) [...]
+
     """
     q = message.content.strip()
     if not len(q):

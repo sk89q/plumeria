@@ -27,6 +27,14 @@ EIGHT_BALL_RESPONSES = (
 async def eight_ball(message):
     """
     Chooses a random response from an 8-ball.
+
+    Example::
+
+        /8ball Will I win a big TV?
+
+    Response::
+
+        Will I win a big TV? Very doubtful
     """
     return "{} **{}**".format(message.content, random.choice(EIGHT_BALL_RESPONSES)).strip()
 
@@ -35,6 +43,12 @@ async def eight_ball(message):
 async def roll(message):
     """
     Rolls dice with support for NdM syntax.
+
+    Example::
+
+        /roll 10d4
+        /roll 10d1*4+3d1
+        /roll 4+14*3
     """
     try:
         result = dice.roll(message.content)
@@ -49,7 +63,13 @@ async def roll(message):
 @commands.register('choice', 'choose', 'pick', category='Utility')
 async def choice(message):
     """
-    Chooses a random entry for a list of comma-separated choices.:
+    Chooses a random entry for a list of items separated by
+    new lines, semi-colons, commas, or spaces.
+
+    Example::
+
+        /choice takeout, dine-in
+        /choice tacos, pho, crepes
     """
     if len(message.content):
         split = split_array(message.content)
@@ -63,6 +83,18 @@ async def choice(message):
 
 @commands.register('coin', category='Utility')
 async def coin(message):
+    """
+    Flips a coin.
+
+    Example::
+
+        /coin
+
+    Response::
+
+        heads
+    """
+
     if random.getrandbits(1):
         return "heads"
     else:

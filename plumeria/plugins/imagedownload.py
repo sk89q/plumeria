@@ -23,6 +23,13 @@ IMAGE_LINK_PATTERN = re.compile("(https?://(?:[^ ]+)\\.(?:png|jpe?g|gif))", re.I
 @rate_limit()
 async def fetch_image(message):
     """
-    Fetch an image from a URL.
+    Fetch an image from a URL. This command essentially changes URLs into attachments.
+
+    The command is not particularly necessary because URLs will automatically
+    be downloaded if needed.
+
+    Example::
+
+        /echo http://example.com/pete.jpg | fetchimage
     """
     return Response("", attachments=[await read_image(message)])

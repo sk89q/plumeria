@@ -12,6 +12,10 @@ youtube = YouTube()
 async def yt(message):
     """
     Search YouTube for a video.
+
+    Example::
+
+        /yt knuckle puck copacetic
     """
     if len(message.content.strip()):
         videos = await youtube.search(message.content)

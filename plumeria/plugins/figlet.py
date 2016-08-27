@@ -10,16 +10,19 @@ MAX_LENGTH = 20
 @rate_limit(burst_size=2)
 async def figlet(message):
     """
-    Generates ASCII art from text. Refrain from frequent usage because the output takes up a lot of
-    visual space.
+    Generates ASCII art from text.
 
     Example::
 
-            __    _
-           / /_  (_)
-          / __ \/ /
-         / / / / /
-        /_/ /_/_/
+        /figlet rationale.
+
+    Response::
+
+                       __  _                   __
+           _________ _/ /_(_)___  ____  ____ _/ /__
+          / ___/ __ `/ __/ / __ \/ __ \/ __ `/ / _ \\
+         / /  / /_/ / /_/ / /_/ / / / / /_/ / /  __/
+        /_/   \__,_/\__/_/\____/_/ /_/\__,_/_/\___(_)
 
     """
     text = message.content.strip()

@@ -20,6 +20,10 @@ with pkg_resources.resource_stream("plumeria", 'fonts/FiraSans-Regular.ttf') as 
 async def drawtext(message):
     """
     Generates an image with given text.
+
+    Example::
+
+        /drawtext Hello there!
     """
     def execute():
         im = Image.new('RGB', (1, 1), (0, 0, 0, 0))
@@ -56,6 +60,10 @@ def blur(message, im):
     """
     Applies a blur effect.
 
+    Example::
+
+        /drawtext Hello there! | blur
+
     Requires an input image.
     """
     parser = ArgumentParser()
@@ -64,11 +72,15 @@ def blur(message, im):
     return im.filter(ImageFilter.GaussianBlur(radius=args.radius))
 
 
-@commands.register('edgeenhance', category='Image')
+@commands.register('edge enhance', 'edgeenhance', category='Image')
 @image_filter
 def edgeenhance(message, im):
     """
     Applies an edge enhance effect.
+
+    Example::
+
+        /drawtext Hello there! | edge enhance
 
     Requires an input image.
     """
@@ -81,16 +93,24 @@ def emboss(message, im):
     """
     Applies a emboss effect.
 
+    Example::
+
+        /drawtext Hello there! | emboss
+
     Requires an input image.
     """
     return im.filter(ImageFilter.EMBOSS)
 
 
-@commands.register('findedges', category='Image')
+@commands.register('find edges', 'findedges', category='Image')
 @image_filter
 def findedges(message, im):
     """
     Applies a find-edges effect.
+
+    Example::
+
+        /drawtext Hello there! | find edges
 
     Requires an input image.
     """
@@ -103,6 +123,10 @@ def sharpen(message, im):
     """
     Applies a sharpen effect.
 
+    Example::
+
+        /drawtext Hello there! | sharpen
+
     Requires an input image.
     """
     return im.filter(ImageFilter.SHARPEN)
@@ -112,7 +136,11 @@ def sharpen(message, im):
 @image_filter
 def bw(message, im):
     """
-    Applies a black and white effect.
+    Applies a black and white effect. There is currently very poor dithering.
+
+    Example::
+
+        /drawtext Hello there! | bw
 
     Requires an input image.
     """

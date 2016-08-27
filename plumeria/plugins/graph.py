@@ -49,7 +49,20 @@ def extract_data(message, pattern, normalize=False):
 @rate_limit()
 async def pie(message):
     """
-    Generate a pie graph.
+    Generate a pie graph. To specify the parts of the pie, make a
+    list separated by new lines, semi-colons or commas where each
+    list entry has a percentage in it (if there is more than one, the
+    first percentage is used).
+
+    To specify a graph title, don't provide a percentage for one of the
+    list items.
+
+    Example::
+
+        /pie Materials, 40% Glass, 22%
+
+    The percentages do not need to add up to 100%. If they do not, then
+    the percentage values will be normalized so that they do add up to 100%.
 
     """
     title, labels, data = extract_data(message.content, pattern=PERCENTAGE_PATTERN, normalize=True)
@@ -83,7 +96,17 @@ async def pie(message):
 @rate_limit()
 async def bar(message):
     """
-    Generate a pie graph.
+    Generate a bar graph. To specify the individual bar labels and values, make a
+    list separated by new lines, semi-colons or commas where each
+    list entry has a number in it (if there is more than one, the
+    first number is used).
+
+    To specify a graph title, don't provide a number for one of the
+    list items.
+
+    Example::
+
+        /bar Groups, Man O 100, rationale. 20
 
     """
     title, labels, data = extract_data(message.content, pattern=NUMBER_PATTERN)
@@ -124,7 +147,13 @@ async def bar(message):
 @rate_limit()
 async def histogram(message):
     """
-    Generate a histogram.
+    Generate a histogram from a list of numbers separated by new lines, semi-colons,
+    commas, or spaces. Currently, the bin count is locked to 10.
+
+    Example::
+
+        /hist 20 39 19 17 28 39 29 20 11 29 32 44
+        /roll 500d10 | hist
 
     """
     data = split_numbers(message.content)

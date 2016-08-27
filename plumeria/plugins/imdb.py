@@ -11,7 +11,20 @@ NAME_PATTERN = re.compile("^(.+?)(?:\\( *([0-9]{4}) *\\))?$")
 @rate_limit()
 async def imdb(message):
     """
-    Look for a movie.
+    Look for information about a movie.
+
+    Example::
+
+        /imdb LA Confidential
+
+    Response::
+
+        L.A. Confidential (1997)
+        138 min (R)
+        Metascore: 90 / IMDB: 8.3
+        Genre: Crime, Drama, Mystery
+
+        As corruption grows in 1950s LA, three policemen[...]
     """
     m = NAME_PATTERN.match(message.content.strip())
     data = (await http.get(URL, params={

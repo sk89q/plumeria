@@ -7,6 +7,14 @@ from plumeria.message import Response
 async def roles(message):
     """
     Gets the roles in the current server, including their name and ID. Intended for development purposes.
+
+    Example::
+
+        /roles
+
+    Response::
+
+        bot (160143463784458624), admin (160143463784458624)
     """
     roles = filter(lambda r: r.name != "@everyone", message.channel.server.roles)
     return Response(", ".join(["{} ({})".format(r.name, r.id) for r in roles]))
@@ -16,5 +24,13 @@ async def roles(message):
 async def userid(message):
     """
     Gets your own Discord user ID for development purposes.
+
+    Example::
+
+        /userid
+
+    Response::
+
+        43463109290000434
     """
     return Response(message.author.id)

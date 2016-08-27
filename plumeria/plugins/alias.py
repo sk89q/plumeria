@@ -80,7 +80,7 @@ async def echo(message):
 
     Can be used to create an alias::
 
-        alias website echo Our website is http://example.com
+        /alias website echo Our website is http://example.com
     """
     return Response(message.content)
 
@@ -96,11 +96,11 @@ async def alias(message):
 
     Example::
 
-        alias serverinfo a2squery example.com:27015
+        /alias serverinfo a2squery example.com:27015
 
     If commands need to be piped, escape the pipe symbol with a ^::
 
-        alias example echo flight simulator ^| drawtext
+        /alias example echo flight simulator ^| drawtext
     """
     parts = message.content.split(" ", 1)
     if len(parts) == 2:
@@ -110,12 +110,16 @@ async def alias(message):
         raise CommandError("<alias> <command>")
 
 
-@commands.register('deletealias', cost=4, category='Alias')
+@commands.register('alias delete', cost=4, category='Alias')
 @channel_only
 @server_admins_only
-async def deletealias(message):
+async def delete_alias(message):
     """
     Deletes an alias by name.
+
+    Example::
+
+        /alias delete aesthetic
     """
     if len(message.content):
         await aliases.delete(message.channel.server, message.content)

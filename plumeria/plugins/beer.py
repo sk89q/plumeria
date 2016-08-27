@@ -12,8 +12,20 @@ api_key = config.create("brewerydb", "key",
 @commands.register("beer", category="Search")
 @rate_limit(burst_size=4)
 async def beer_search(message):
-    """DL
+    """
     Search for a beer using brewerydb.com.
+
+    Example::
+
+        /beer indian pale ale
+
+    Response::
+
+        Amnesia I.P.A.
+        ABV: 7.2%
+        IBU: 55
+        Style: American-Style India Pale Ale
+        Description: Named for the beer that was shipped to Her Majesty’s [...]
     """
     query = message.content.strip()
     if len(query):

@@ -31,6 +31,10 @@ async def steam_status(message):
 
     Uses steamstat.us for status information.
 
+    Example::
+
+        /steamstatus
+
     """
     status = await get_steam_status()
     return Response("{} online\nStore: {}\nCommunity: {}\nWeb API: {}\nSteam OS Repo: {}".format(

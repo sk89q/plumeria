@@ -6,11 +6,20 @@ from plumeria.api.lastfm import LastFm
 lastfm = LastFm()
 
 
-@commands.register('lastscrobble', category='last.fm')
+@commands.register('lastfm', 'last scrobble', 'lastscrobble', category='last.fm')
 @rate_limit()
 async def lastscrobble(message):
     """
     Gets the last scrobbled song of a user.
+
+    Example::
+
+        /lastfm example
+
+    Response::
+
+        Polar Bear Club - Wlwycd
+
     """
     if len(message.content):
         tracks = await lastfm.recent_tracks(message.content)
@@ -25,6 +34,14 @@ async def lastscrobble(message):
 async def tagtop(message):
     """
     Gets the top track for a music tag using last.fm.
+
+    Example::
+
+        /tagtop indie rock
+
+    Response::
+
+        The Killers - Mr. Brightside
     """
     if len(message.content):
         tracks = await lastfm.tag_tracks(message.content)

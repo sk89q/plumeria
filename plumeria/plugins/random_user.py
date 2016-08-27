@@ -9,6 +9,16 @@ async def random_user(message):
     """
     Get details for a random user generated from randomuser.me.
 
+    Example::
+
+        /random user
+
+    Response::
+
+        Perry Sullivan
+        8776 Nowlin Rd, Pomona, Hawaii 38369
+        DOB: 1968-06-05 06:03:33
+
     """
     r = await http.get("https://randomuser.me/api/")
     user = r.json()['results'][0]

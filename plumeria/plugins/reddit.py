@@ -49,7 +49,21 @@ async def get_subreddit_post(q, top=False, count=5):
 @rate_limit()
 async def subreddit(message):
     """
-    Get the hottest posts from a subreddit.
+    Get the hottest posts from a subreddit, with an optional parameter to
+    specify the number of posts to get.
+
+    Example::
+
+        /reddit hiphopheads
+        /reddit hiphopheads 10
+
+    Response::
+
+        \u2022 i'm slug from atmosphere. aMA https:/[...]
+        \u2022 Frank Ocean gets first #1 album with[...]
+        \u2022 [FRESH] Isaiah Rashad - Park https://r[...]
+        \u2022 [FRESH VIDEO] Capital STEEZ - Herban [...]
+        \u2022 Frank Ocean - Blonde, over 750k people [...]
 
     """
     parser = ArgumentParser()
@@ -63,7 +77,8 @@ async def subreddit(message):
 @rate_limit()
 async def subreddit_top(message):
     """
-    Get the top post from a subreddit.
+    Get the all-time top posts from a subreddit, with an optional parameter to
+    specify the number of posts to get
 
     """
     parser = ArgumentParser()
@@ -77,7 +92,19 @@ async def subreddit_top(message):
 @rate_limit()
 async def search_reddit(message):
     """
-    Search Reddit for a post.
+    Search Reddit for posts.
+
+    Example::
+
+        .redditsearch the wonder years
+
+    Response::
+
+        \u2022 I am producer and actor Jason H[...]
+        \u2022 The Wonder Years - No Closer To [...]
+        \u2022 I’m Daniel Stern. You might know [...]
+        \u2022 Winnie Cooper from The Wonder Year[...]
+        \u2022 The Wonder Years Fall Tour https:/[...]
 
     """
     q = message.content
