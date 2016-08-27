@@ -43,7 +43,7 @@ async def strawpoll(message):
     ), require_success=False)
     data = r.json()
     if r.status_code == 200:
-        return "<https://strawpoll.me/{}>".format(data['id'])
+        return "Vote in **{}**: <https://strawpoll.me/{}>".format(choices[0], data['id'])
     else:
         raise CommandError("Strawpolls.me reported an error: {}".format(data['errorMessage']))
 
