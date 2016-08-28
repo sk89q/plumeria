@@ -14,6 +14,7 @@ from .util.ratelimit import MessageTokenBucket, RateLimitExceeded
 __all__ = ('CommandManager',)
 
 DESCRIPTION_PATTERN = re.compile("^([^\r\n]*)")
+COMMAND_TOKENS_PATTERN = re.compile("[ \\r\\n\\t]")
 
 logger = logging.getLogger(__name__)
 
@@ -158,8 +159,8 @@ class CommandManager:
         root = self.commands
         content = message.content
         while True:
-            split = content.split(" ", 1)
-            name = split[0].lower()
+            split = COMMAND_TOKENS_PATTERN.split(content, 1)
+            name = split[0].strip().lower()
             if name in root.children:
                 root = root.children[name]
                 content = split[1] if len(split) > 1 else ""
