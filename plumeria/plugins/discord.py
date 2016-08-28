@@ -20,7 +20,7 @@ async def roles(message):
     return Response(", ".join(["{} ({})".format(r.name, r.id) for r in roles]))
 
 
-@commands.register('user id', ''userid', category='Discord')
+@commands.register('user id', 'userid', category='Discord')
 async def userid(message):
     """
     Gets your own Discord user ID for development purposes.
