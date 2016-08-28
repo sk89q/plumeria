@@ -21,6 +21,7 @@ mysqlclient==1.3.7
 numpy==1.11.1+mkl
 Pillow==3.1.1
 py==1.4.31
+pycountry==1.20
 pycparser==2.14
 pydot==1.2.2
 pyfiglet==0.7.4
