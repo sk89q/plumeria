@@ -19,7 +19,7 @@ MAX_LENGTH = 4000
 IMAGE_LINK_PATTERN = re.compile("(https?://(?:[^ ]+)\\.(?:png|jpe?g|gif))", re.I)
 
 
-@commands.register("fetchimage", category="Image")
+@commands.register("fetch image", "fetchimage", category="Image")
 @rate_limit()
 async def fetch_image(message):
     """

@@ -10,7 +10,7 @@ client_id = config.create("soundcloud", "client_id",
                           comment="A client ID registered on soundcloud.com")
 
 
-@commands.register("soundcloud", category="Search")
+@commands.register("soundcloud", category="Music")
 @rate_limit()
 async def soundcloud(message):
     """

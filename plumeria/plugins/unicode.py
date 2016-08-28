@@ -4,7 +4,7 @@ from plumeria.command import commands
 from plumeria.util.command import string_filter
 
 
-@commands.register('unicodeescape', category='Development')
+@commands.register('unicode escape', 'unicodeescape', category='Development')
 @string_filter
 def unicode_escape(text):
     """
@@ -26,7 +26,7 @@ def unicode_escape(text):
     return text.encode("unicode_escape").decode("utf-8")
 
 
-@commands.register('unicodename', category='Development')
+@commands.register('unicode name', 'unicodename', category='Development')
 @string_filter
 def unicode_name(text):
     """
@@ -37,7 +37,7 @@ def unicode_name(text):
 
 
 
-@commands.register('unicodecode', category='Development')
+@commands.register('unicode code', 'unicodecode', category='Development')
 @string_filter
 def unicode_name(text):
     """

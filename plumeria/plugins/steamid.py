@@ -5,7 +5,7 @@ from plumeria.util.ratelimit import rate_limit
 steam_community = SteamCommunity()
 
 
-@commands.register("steamid", category="Steam")
+@commands.register("steam id", "steamid", category="Steam")
 @rate_limit()
 async def steamid(message):
     """
@@ -20,7 +20,7 @@ async def steamid(message):
     )
 
 
-@commands.register("steamprofile", category="Steam")
+@commands.register("steam profile", "steamprofile", category="Steam")
 @rate_limit()
 async def steamprofile(message):
     """
@@ -36,7 +36,7 @@ async def steamprofile(message):
         profile.id.to_64())
 
 
-@commands.register("steamavatar", category="Steam")
+@commands.register("steam avatar", "steamavatar", category="Steam")
 @rate_limit()
 async def steam_avatar(message):
     """
@@ -51,7 +51,7 @@ async def steam_avatar(message):
         raise CommandError("The user has no avatar.")
 
 
-@commands.register("steamid64", category="Steam")
+@commands.register("steam id64", "steamid64", category="Steam")
 @rate_limit()
 async def steamid(message):
     """
@@ -61,7 +61,7 @@ async def steamid(message):
     return str((await parse_steam_id(s)).to_64())
 
 
-@commands.register("steamid32", category="Steam")
+@commands.register("steam id32", "steamid32", category="Steam")
 @rate_limit()
 async def steamid(message):
     """

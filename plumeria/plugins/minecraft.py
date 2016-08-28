@@ -26,7 +26,7 @@ def validate_uuid(uuid):
     raise CommandError("Invalid UUID given")
 
 
-@commands.register("mcstatus", category="Minecraft")
+@commands.register("minecraft status", "mcstatus", category="Minecraft")
 @rate_limit()
 async def mc_status(message):
     """
@@ -54,7 +54,7 @@ async def mc_status(message):
     return Response(", ".join(status))
 
 
-@commands.register("mcuuid", category="Minecraft")
+@commands.register("minecraft uuid", "mcuuid", category="Minecraft")
 @rate_limit()
 async def mc_uuid(message):
     """
@@ -70,7 +70,7 @@ async def mc_uuid(message):
         raise CommandError("API returned an error code")
 
 
-@commands.register("mcnames", category="Minecraft")
+@commands.register("minecraft names", "mcnames", category="Minecraft")
 @rate_limit()
 async def mc_name_history(message):
     """

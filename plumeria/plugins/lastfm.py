@@ -6,7 +6,7 @@ from plumeria.api.lastfm import LastFm
 lastfm = LastFm()
 
 
-@commands.register('lastfm', 'last scrobble', 'lastscrobble', category='last.fm')
+@commands.register('lastfm', 'last scrobble', 'lastscrobble', category='Music')
 @rate_limit()
 async def lastscrobble(message):
     """
@@ -29,7 +29,7 @@ async def lastscrobble(message):
             raise CommandError("No tracks have been scrobbled by that user.")
 
 
-@commands.register('tagtop', category='last.fm')
+@commands.register('lastfm tag', 'tagtop', category='Music')
 @rate_limit()
 async def tagtop(message):
     """

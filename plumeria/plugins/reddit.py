@@ -45,7 +45,7 @@ async def get_subreddit_post(q, top=False, count=5):
         raise CommandError("Got {} error code".format(e.http_code))
 
 
-@commands.register("reddit", "subreddit" "r/", category="Reddit")
+@commands.register("subreddit", "r/", category="Search")
 @rate_limit()
 async def subreddit(message):
     """
@@ -73,22 +73,7 @@ async def subreddit(message):
     return "/r/{}\n{}".format(args.subreddit, await get_subreddit_post(args.subreddit, count=args.count))
 
 
-@commands.register("reddittop", "topreddit", "subreddittop", "r/top", "r/top/", category="Reddit")
-@rate_limit()
-async def subreddit_top(message):
-    """
-    Get the all-time top posts from a subreddit, with an optional parameter to
-    specify the number of posts to get
-
-    """
-    parser = ArgumentParser()
-    parser.add_argument("subreddit", type=valid_subreddit_name)
-    parser.add_argument("count", type=int, nargs='?', default=5, choices=range(1, 10))
-    args = parser.parse_args(shlex.split(message.content))
-    return "/r/top/{}\n{}".format(args.subreddit, await get_subreddit_post(args.subreddit, count=args.count, top=True))
-
-
-@commands.register("redditsearch", "rs", category="Reddit")
+@commands.register("reddit", "rs", category="Search")
 @rate_limit()
 async def search_reddit(message):
     """

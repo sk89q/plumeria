@@ -7,7 +7,7 @@ from plumeria.util.ratelimit import rate_limit
 RESULT_LIMIT = 8
 
 
-@commands.register("spotify artist", "spartist", category="Search")
+@commands.register("spotify artist", "spartist", category="Music")
 @rate_limit()
 async def artist(message):
     """
@@ -36,7 +36,7 @@ async def artist(message):
         raise CommandError("no results found")
 
 
-@commands.register("spotify track", "spotify", "sptrack", category="Search")
+@commands.register("spotify track", "spotify", "sptrack", category="Music")
 @rate_limit()
 async def track(message):
     """
@@ -65,7 +65,7 @@ async def track(message):
         raise CommandError("no results found")
 
 
-@commands.register("spotify album", "spalbum", category="Search")
+@commands.register("spotify album", "spalbum", category="Music")
 @rate_limit()
 async def album(message):
     """

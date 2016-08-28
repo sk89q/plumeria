@@ -23,7 +23,7 @@ async def get_steam_status():
                                )
 
 
-@commands.register("steamstatus", category="Steam")
+@commands.register("steam status", "steamstatus", category="Steam")
 @rate_limit()
 async def steam_status(message):
     """
