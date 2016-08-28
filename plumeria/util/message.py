@@ -15,6 +15,7 @@ MAX_SIZE = 1024 * 1024 * 6
 MAX_LENGTH = 4000
 IMAGE_LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
 MARKDOWN_ESCAPE_PATTERN = re.compile("([\\*_`\\{\\}\\[\\]\\-~])")
+MARKDOWN_CODE_BLOCK = re.compile("```(.*?)```", re.S)
 
 
 def escape_markdown(s):
@@ -117,3 +118,10 @@ def parse_numer_list(s):
         return list(map(lambda x: float(x), numbers))
     except ValueError as e:
         raise CommandError("All the entries must be numbers")
+
+
+def strip_markdown_code(s):
+    m = MARKDOWN_CODE_BLOCK.search(s)
+    if m:
+        return m.group(1)
+    return s
