@@ -13,6 +13,7 @@ html2text==2016.5.29
 IPy==0.83
 Jinja2==2.8
 lxml==3.6.4
+Markdown==2.6.6
 MarkupSafe==0.23
 matplotlib==2.0.0b3
 multidict==1.2.2
@@ -21,6 +22,7 @@ numpy==1.11.1+mkl
 Pillow==3.1.1
 py==1.4.31
 pycparser==2.14
+pydot==1.2.2
 pyfiglet==0.7.4
 PyNaCl==1.0.1
 pyparsing==2.1.8
@@ -34,5 +36,6 @@ rethinkdb==2.3.0.post5
 scipy==0.18.0
 six==1.10.0
 SQLAlchemy==1.0.12
+tzlocal==1.2.2
 websockets==3.1
 ws4py==0.3.4
