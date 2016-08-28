@@ -51,6 +51,10 @@ code {
   color: #444;
 }
 
+pre {
+  max-width: 100%;
+}
+
 blockquote {
   font-size: inherit;
 }

@@ -16,7 +16,7 @@
       <ul class="sublinks">
         {% for mapping in by_category[category] %}
           <li>
-            <a href="#command-{{ mapping.aliases[0] }}">{{ mapping.aliases[0] }}</a>
+            <a href="#command-{{ mapping.aliases[0]|replace(' ', '_') }}">{{ mapping.aliases[0] }}</a>
             {% if mapping.command.owners_only %}
             <i class="fa fa-ban text-muted"></i>
             {% endif %}
@@ -156,7 +156,7 @@
           {% if mapping.command.owners_only %}
           <div class="command-restrictions pull-right"><span class="label label-danger"><i class="fa fa-ban"></i> Bot owners only</span></div>
           {% endif %}
-          <h3 id="command-{{ mapping.aliases[0] }}">
+          <h3 id="command-{{ mapping.aliases[0]|replace(' ', '_') }}">
             {{ mapping.aliases[0] }}
             {% if mapping.aliases|length > 1 %}
             <div class="command-aliases">
