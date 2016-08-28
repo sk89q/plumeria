@@ -1,5 +1,7 @@
 {% extends "master.html" %}
 {% block content %}
+  <div class="doc-nav-menu"></div>
+
   <div class="doc-nav">
     <ul>
       <li><a href="#intro">Introduction</a></li>
@@ -175,4 +177,7 @@
       {% endfor %}
     {% endfor %}
   </div>
+{% endblock %}
+{% block body_footer %}
+  <script src="/static/docs.js"></script>
 {% endblock %}
