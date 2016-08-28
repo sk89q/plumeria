@@ -62,25 +62,13 @@ async def mc_uuid(message):
     """
     name = validate_name(message.content)
     try:
-        r = await http.get("https://us.mc-api.net/v3/uuid/" + name)
-        return Response(r.json()['uuid'])
+        r = await http.get("https://mcapi.ca/uuid/player/" + name)
+        results = r.json()
+        if len(results):
+            return Response(results[0]['uuid_formatted'])
+        else:
+            raise CommandError("no results")
     except http.BadStatusCodeError as e:
         if e.http_code == 404:
             raise CommandError("No user found by that name")
-        raise CommandError("API returned an error code")
-
-
-@commands.register("minecraft names", "mcnames", category="Minecraft")
-@rate_limit()
-async def mc_name_history(message):
-    """
-    Get the name history of a UUID.
-    """
-    uuid = validate_uuid(message.content)
-    try:
-        r = await http.get("https://us.mc-api.net/v3/history/" + uuid)
-        return Response(", ".join([i['name'] for i in r.json()['history']]))
-    except http.BadStatusCodeError as e:
-        if e.http_code == 404:
-            raise CommandError("No user found by that UUID")
         raise CommandError("API returned an error code")
