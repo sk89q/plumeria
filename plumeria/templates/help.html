@@ -1,12 +1,20 @@
 {% extends "master.html" %}
 {% block content %}
   <div class="doc-nav">
+    <ul>
+      <li><a href="#intro">Introduction</a></li>
+      <li><a href="#piping">Piping</a></li>
+      <li><a href="#standard-responses">Responses</a></li>
+      <li><a href="#permissions">Permissions</a></li>
+      <li><a href="#writing-plugins">Writing Plugins</a></li>
+    </ul>
+
     {% for category in categories %}
       <h2>{{ category }}</h2>
-      <ul>
+      <ul class="sublinks">
         {% for mapping in by_category[category] %}
           <li>
-            <a href="#{{ mapping.aliases[0] }}">{{ mapping.aliases[0] }}</a>
+            <a href="#command-{{ mapping.aliases[0] }}">{{ mapping.aliases[0] }}</a>
             {% if mapping.command.owners_only %}
             <i class="fa fa-ban text-muted"></i>
             {% endif %}
@@ -20,7 +28,123 @@
   </div>
 
   <div class="doc-contents">
-    <h1>Plumeria Commands</h1>
+    <h1>Plumeria Documentation</h1>
+
+    <h2 id="intro">Introduction</h2>
+
+    <p>
+      Commands in Plumeria are used by prefixing them with
+      <kbd>+</kbd>, <kbd>@</kbd>, <kbd>;</kbd>, <kbd>.</kbd>, <kbd>!</kbd>, or <kbd>/</kbd>.
+      For example, to call the <code>image</code> command, you could type
+      <code>.image tssf</code>. Some mobile keyboards make it difficult to put a character like
+      a period right before another word, so <code>. image tssf</code> is
+      also acceptable (with a space after the character). If a command doesn't
+      exist in Plumeria, then there won't be a response at all.
+    </p>
+
+    <p>
+      Many commands respond immediately, but some commands (like an image search) will have
+      to contact an external server and wait for a reply. In those cases, no response
+      will be returned until that external server has responded.
+    </p>
+
+    <p>
+      Commands have rate limits, which limits how many times they can be used in a
+      short period, per server, per channel, and per user. If you exceed the rate limit,
+      you may be notified or perhaps the bot won't respond at all. This is to prevent
+      both abuse and intentional or accidental bot-to-bot communication.
+    </p>
+
+    <p>
+      If a command returns a response that is too long for Discord to accept, then
+      a truncated message will appear but then the whole message will be attached
+      as a text file to the message, formatted in Markdown.
+    </p>
+
+    <h2 id="piping">Piping</h2>
+
+    <p>
+      Sometimes you want to take the output of one command and pass it into to another
+      command for additional processing. For example, calling <code>.tagtop indie rock</code> might return
+      <code>The Killers - Mr. Brightside</code>, and you want search YouTube
+      for the song using the command <code>.yt The Killers - Mr. Brightside</code>. You can
+      have Plumeria do this for you by using a bar character (<code>|</code>), as illustrated:
+      <code>.tagtop indie rock | yt</code>. Notice how you don't need the prefix for
+      the piped commands.
+    </p>
+
+    <p>
+      When you pipe a command's output, essentially the output is shoved onto the end of
+      the input to the next command. For example, if you did
+      <code>.echo Example | drawtext An </code>, then the drawtext command
+      that would be executed would be <code>drawtext An Example</code>. While you
+      can't normally pipe Plumeria's commands to other bots, you can use the <code>echo</code>
+      command and this property to do that, like so:
+      <code>.tagtop | echo .play </code> (which would hopefully cause a different
+      music bot to play that song). The bot ignores commands from itself so
+      this method won't work on itself.
+    </p>
+
+    <p>
+      Text can be piped, but so can images. For example, the <code>drawtext</code>
+      command generates an image with some text on it and this image is attached
+      to the response as an <em>attachment</em>. This attachment can be then
+      piped to another command like <code>blur</code> or <code>sharpen</code>,
+      as illustrated here:
+      <code>.drawtext blur me | blur</code>. Another example of image
+      piping to generate meme images by combining image search with the
+      meme text generator, as illustrated here: <code>.image awkward penguin background | mt EXAMPLE</code>.
+    </p>
+
+    <p>
+      Discord lets you upload images and other files, so you can actually upload
+      an image and then provide a command in the "comment" box, which allows you
+      to process uploaded images directly.
+    </p>
+
+    <p>
+      Sometimes a message might contain a <em>link</em> to an image and not the
+      image attached directly, but Plumeria will automatically download the image
+      for you if a command requests it. The image search command doesn't
+      return an image directly, for example.
+    </p>
+
+    <p>
+      Plumeria can work with any type of attachment but most commands that
+      accept attachments are image-related ones. If or when Discord adds
+      support for playing embedded audio files, Plumeria will likely be updated
+      with some simple sound generation or sound processing functions.
+    </p>
+
+    <h2 id="standard-responses">Responses</h2>
+
+    <p>
+      Because commands in Plumeria can be piped to each other, many commands try
+      to adhere to some form of de-facto standard for responses in Plumeria. For
+      example, the <code>.results</code> command that returns poll results
+      from a Strawpoll.me poll returns data that should be directly usable in
+      the <code>.bar</code> or <code>.pie</code> chart graphing commands.
+    </p>
+
+    <h2 id="permissions">Permissions</h2>
+
+    <p>
+      The vast majority of commands can be used by anyone, but some commands
+      require that the user has a role named <code>bot-admin</code>. A
+      smaller set of commands are reserved for the owner of the bot and
+      the list of users permitted to use those commands is listed in the
+      bot's configuration file.
+    </p>
+
+    <h2 id="writing-plugins">Writing Plugins</h2>
+
+    <p>
+      Plumeria is written in Python 3 and is open source. You can contribute plugins
+      by submitting them to the <a href="https://github.com/sk89q/Plumeria">GitHub project</a>.
+    </p>
+
+    <h2>Command Reference</h2>
+
     {% for category in categories %}
       {% for mapping in by_category[category] %}
         <div class="command-block">
@@ -30,7 +154,7 @@
           {% if mapping.command.owners_only %}
           <div class="command-restrictions pull-right"><span class="label label-danger"><i class="fa fa-ban"></i> Bot owners only</span></div>
           {% endif %}
-          <h3 id="{{ mapping.aliases[0] }}">
+          <h3 id="command-{{ mapping.aliases[0] }}">
             {{ mapping.aliases[0] }}
             {% if mapping.aliases|length > 1 %}
             <div class="command-aliases">

@@ -30,22 +30,33 @@ body {
   background: #efefef;
   font-family: Lato, "Helvetica Neue", Helvetica, sans-serif;
   font-size: 15px;
+  color: #3E424E;
+  line-height: 160%;
 }
 
 a:link, a:visited {
-  color: #FF3F00;
+  color: inherit;
+  border-bottom: 1px solid #ddd;
+}
+
+a:hover, a:active {
+  text-decoration: none;
+  border-bottom: 1px solid #3E424E;
 }
 
 code {
   background: #fff;
-  border: 1px solid #ccc;
+  border-radius: 0;
   padding: 2px 5px;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
   color: #444;
 }
 
 blockquote {
   font-size: inherit;
+}
+
+.label-warning {
+  background: #FA976A;
 }
 
 h1 {
@@ -55,8 +66,12 @@ h1 {
 h2 {
   margin: 60px 0 20px 0;
   padding: 0 0 15px 0;
-  font-size: 15px;
+  font-size: 19px;
   color: #888;
+}
+
+h2:first-child {
+  margin-top: 0;
 }
 
 h3 {
@@ -69,11 +84,15 @@ h3 {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 250px;
+  width: 230px;
   padding: 30px;
   overflow: auto;
   background: white;
-  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.doc-nav h1 {
+  margin: 0 0 30px 0;
+  font-size: 22px;
 }
 
 .doc-nav h2 {
@@ -81,7 +100,7 @@ h3 {
   padding: 0;
   font-size: 15px;
   font-weight: bold;
-  color: #000;
+  color: #78CEA7;
 }
 
 .doc-nav ul, li {
@@ -96,6 +115,10 @@ h3 {
 }
 
 .doc-nav li {
+  margin: 3px 0;
+}
+
+.doc-nav ul.sublinks li {
   margin: 3px 0 3px 7px;
 }
 
