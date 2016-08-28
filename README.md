@@ -2,9 +2,9 @@
 
 Plumeria is a Discord bot used on the [SKCraft](https://www.skcraft.com) Discord channel.
 
-NOTE: Plumeria predates Discord's official API and currently does not support bot accounts yet.
-
 Works on Windows, Mac OS X, and Linux.
+
+![Plumeria Help](readme/help.png)
 
 ## Highlights
 
@@ -19,6 +19,7 @@ Works on Windows, Mac OS X, and Linux.
 * Rudimentary protection against SSRF and server-side DNS rebinding attacks
 * Flexible command parsing (use one of many prefixes)
 * Mobile keyboard-friendly command syntax supported (`. qr test`)
+* Beautiful web-based help
 
 ## Usage
 
