@@ -231,7 +231,10 @@ class CommandManager:
         parts = [StringIO()]
         for i in range(0, len(s)):
             if escaping:
+                if s[i] != "|":
+                    parts[len(parts) - 1].write("^")
                 parts[len(parts) - 1].write(s[i])
+                escaping = False
             elif s[i] == "^":
                 escaping = True
             elif s[i] == "|":
