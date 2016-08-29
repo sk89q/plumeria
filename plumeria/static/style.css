@@ -132,7 +132,7 @@ h3 {
   color: #78CEA7;
 }
 
-.doc-nav ul, li {
+.doc-nav ul, .doc-nav li {
   display: block;
   list-style: none;
   margin: 0;
