@@ -51,8 +51,8 @@ async def fetch_image(url):
             width, height = im.size
             if width > MAX_LENGTH or height > MAX_LENGTH:
                 raise CommandError("Image file is too big in dimensions.")
-            if im.format != "RGB":
-                im = im.convert("RGB")
+            if im.format.upper() != "RGBA":
+                im = im.convert("RGBA")
             return im
 
         im = await asyncio.get_event_loop().run_in_executor(None, execute)
@@ -72,8 +72,8 @@ async def read_image(message):
                 return attachment
             elif attachment.mime_type.startswith("image/"):
                 im = Image.open(io.BytesIO(await attachment.read()))
-                if im.format != "RGB":
-                    im = im.convert("RGB")
+                if im.format.upper() != "RGBA":
+                    im = im.convert("RGBA")
                 return ImageAttachment(im, attachment.filename)
         except IOError as e:
             raise CommandError("Failed to read image from message.")

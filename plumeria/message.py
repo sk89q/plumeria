@@ -135,13 +135,13 @@ class URLAttachment:
 class ImageAttachment(Attachment):
     def __init__(self, image: Image, filename):
         self.image = image
-        self.filename = filename + ".jpg"
-        self.mime_type = 'image/jpeg'
+        self.filename = filename + ".png"
+        self.mime_type = 'image/png'
 
     async def read(self):
         def execute():
             out = io.BytesIO()
-            self.image.save(out, 'jpeg')
+            self.image.save(out, 'png')
             return out.getvalue()
 
         return await asyncio.get_event_loop().run_in_executor(None, execute)
