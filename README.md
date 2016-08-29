@@ -21,6 +21,177 @@ Works on Windows, Mac OS X, and Linux.
 * Mobile keyboard-friendly command syntax supported (`. qr test`)
 * Beautiful web-based help
 
+## Commands
+
+**Alias**
+
+* alias
+* alias delete
+
+**Development**
+
+* packagist
+* pypi
+* random user
+* rubygems
+* unicode escape
+* unicode name
+* unicode code
+
+**Discord**
+
+* roles
+* user id
+
+**Electronics**
+
+* resistors
+
+**Fun**
+
+* figlet
+
+**Games**
+
+* minecraft status
+* minecraft uuid
+* minecraft body
+* minecraft head
+* minecraft face
+* minecraft skin
+* minecraft cape
+* osu sig
+* osu stats
+
+**GitLab**
+
+* gitlab url
+* gitlab addtoken
+* gitlab removetoken
+* gitlab tokens
+* gitlab subscribe
+* gitlab unsubscribe
+* gitlab subscriptions
+
+**Graphing**
+
+* pie
+* bar
+* histogram
+* graph
+* digraph
+
+**Image**
+
+* tex
+* drawtext
+* blur
+* edge enhance
+* emboss
+* find edges
+* sharpen
+* bw
+* fetch image
+* memetext
+* memetext2
+* qrcode
+
+**Music**
+
+* lastfm
+* lastfm tag
+* artist charts
+* charts
+* lyrics
+* soundcloud
+* spotify artist
+* spotify track
+* spotify album
+
+**Search**
+
+* beer
+* image
+* cheapshark
+* cve
+* abstract
+* latlng
+* directions
+* gravatar
+* imdb
+* subreddit
+* reddit
+* strawpoll
+* strawpoll results
+* urban
+* earthquakes
+* wolfram
+* woot
+* youtube
+
+**Servers**
+
+* a2squery
+
+**Statistics**
+
+* mean
+* median
+* median low
+* median high
+* median grouped
+* mode
+* pstdev
+* pvariance
+* stdev
+* variance
+
+**Steam**
+
+* steam status
+* steam id
+* steam profile
+* steam avatar
+* steam id64
+* steam id32
+
+**String**
+
+* upper
+* lower
+* rot13
+* idna
+* punycode
+* base64
+* base64dec
+* md5
+* sha1
+* sha224
+* sha256
+* urlescape
+* unurlescape
+* length
+* findurl
+* uuid
+* dashuuid
+* hexuuid
+
+**Utility**
+
+* echo
+* help
+* commands dump
+* last text
+* last image
+* last url
+* update
+* 8ball
+* roll
+* choice
+* coin
+* timestamp
+* uptime
+
 ## Usage
 
 1. Install Python 3.5
@@ -252,46 +423,6 @@ async def handle(request):
 ### Performing Background Tasks
 
 Start any background tasks in the `preinit` or `init` events. You can either run those background tasks in the asyncio event loop or in a thread, but remember to be careful whenever passing between those two contexts.
-
-## Plugins
-
-### Developed
-
-* Alias
-* Bing image search
-* BreweryDB
-* Cheapshark
-* DuckDuckGo
-* Figlet
-* Source Server Query (A2S)
-* Help
-* Image processing (fetch, blur, sharpen, etc.)
-* IMDB
-* GitLab hooks
-* Last.fm
-* Minecraft
-* QRCode
-* Git update
-* Reddit
-* Statistics (mean, mode, etc.)
-* Steam Community
-* String manipulation (upper, lower, rot13, etc.)
-* Time
-* Urban Dictionary
-* USGS
-* UUIDs
-* YouTube
-
-### Planned
-
-* Channel management
-* VOIP event logging
-* GitHub hooks
-
-### Low priority
-
-* Twitch
-* Music bot
 
 ## License
 
