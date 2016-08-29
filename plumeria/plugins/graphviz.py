@@ -32,6 +32,8 @@ def render_dot(graph, format="png"):
 
     p = subprocess.Popen(
         [program, '-T' + format],
+        env={'SERVER_NAME': 'plumeria',
+             'GV_FILE_PATH': '/dev/null'},
         shell=False,
         stdin=subprocess.PIPE,
         stderr=subprocess.PIPE,
