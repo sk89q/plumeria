@@ -4,6 +4,7 @@ import re
 
 import aiohttp
 from PIL import Image
+from bs4 import BeautifulSoup
 
 from plumeria.command import CommandError
 from plumeria.message import logger, ImageAttachment
@@ -125,3 +126,7 @@ def strip_markdown_code(s):
     if m:
         return m.group(1)
     return s
+
+
+def strip_html(s):
+    return BeautifulSoup(s, "html.parser").get_text()
