@@ -6,22 +6,35 @@ import threading
 import matplotlib
 import numpy as np
 import pkg_resources
+from PIL import Image
+from PIL import ImageChops
 
 from plumeria.command import commands, CommandError
-from plumeria.message import Response, MemoryAttachment
+from plumeria.message import Response, MemoryAttachment, ImageAttachment
 from plumeria.util.message import parse_list, parse_numer_list
 from plumeria.util.ratelimit import rate_limit
 
 matplotlib.use('Agg')
 
+from matplotlib import rc
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
 PERCENTAGE_PATTERN = re.compile("\\b([0-9]+\\.?[0-9]*)%?\\b")
 NUMBER_PATTERN = re.compile("\\b([0-9]+\\.?[0-9]*)\\b")
 
+rc('text', usetex=False)
 font_path = pkg_resources.resource_filename("plumeria", 'fonts/FiraSans-Regular.ttf')
 lock = threading.RLock()
+
+
+def trim_whitespace(im):
+    bg = Image.new(im.mode, im.size, im.getpixel((0, 0)))
+    diff = ImageChops.difference(im, bg)
+    diff = ImageChops.add(diff, diff, 2.0, -100)
+    bbox = diff.getbbox()
+    if bbox:
+        return im.crop(bbox)
 
 
 def extract_data(message, pattern, normalize=False):
@@ -142,7 +155,6 @@ async def bar(message):
     return Response("", attachments=[MemoryAttachment(buf, "graph.png", "image/png")])
 
 
-
 @commands.register("histogram", "hist", category="Graphing")
 @rate_limit()
 async def histogram(message):
@@ -178,3 +190,35 @@ async def histogram(message):
     buf = await asyncio.get_event_loop().run_in_executor(None, execute)
 
     return Response("", attachments=[MemoryAttachment(buf, "graph.png", "image/png")])
+
+
+@commands.register("tex", "latex", category="Image")
+@rate_limit()
+async def latex(message):
+    """
+    Renders LaTeX/TeX. Uses matplotlib to render instead of LaTeX.
+
+    Example::
+
+        /tex \\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}
+
+    """
+
+    def execute():
+        with lock:
+            plt.figure(1, figsize=(1, 1))
+            plt.axis("off")
+            plt.title("${}$".format(message.content.replace("$", "\\$")))
+            buf = io.BytesIO()
+            try:
+                plt.savefig(buf, bbox_inches='tight', transparent=False, pad_inches=0)
+            except ValueError as e:
+                raise CommandError("Render error: {}".format(str(e)))
+            plt.clf()
+            im = Image.open(buf)
+            im = trim_whitespace(im)
+            return im
+
+    im = await asyncio.get_event_loop().run_in_executor(None, execute)
+
+    return Response("", attachments=[ImageAttachment(im, "text.png")])
