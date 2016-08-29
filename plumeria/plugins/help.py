@@ -1,7 +1,9 @@
 import collections
 
+import io
+
 from plumeria.command import commands
-from plumeria.message import Response
+from plumeria.message import Response, MemoryAttachment
 from plumeria.webserver import app, render_template
 
 
@@ -15,6 +17,29 @@ async def help(message):
     else:
         server = "private"
     return Response(await app.get_base_url() + "/help/{}".format(server))
+
+
+@commands.register('commands dump', category='Utility')
+async def dump_commands(message):
+    """
+    Get a listing of commands in Markdown as a text file.
+    """
+    server = message.channel.server.id
+    categories = set()
+    by_category = collections.defaultdict(lambda: [])
+    mappings = sorted(await commands.get_mappings(server), key=lambda m: m.command.category or "")
+    for mapping in mappings:
+        categories.add(mapping.command.category)
+        by_category[mapping.command.category].append(mapping)
+    categories = sorted(categories)
+    buf = io.StringIO()
+    for category in categories:
+        buf.write("\n\n**{}**\n".format(category))
+        for mapping in by_category[category]:
+            buf.write("\n* {}".format(mapping.aliases[0]))
+    return Response("See attachment", attachments=[
+        MemoryAttachment(io.BytesIO(buf.getvalue().strip().encode("utf-8")), "commands.txt", "text/plain")
+    ])
 
 
 @app.route('/help/{server}')
