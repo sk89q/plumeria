@@ -9,4 +9,3 @@ venv
 /*.ini
 .cache
 .venv
-/fonts
