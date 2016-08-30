@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import asyncio
+import os.path
 import pkgutil
 import sys
 import argparse
@@ -37,6 +38,10 @@ if __name__ == "__main__":
         asyncio.set_event_loop(loop)
 
     loop = asyncio.get_event_loop()
+
+    plugins_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "plugins"))
+    logging.info("Added {} as an extra source for plugins".format(plugins_dir))
+    sys.path.insert(0, plugins_dir)
 
     discovered_modules = list(pkgutil.iter_modules(plumeria.plugins.__path__))
     modules_to_load = set()
