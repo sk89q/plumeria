@@ -39,7 +39,7 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
 
     discovered_modules = list(pkgutil.iter_modules(plumeria.plugins.__path__))
-    modules_to_load = []
+    modules_to_load = set()
 
     # Discover list of modules to load and save it to config
     config.load()
@@ -47,8 +47,13 @@ if __name__ == "__main__":
         path = "plumeria.plugins." + modname
         enabled = config.create("plugins", path, type=boolstr, fallback=True)
         if enabled():
-            modules_to_load.append(path)
+            modules_to_load.add(path)
     config.save()
+
+    # Add extra modules that are specified in the config file
+    for path in config.reader['plugins'].keys():
+        if boolstr(config.reader.get("plugins", path, fallback="")):
+            modules_to_load.add(path)
 
     for path in modules_to_load:
         logging.info("Loading {}...".format(path))
