@@ -1,14 +1,14 @@
 import argparse
 import inspect
 import logging
-
 import re
 from collections import namedtuple
 from functools import wraps
-
 from io import StringIO
-from .message import ProxyMessage, Response
+
 from .event import bus
+from .message import ProxyMessage, Response
+from .transaction import tx_log
 from .util.ratelimit import MessageTokenBucket, RateLimitExceeded
 
 __all__ = ('CommandManager',)
@@ -107,6 +107,7 @@ class CommandManager:
         :param description: a short description of the command
         :param help: a long RST-formatted help text
         """
+
         def decorator(f):
             command = Command(f, **kwargs)
             for alias in aliases:
@@ -270,7 +271,7 @@ async def on_message(message):
 
         response = await commands.execute(message, Context())
         if response:
-            await message.respond(response)
+            tx_log.add_response(message, await message.respond(response))
 
 
 def channel_only(f):

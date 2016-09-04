@@ -16,17 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class Message:
-    def __init__(self, channel, author, content,
-                 embeds=None, attachments=None, timestamp=None, edited_timestamp=None, tts=False):
-        self.channel = channel
-        self.author = author
-        self.content = content
-        self.embeds = embeds or []
-        self.attachments = attachments or []
-        self.timestamp = timestamp or datetime.now()
-        self.edited_timestamp = edited_timestamp or None
-        self.tts = tts
-
     async def respond(self, content):
         if isinstance(content, Response):
             if len(content.attachments):
@@ -75,12 +64,13 @@ class Message:
 
 class ProxyMessage(Message):
     def __init__(self, message):
-        super().__init__(message.channel, message.author, message.content, message.embeds, message.attachments,
-                         message.timestamp, message.edited_timestamp, message.tts)
         self.delegate = message
 
     async def respond(self, content):
         return await self.delegate.respond(content)
+
+    def __getattr__(self, item):
+        return getattr(self.delegate, item)
 
 
 class Response:
