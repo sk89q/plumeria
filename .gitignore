@@ -9,3 +9,4 @@ venv
 /*.ini
 .cache
 .venv
+/node_modules
