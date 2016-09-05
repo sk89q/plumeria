@@ -60,7 +60,7 @@ class DiscordChannel(Channel):
 
             @asyncio.coroutine
             async def __anext__(self):
-                return DiscordMessage(await logs.__anext__())
+                return DiscordMessage(await logs.__anext__(), client)
 
         return HistoryWrapper()
 
