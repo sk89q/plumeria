@@ -1,0 +1,8 @@
+{
+  "name": "plumeria",
+  "version": "1.0.0",
+  "author": "",
+  "dependencies": {
+    "phantomjs": "^2.1.7"
+  }
+}
