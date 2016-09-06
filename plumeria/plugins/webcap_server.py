@@ -1,5 +1,6 @@
 import asyncio
 import io
+import logging
 import os
 import random
 import re
@@ -17,6 +18,8 @@ from plumeria import config
 from plumeria.webserver import app
 
 VALID_URL_REGEX = re.compile("^(?:https?://|data:)", re.IGNORECASE)
+
+logger = logging.getLogger(__name__)
 
 
 def generate_key(length):
@@ -78,6 +81,8 @@ async def handle(request):
         return json_response(status=400, data={'error': 'max_height is not a valid number'})
 
     def execute():
+        logger.info("Requesting {} via Selenium/PhantomJS...".format(url))
+
         try:
             driver = webdriver.PhantomJS(executable_path='node_modules/phantomjs/lib/phantom/bin/phantomjs')
             driver.set_window_size(width, 768)
@@ -86,9 +91,18 @@ async def handle(request):
             data = io.BytesIO()
             data.write(driver.get_screenshot_as_png())
         except TimeoutException:
+            logger.warn("Request for {} timed out".format(url), exc_info=True)
             return json_response(status=400, data={'error': 'timeout'})
+        except Exception:
+            logger.warn("Request for {} encountered an error".format(url), exc_info=True)
+            return json_response(status=500, data={'error': 'a rendering error occurred'})
 
-        im = Image.open(data)
+        try:
+            im = Image.open(data)
+        except OSError:
+            logger.warn("Request for {} resulted in an image file that could not be opened".format(url), exc_info=True)
+            return json_response(status=500, data={'error': 'failed to read rendered image'})
+
         w, h = im.size
         im = im.crop((0, 0, min(w, width), min(h, max_height)))
         if trim_image:
