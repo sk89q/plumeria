@@ -26,12 +26,13 @@ logger = logging.getLogger(__name__)
 
 
 @rate_limit(burst_size=2)
-async def render(url, trim_image=False):
+async def render(url, width=1024, max_height=4096, trim_image=False):
     with DefaultClientSession(connector=TCPConnector()) as session:
         async with session.request(method="post", url=render_url(), data=json.dumps({
             "url": url,
             "key": api_key(),
-            "max_height": "4096",
+            "width": str(width),
+            "max_height": str(max_height),
             "trim": "true" if trim_image else "false",
         })) as r:
             if r.status == 200:
@@ -46,14 +47,14 @@ async def render(url, trim_image=False):
                     raise CommandError("error occurred with status code {}".format(r.status))
 
 
-@commands.register('screenshot', 'ss', category='Utility')
+@commands.register('screenshot', 'ss', 'screenshot desktop', 'ss desktop', category='Utility')
 async def screenshot(message):
     """
     Generates a screenshot of a webpage.
 
     Example::
 
-        /screenshot https://www.sk89q.com
+        /ss https://www.sk89q.com
 
     """
     q = message.content.strip()
@@ -65,6 +66,27 @@ async def screenshot(message):
     url = m.group(1)
     logger.debug("Fetching screenshot of {} for {}".format(url, message.author))
     return await render(url)
+
+
+@commands.register('screenshot mobile', 'ss mobile', category='Utility')
+async def screenshot_mobile(message):
+    """
+    Generates a (mobile) screenshot of a webpage.
+
+    Example::
+
+        /ss mobile https://www.sk89q.com
+
+    """
+    q = message.content.strip()
+    if not q:
+        raise CommandError("URL required")
+    m = LINK_PATTERN.search(q)
+    if not m:
+        raise CommandError("No URL found in input text")
+    url = m.group(1)
+    logger.debug("Fetching mobile screenshot of {} for {}".format(url, message.author))
+    return await render(url, width=410, max_height=1024)
 
 
 @commands.register('render', category='Utility')
