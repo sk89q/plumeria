@@ -25,8 +25,28 @@ api_key = config.create("webcap", "key",
 logger = logging.getLogger(__name__)
 
 
-@commands.register('screenshot', 'ss', category='Utility')
 @rate_limit(burst_size=2)
+async def render(url, trim_image=False):
+    with DefaultClientSession(connector=TCPConnector()) as session:
+        async with session.request(method="post", url=render_url(), data=json.dumps({
+            "url": url,
+            "key": api_key(),
+            "max_height": "4096",
+            "trim": "true" if trim_image else "false",
+        })) as r:
+            if r.status == 200:
+                buffer = io.BytesIO()
+                buffer.write(await r.read())
+                return Response("", attachments=[MemoryAttachment(buffer, "screenshot.jpg", "image/jpeg")])
+            else:
+                try:
+                    data = await r.json()
+                    raise CommandError("error occurred: {}".format(data['error']))
+                except JSONDecodeError:
+                    raise CommandError("error occurred with status code {}".format(r.status))
+
+
+@commands.register('screenshot', 'ss', category='Utility')
 async def screenshot(message):
     """
     Generates a screenshot of a webpage.
@@ -42,20 +62,22 @@ async def screenshot(message):
     m = LINK_PATTERN.search(q)
     if not m:
         raise CommandError("No URL found in input text")
-    logger.debug("Fetching screenshot of {} for {}".format(m.group(1), message.author))
-    with DefaultClientSession(connector=TCPConnector()) as session:
-        async with session.request(method="post", url=render_url(), data=json.dumps({
-            "url": m.group(1),
-            "key": api_key(),
-            "max_height": "4096",
-        })) as r:
-            if r.status == 200:
-                buffer = io.BytesIO()
-                buffer.write(await r.read())
-                return Response("", attachments=[MemoryAttachment(buffer, "screenshot.jpg", "image/jpeg")])
-            else:
-                try:
-                    data = await r.json()
-                    raise CommandError("error occurred: {}".format(data['error']))
-                except JSONDecodeError:
-                    raise CommandError("error occurred with status code {}: {}".format(r.status_code, r.text()))
+    url = m.group(1)
+    logger.debug("Fetching screenshot of {} for {}".format(url, message.author))
+    return await render(url)
+
+
+@commands.register('render', category='Utility')
+async def render_html(message):
+    """
+    Generates a screenshot of some HTML.
+
+    Example::
+
+        /render Hello <strong>world</b>!
+
+    """
+    q = message.content.strip()
+    if not q:
+        raise CommandError("Some HTML required")
+    return await render("data:text/html," + q, trim_image=True)
