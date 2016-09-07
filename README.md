@@ -50,6 +50,7 @@ Works on Windows, Mac OS X, and Linux.
 **Fun**
 
 * figlet
+* mcmusic
 
 **Games**
 
