@@ -52,3 +52,4 @@ class YouTube(BaseRestClient):
                                        item['snippet']['title'],
                                        item['snippet']['description'],
                                        "https://www.youtube.com/watch?v={}".format(item['id']['videoId'])))
+        return videos
