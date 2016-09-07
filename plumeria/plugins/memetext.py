@@ -20,9 +20,6 @@ def draw_textbox(im, left_x, top_y, box_width, text, font, border_size=2, v_alig
     widths = []
     heights = []
     last_fit_width = 0
-
-    # TODO: support user provided new line characters
-
     i = 0
     while i < len(words):
         word = words[i]

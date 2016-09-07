@@ -38,3 +38,20 @@ class YouTube(BaseRestClient):
                                        item['snippet']['description'],
                                        "https://www.youtube.com/watch?v={}".format(item['id']['videoId'])))
         return videos
+
+    async def searchExtended(self, id, sortBy, maxResults):
+        json = await self.request("get", "https://www.googleapis.com/youtube/v3/search", params={
+            "key": self.api_key,
+            "channelId": id,
+            "part": "snippet",
+            "order": sortBy,
+            "maxResults": maxResults,
+            "type": "video"
+        })
+        videos = []
+        for item in json['items']:
+            videos.append(YouTubeVideo(item['id']['videoId'],
+                                       item['snippet']['title'],
+                                       item['snippet']['description'],
+                                       "https://youtube.com/watch?v={}".format(item['id']['videoId'])))
+        return videos
