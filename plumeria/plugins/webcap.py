@@ -89,10 +89,10 @@ async def screenshot_mobile(message):
     return await render(url, width=410, max_height=1024)
 
 
-@commands.register('render', category='Utility')
+@commands.register('render crop', 'render', category='Utility')
 async def render_html(message):
     """
-    Generates a screenshot of some HTML.
+    Generates a screenshot of some HTML. Crops out whitespace.
 
     Example::
 
@@ -103,3 +103,19 @@ async def render_html(message):
     if not q:
         raise CommandError("Some HTML required")
     return await render("data:text/html," + q, trim_image=True)
+
+
+@commands.register('render full', 'renderf', category='Utility')
+async def render_html_full(message):
+    """
+    Generates a screenshot of some HTML without cropping.
+
+    Example::
+
+        /renderf Hello <strong>world</b>!
+
+    """
+    q = message.content.strip()
+    if not q:
+        raise CommandError("Some HTML required")
+    return await render("data:text/html," + q, trim_image=False)
