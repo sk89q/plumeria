@@ -36,7 +36,7 @@ async def eight_ball(message):
 
         Will I win a big TV? Very doubtful
     """
-    return "{} **{}**".format(message.content, random.choice(EIGHT_BALL_RESPONSES)).strip()
+    return "Q:{}\n**A:{}**".format(message.content, random.choice(EIGHT_BALL_RESPONSES)).strip()
 
 
 @commands.register('roll', 'dice', category='Utility')
