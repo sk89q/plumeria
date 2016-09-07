@@ -1,3 +1,5 @@
+from random import randint
+
 from plumeria.api.youtube import YouTube
 from plumeria.command import commands, CommandError, channel_only
 from plumeria.message import Response
@@ -22,3 +24,20 @@ async def yt(message):
             return Response(videos[0].url)
         else:
             raise CommandError("No video found!")
+
+
+@commands.register('mcmusic', 'overusedmusic', cost=2, category='Fun')
+@rate_limit()
+async def mcmusic():
+    """
+    List topviewed NCS videos and select 1 at random.
+
+    Example::
+
+        /mcmusic
+    """
+    videos = await youtube.searchExtended("UC_aEa8K-EOJ3D6gOs7HcyNg", "viewcount", 50)
+    if len(videos):
+        return Response(videos[randint(0, len(videos))].url)
+    else:
+        raise CommandError("No video found!")
