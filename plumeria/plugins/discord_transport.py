@@ -20,6 +20,16 @@ client = discord.Client()
 logger = logging.getLogger(__name__)
 
 
+class DiscordClient(Transport):
+    id = "discord"
+
+    def __init__(self, delegate):
+        self.delegate = delegate
+
+    def __getattr__(self, item):
+        return getattr(self.delegate, item)
+
+
 class DiscordChannel(Channel):
     def __init__(self, delegate):
         self.delegate = delegate
@@ -28,11 +38,17 @@ class DiscordChannel(Channel):
     def server(self):
         return DiscordServer(self.delegate.server)
 
+    def is_default_channel(self):
+        return self.delegate.is_default_channel()
+
+    def mention(self):
+        return self.delegate.mention()
+
     async def send_file(self, fp, filename=None, content=None):
-        return await client.send_file(self.delegate, fp, filename=filename, content=content)
+        return DiscordMessage(await client.send_file(self.delegate, fp, filename=filename, content=content), client)
 
     async def send_message(self, content, tts=False):
-        return await client.send_message(self.delegate, content, tts=tts)
+        return DiscordMessage(await client.send_message(self.delegate, content, tts=tts), client)
 
     def get_history(self, limit=100):
         logs = client.logs_from(self.delegate, limit=100)
@@ -44,7 +60,7 @@ class DiscordChannel(Channel):
 
             @asyncio.coroutine
             async def __anext__(self):
-                return DiscordMessage(await logs.__anext__())
+                return DiscordMessage(await logs.__anext__(), client)
 
         return HistoryWrapper()
 
@@ -65,12 +81,14 @@ class DiscordServer(Server):
 
 
 class DiscordMessage(Message):
-    def __init__(self, message):
-        attachments = list(map(lambda o: DiscordAttachment(o), message.attachments))
-        self.discord_channel = message.channel
-        super().__init__(DiscordChannel(message.channel),
-                         message.author, message.content, message.embeds, attachments,
-                         message.timestamp, message.edited_timestamp, message.tts)
+    def __init__(self, message, client):
+        self.delegate = message
+        self.channel = DiscordChannel(message.channel)
+        self.client = client
+        self.attachments = list(map(lambda o: DiscordAttachment(o), message.attachments))
+
+    def __getattr__(self, item):
+        return getattr(self.delegate, item)
 
 
 class DiscordAttachment(Attachment):
@@ -107,7 +125,7 @@ class DiscordTransport(Transport):
 @client.event
 async def on_ready():
     logger.info("Logged in as {} ({})".format(client.user.name, client.user.id))
-    await bus.post("discord.ready", client)
+    await bus.post("discord.ready", DiscordClient(client))
 
 
 @client.event
@@ -117,15 +135,27 @@ async def on_channel_delete(channel):
 
 @client.event
 async def on_server_remove(server):
-    await bus.post("server.remove", server)
+    await bus.post("server.remove", DiscordServer(server))
 
 
 @client.event
 async def on_message(message):
     if message.author != client.user:
-        await bus.post("message", DiscordMessage(message))
+        await bus.post("message", DiscordMessage(message, DiscordClient(client)))
     else:
-        await bus.post("self_message", DiscordMessage(message))
+        await bus.post("self_message", DiscordMessage(message, DiscordClient(client)))
+
+
+@client.event
+async def on_message_delete(message):
+    await bus.post("message.delete", DiscordMessage(message, DiscordClient(client)))
+
+
+@client.event
+async def on_message_edit(before, after):
+    await bus.post("message.edit",
+                   DiscordMessage(before, DiscordClient(client)),
+                   DiscordMessage(after, DiscordClient(client)))
 
 
 @bus.event("init")

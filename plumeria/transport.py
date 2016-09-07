@@ -10,4 +10,16 @@ class Transport:
     pass
 
 
+class User:
+    pass
+
+
+class Member:
+    pass
+
+
+class Role:
+    pass
+
+
 transports = TransportManager()

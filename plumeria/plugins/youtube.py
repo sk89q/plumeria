@@ -7,7 +7,6 @@ youtube = YouTube()
 
 
 @commands.register('youtube', 'yt', 'ytsearch', cost=2, category='Search')
-@channel_only
 @rate_limit()
 async def yt(message):
     """
