@@ -2,6 +2,7 @@ import asyncio
 import io
 import logging
 import re
+from collections import deque
 from datetime import datetime
 
 from PIL import Image
@@ -15,7 +16,15 @@ CONTINUATION_STRING = "\n..."
 logger = logging.getLogger(__name__)
 
 
+def create_stack():
+    return deque(maxlen=20)
+
+
 class Message:
+    def __init__(self):
+        self.registers = {}
+        self.stack = create_stack()
+
     async def respond(self, content):
         if isinstance(content, Response):
             if len(content.attachments):
@@ -74,9 +83,11 @@ class ProxyMessage(Message):
 
 
 class Response:
-    def __init__(self, content, attachments=None):
+    def __init__(self, content="", attachments=None, registers=None, stack=None):
         self.content = content
         self.attachments = attachments or []
+        self.registers = registers
+        self.stack = stack
 
 
 class Attachment:

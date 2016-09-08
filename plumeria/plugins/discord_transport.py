@@ -24,6 +24,7 @@ class DiscordClient(Transport):
     id = "discord"
 
     def __init__(self, delegate):
+        super().__init__()
         self.delegate = delegate
 
     def __getattr__(self, item):
@@ -32,6 +33,7 @@ class DiscordClient(Transport):
 
 class DiscordChannel(Channel):
     def __init__(self, delegate):
+        super().__init__()
         self.delegate = delegate
 
     @property
@@ -70,6 +72,7 @@ class DiscordChannel(Channel):
 
 class DiscordServer(Server):
     def __init__(self, delegate):
+        super().__init__()
         self.delegate = delegate
 
     @property
@@ -82,6 +85,7 @@ class DiscordServer(Server):
 
 class DiscordMessage(Message):
     def __init__(self, message, client):
+        super().__init__()
         self.delegate = message
         self.channel = DiscordChannel(message.channel)
         self.client = client
@@ -93,6 +97,7 @@ class DiscordMessage(Message):
 
 class DiscordAttachment(Attachment):
     def __init__(self, data):
+        super().__init__()
         self.url = data['url']
         _, ext = os.path.splitext(data['filename'])
         self.filename = data['filename']

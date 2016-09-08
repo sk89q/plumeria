@@ -137,11 +137,12 @@ async def alias_enumerator(server_id):
 
 
 @commands.intercept
-async def alias_listener(message, value, depth):
-    if not message.channel.is_private:  # public channels only
-        value = aliases.match_command(message, value)
+async def alias_listener(original, value, depth):
+    if not original.channel.is_private:  # public channels only
+        value = aliases.match_command(original, value)
         if value:
-            message = ProxyMessage(message)
+            message = ProxyMessage(original)
             message.content = value
+            message.registers['input'] = original
             return await commands.execute(message, Context(), expect_prefix=False)
         return False

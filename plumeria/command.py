@@ -174,7 +174,7 @@ class CommandManager:
             context.consume(command.cost)
             result = await command.executor(message)
             if result is None:
-                return None
+                return Response()
             elif isinstance(result, Response):
                 return result
             elif isinstance(result, str):
@@ -212,8 +212,16 @@ class CommandManager:
                 if input:
                     command = command + " " + input.content
                     message.attachments = input.attachments
+                    message.registers = input.registers
+                    message.stack = input.stack
+                command = self._interpolate(command, message.registers)
                 message.content = command
                 input = await self.execute_prefixed(message, context, expect_prefix=False)
+                if input: # if there is no command, it will be None
+                    if not input.registers:
+                        input.registers = message.registers
+                    if not input.stack:
+                        input.stack = message.stack
             return input
         except AuthorizationError as e:
             await message.respond("error: Whoops -- you can't use this.")
@@ -245,6 +253,47 @@ class CommandManager:
         parts = map(lambda x: x.getvalue().strip(), parts)
         parts = filter(lambda x: len(x), parts)
         return list(parts)
+
+    def _interpolate(self, s, registers):
+        escaping = False
+        variable_mode = False
+        buffer = StringIO()
+        variable_buffer = StringIO()
+        for i in range(0, len(s)):
+            if escaping:
+                if s[i] != "#":
+                    buffer.write("^")
+                buffer.write(s[i])
+                escaping = False
+            elif variable_mode:
+                if s[i] == "#":
+                    name = variable_buffer.getvalue()
+                    if name in registers:
+                        buffer.write(registers[name].content)
+                    else:
+                        buffer.write("#")
+                        buffer.write(name)
+                        buffer.write("#")
+                    variable_buffer = StringIO()
+                    variable_mode = False
+                elif s[i] != " ":
+                    variable_buffer.write(s[i])
+                else:  # invalid variable name
+                    buffer.write("#")
+                    buffer.write(variable_buffer.getvalue())
+                    buffer.write(s[i])
+                    variable_buffer = StringIO()
+                    variable_mode = False
+            elif s[i] == "^":
+                escaping = True
+            elif s[i] == "#":
+                variable_mode = True
+            else:
+                buffer.write(s[i])
+        if len(variable_buffer.getvalue()):
+            buffer.write("#")
+            buffer.write(variable_buffer.getvalue())
+        return buffer.getvalue()
 
 
 class ArgumentParserError(Exception):
