@@ -50,7 +50,7 @@ if __name__ == "__main__":
     config.load()
     for importer, modname, ispkg in discovered_modules:
         path = "plumeria.plugins." + modname
-        enabled = config.create("plugins", path, type=boolstr, fallback=True)
+        enabled = config.create("plugins", path, type=boolstr, fallback=False)
         if enabled():
             modules_to_load.add(path)
     config.save()

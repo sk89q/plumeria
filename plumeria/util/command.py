@@ -33,3 +33,11 @@ def string_filter(f):
         return Response(await asyncio.get_event_loop().run_in_executor(None, execute))
 
     return wrapper
+
+
+def add_doc(value):
+    def wrapper(func):
+        func.__doc__ = value
+        return func
+
+    return wrapper

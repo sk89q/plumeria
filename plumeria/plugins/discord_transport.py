@@ -12,8 +12,9 @@ from plumeria.transport import transports, Transport
 from plumeria.util import to_mimetype
 from plumeria.util.http import DefaultClientSession
 
-discord_user = config.create("discord", "username", fallback="", comment="The Discord username to login to.")
-discord_pass = config.create("discord", "password", fallback="", comment="The Discord password to login with.")
+discord_user = config.create("discord", "username", fallback="", comment="The Discord username to login to")
+discord_pass = config.create("discord", "password", fallback="", comment="The Discord password to login with")
+discord_token = config.create("discord", "token", fallback="", comment="The Discord token to login with (overrides password login if set)")
 
 client = discord.Client()
 
@@ -35,6 +36,10 @@ class DiscordChannel(Channel):
     def __init__(self, delegate):
         super().__init__()
         self.delegate = delegate
+
+    @property
+    def type(self):
+        return str(self.delegate.type)
 
     @property
     def server(self):
@@ -165,9 +170,14 @@ async def on_message_edit(before, after):
 
 @bus.event("init")
 async def init():
-    username = discord_user()
-    if username != "":
+    token = discord_token()
+    if len(token):
         transports.register("discord", DiscordTransport(client))
-        asyncio.get_event_loop().create_task(client.start(username, discord_pass()))
+        asyncio.get_event_loop().create_task(client.start(token))
     else:
-        logger.warning("No Discord username/password set! Not connecting to Discord...")
+        username = discord_user()
+        if username != "":
+            transports.register("discord", DiscordTransport(client))
+            asyncio.get_event_loop().create_task(client.start(username, discord_pass()))
+        else:
+            logger.warning("No Discord username/password set! Not connecting to Discord...")

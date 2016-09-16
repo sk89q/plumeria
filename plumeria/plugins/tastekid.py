@@ -1,6 +1,7 @@
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.util import http
+from plumeria.util.command import add_doc
 from plumeria.util.ratelimit import rate_limit
 from plumeria.util.string import first_words
 
@@ -16,15 +17,6 @@ types = (
 api_key = config.create("tastekid", "key",
                         fallback="",
                         comment="An API key from https://www.tastekid.com/account/api_access")
-
-
-def add_doc(value):
-    def wrapper(func):
-        func.__doc__ = value
-        return func
-
-    return wrapper
-
 
 for e in types:
     def make_command(type, names, example):

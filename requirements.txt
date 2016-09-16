@@ -19,6 +19,7 @@ matplotlib==2.0.0b3
 multidict==1.2.2
 numpy
 Pillow==3.1.1
+psutil==4.3.1
 py==1.4.31
 pycountry==1.20
 pycparser==2.14
