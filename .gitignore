@@ -11,3 +11,7 @@ venv
 .venv
 /node_modules
 /ghostdriver.log
+/build
+/packages
+/tmp
+*.egg-info
