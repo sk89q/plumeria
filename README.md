@@ -2,7 +2,9 @@
 
 Plumeria is a fun & practical Discord bot for your Discord server. As Plumeria is fairly powerful, it is meant to be self-hosted by running the software on your computer or, preferably, on some sort of server.
 
-The software is designed to work on Windows, Mac OS X, and Linux.
+Writing new commands or plugins for Plumeria is also very easy. Plumeria is written in Python 3.
+
+Plumeria is designed to work on Windows, Mac OS X, and Linux.
 
 ![Plumeria Help](readme/help.png)
 
