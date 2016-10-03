@@ -1,5 +1,7 @@
 # Plumeria, the Discord bot
 
+[![Documentation Status](https://readthedocs.org/projects/plumeria/badge/?version=latest)](http://plumeria.readthedocs.io/en/latest/?badge=latest)
+
 Plumeria is a fun & practical Discord bot for your Discord server. As Plumeria is fairly powerful, it is meant to be self-hosted by running the software on your computer or, preferably, on some sort of server.
 
 Writing new commands or plugins for Plumeria is also very easy. Plumeria is written in Python 3.
@@ -28,6 +30,10 @@ Here are some examples:
   `i harambe | put url | render <div style="position: relative"><img src="#url#" style="max-width: 400px; max-height: 400px"><img src="http://i.imgur.com/PeBN4e1.jpg" style="position: absolute; top: 0; left :0; max-width: 400px ;max-height: 400px"></div>`
 * Blending two images from Bing image search together (uses variables):
   `i adtr | put a | i knuckle puck | put b | render <div style="position: relative"><img src="#a#" style="max-width: 400px; max-height: 400px"><img src="#b#" style="position: absolute; top: 0; left: 0; opacity: 0.5; max-width: 400px; max-height: 400px"></div>`
+
+## Installation
+
+To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/latest/).
 
 ## Command List
 
