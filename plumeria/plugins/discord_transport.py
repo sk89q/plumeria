@@ -184,8 +184,8 @@ async def on_server_join(server):
 
 
 @client.event
-async def on_server_update(server):
-    await bus.post("server.update", _wrap(server, transport))
+async def on_server_update(before, after):
+    await bus.post("server.update", _wrap(before, transport), _wrap(after, transport))
 
 
 @client.event
