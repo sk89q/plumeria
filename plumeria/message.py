@@ -7,6 +7,8 @@ from datetime import datetime
 
 from PIL import Image
 
+from plumeria.transport import Channel
+from plumeria.transport import Server
 from .util.http import DefaultClientSession
 
 MAX_BODY_LENGTH = 1900
@@ -82,8 +84,8 @@ class Message:
         self.content = None
         self.nonce = None
         self.embeds = None
-        self.channel = None
-        self.server = None
+        self.channel = None  # type: Channel
+        self.server = None  # type: Server
         self.call = None
         self.mention_everyone = None
         self.channel_mentions = None
@@ -95,7 +97,6 @@ class Message:
         self.raw_role_mentions = None
         self.clean_content = None
         self.system_content = None
-
 
 
 class ProxyMessage(Message):

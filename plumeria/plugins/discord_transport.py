@@ -24,9 +24,11 @@ discord_token = config.create("discord", "token", fallback="",
 
 logger = logging.getLogger(__name__)
 
+DICT_VALUES = {}.values().__class__
+
 
 def _wrap(o, transport):
-    if isinstance(o, list):
+    if isinstance(o, list) or isinstance(o, DICT_VALUES):
         return [_wrap(item, transport) for item in o]
     elif isinstance(o, tuple):
         return tuple([_wrap(item, transport) for item in o])
@@ -79,6 +81,14 @@ class DiscordWrapper:
         else:
             return self._wrap(attr)
 
+    def __hash__(self):
+        return self.delegate.__hash__()
+
+    def __eq__(self, other):
+        if isinstance(other, DiscordWrapper):
+            other = other.delegate
+        return self.delegate.__eq__(other)
+
 
 class DiscordTransport(DiscordWrapper, Transport):
     def __init__(self, delegate):
@@ -96,6 +106,23 @@ class DiscordChannel(DiscordWrapper, Channel):
 
     async def send_message(self, content, tts=False):
         return await self.transport.send_message(self.delegate, content, tts=tts)
+
+    @property
+    def multiple_participants(self):
+        return self.type in ('text', 'voice', 'group')
+
+    @property
+    def server(self):
+        if hasattr(self.delegate, 'server'):
+            return self._wrap(self.delegate.server)
+        else:
+            return None
+
+    @property
+    def members(self):
+        for member in self.server.members:
+            if self.permissions_for(member).read_messages:
+                yield member
 
     def get_history(self, limit=100):
         logs = self.transport.logs_from(self.delegate, limit=limit)
