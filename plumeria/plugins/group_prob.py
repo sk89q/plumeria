@@ -19,6 +19,15 @@ def map_choice(choice):
 @commands.register("group prob", "gp", category="Utility")
 @channel_only
 async def group_prob(message):
+    """
+    A fun command that picks random people as "most likely" and "least likely"
+    from the channel for a question.
+
+    Example::
+
+        /gp find love in a bathroom
+        
+    """
     query = message.content.strip()
     if not len(query):
         raise CommandError("A statement or question must be posed!")
