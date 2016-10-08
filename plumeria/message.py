@@ -22,6 +22,7 @@ def create_stack():
 
 class Message:
     def __init__(self):
+        super().__init__()
         self.registers = {}
         self.stack = create_stack()
 
@@ -69,6 +70,32 @@ class Message:
 
     def __str__(self, *args, **kwargs):
         return repr(self.__dict__)
+
+    def _ide_hint(self):
+        # fix unresolved attribute errors
+        self.id = None
+        self.edited_timestamp = None
+        self.timestamp = None
+        self.tts = None
+        self.type = None
+        self.author = None
+        self.content = None
+        self.nonce = None
+        self.embeds = None
+        self.channel = None
+        self.server = None
+        self.call = None
+        self.mention_everyone = None
+        self.channel_mentions = None
+        self.role_mentions = None
+        self.attachments = None
+        self.pinned = None
+        self.raw_mentions = None
+        self.raw_channel_mentions = None
+        self.raw_role_mentions = None
+        self.clean_content = None
+        self.system_content = None
+
 
 
 class ProxyMessage(Message):

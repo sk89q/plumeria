@@ -33,10 +33,6 @@ if __name__ == "__main__":
 
     config.file = args.config
 
-    if sys.platform == 'win32':
-        loop = asyncio.ProactorEventLoop()
-        asyncio.set_event_loop(loop)
-
     loop = asyncio.get_event_loop()
 
     plugins_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "plugins"))

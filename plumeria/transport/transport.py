@@ -13,6 +13,7 @@ class Transport:
 
     def _ide_hint(self):
         # fix unresolved attribute errors
+        self.id = None
         self.user = None
         self.voice_clients = None
         self.servers = None

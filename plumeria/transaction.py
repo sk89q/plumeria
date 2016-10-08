@@ -3,6 +3,7 @@ import logging
 import pylru
 
 from plumeria.event import bus
+from plumeria.message import Message
 
 logger = logging.getLogger(__name__)
 
@@ -16,16 +17,16 @@ class Response:
 
     async def handle_request_delete(self):
         if not self.delete_aware:
-            await self.message.client.edit_message(self.message,
-                                                   "Original message by **{}** deleted".format(
-                                                       self.transaction.request_message.author.mention))
+            await self.message.server.transport.edit_message(self.message,
+                                                             "Original message by **{}** deleted".format(
+                                                                 self.transaction.request_message.author.mention))
             self.delete_aware = True
 
     async def handle_request_edit(self):
         if not self.edit_aware:
-            await self.message.client.edit_message(self.message,
-                                                   "Original message by **{}** edited".format(
-                                                       self.transaction.request_message.author.mention))
+            await self.message.server.transport.edit_message(self.message,
+                                                             "Original message by **{}** edited".format(
+                                                                 self.transaction.request_message.author.mention))
             self.edit_aware = True
 
 
@@ -39,8 +40,8 @@ class TransactionLog:
     def __init__(self):
         self.cache = pylru.lrucache(400)
 
-    def get_key(self, message):
-        return str(message.client.id) + ":" + str(message.id)
+    def get_key(self, message: Message):
+        return str(message.server.transport.id) + ":" + str(message.id)
 
     def add_response(self, message, response):
         key = self.get_key(message)
@@ -71,7 +72,6 @@ async def on_message_delete(message):
             except:
                 # todo: what if one of the responses was deleted?
                 logger.warn("Failed to handle deletion of a message", exc_info=True)
-
 
 
 @bus.event("message.edit")

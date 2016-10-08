@@ -11,6 +11,7 @@ setup(name='Plumeria',
       packages=['plumeria'],
       install_requires=[
           'aiohttp>=0.22.5',
+          'aiomysql>=0.0.9',
           'beautifulsoup4>=4',
           'dice>=1.0.2',
           'discord.py>=0.11.0',
