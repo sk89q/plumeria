@@ -1,6 +1,9 @@
+import io
+import json
+
 from plumeria.command import commands, Context, CommandError, channel_only
 from plumeria.event import bus
-from plumeria.message import ProxyMessage, Message
+from plumeria.message import ProxyMessage, Message, Response, MemoryAttachment
 from plumeria.perms import server_admins_only
 from plumeria.storage import migrations
 from plumeria.util.format import escape_markdown
@@ -86,6 +89,25 @@ async def get_alias(message: Message):
             raise CommandError("That alias '{}' doesn't exist".format(name))
     else:
         raise CommandError("<alias>")
+
+
+@commands.register('alias export', cost=4, category='Alias')
+@channel_only
+@server_admins_only
+async def export_aliases(message: Message):
+    """
+    Exports all aliases as a .json file that can't be imported anywhere yet.
+
+    Example::
+
+        /alias export
+    """
+    data = {}
+    for alias in aliases.get_all(message.server):
+        data[alias.alias] = alias.command
+    return Response("Here are all the aliases on this channel", attachments=[
+        MemoryAttachment(io.BytesIO(json.dumps(data).encode('utf-8')), 'aliases.json', 'application/json'),
+    ])
 
 
 @commands.enumerator

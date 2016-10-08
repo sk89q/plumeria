@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Sequence
 
 from plumeria.command import Command, Mapping
 from plumeria.storage import pool
@@ -49,6 +50,18 @@ class AliasManager:
             else:
                 return None
         return node
+
+    def get_all(self, server: Server) -> Sequence[Alias]:
+        """Get all defined aliases for a server."""
+
+        keys = (server.transport.id.lower(), server.id.lower())
+        node = self.aliases
+        for key in keys:
+            if key in node:
+                node = node[key]
+            else:
+                return []
+        return node.values()
 
     def get_mappings(self, server_id):
         mappings = []
