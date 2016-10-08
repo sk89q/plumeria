@@ -254,6 +254,8 @@ class CommandManager:
                 parts.append(StringIO())
             else:
                 parts[len(parts) - 1].write(s[i])
+        if escaping:
+            parts[len(parts) - 1].write("^")
         parts = map(lambda x: x.getvalue().strip(), parts)
         parts = filter(lambda x: len(x), parts)
         return list(parts)
@@ -294,6 +296,8 @@ class CommandManager:
                 variable_mode = True
             else:
                 buffer.write(s[i])
+        if escaping:
+            buffer.write("^")
         if len(variable_buffer.getvalue()):
             buffer.write("#")
             buffer.write(variable_buffer.getvalue())
