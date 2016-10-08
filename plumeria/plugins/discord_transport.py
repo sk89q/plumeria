@@ -167,8 +167,8 @@ async def on_member_join(member):
 
 
 @client.event
-async def on_member_update(member):
-    await bus.post("server.member.update", _wrap(member, transport))
+async def on_member_update(before, after):
+    await bus.post("server.member.update", _wrap(before, transport), _wrap(after, transport))
 
 
 @client.event
