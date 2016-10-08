@@ -9,10 +9,10 @@ MAX_USERS = 10
 
 
 def map_choice(choice):
-    return "**{most}** ({most_pct:.0f}%){clap}".format(
+    return "{clap}**{most}** ({most_pct:.0f}%)".format(
         most=choice[0],
         most_pct=choice[1] * 100,
-        clap=" \N{CLAPPING HANDS SIGN}" if choice[1] >= 0.9 else "",
+        clap="\N{CLAPPING HANDS SIGN} " if choice[1] >= 0.9 else "",
     )
 
 
