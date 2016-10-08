@@ -26,7 +26,7 @@ async def group_prob(message):
     users = await tracker.get_recent_users(message.channel)
 
     # if we don't have a lot of users, get the member list of the channel
-    if len(users) < 3:
+    if len(users) < 2:
         users = []
         for member in message.channel.members:
             # don't include ourselves
