@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.util import http
-from plumeria.util.message import escape_markdown
+from plumeria.util.format import escape_markdown
 from plumeria.util.ratelimit import rate_limit
 
 api_key = config.create("wolfram", "key",

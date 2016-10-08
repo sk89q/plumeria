@@ -15,12 +15,7 @@ CHUNK_SIZE = 1024
 MAX_SIZE = 1024 * 1024 * 6
 MAX_LENGTH = 4000
 IMAGE_LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
-MARKDOWN_ESCAPE_PATTERN = re.compile("([\\*_`\\{\\}\\[\\]\\-~])")
 MARKDOWN_CODE_BLOCK = re.compile("```(.*?)```", re.S)
-
-
-def escape_markdown(s):
-    return MARKDOWN_ESCAPE_PATTERN.sub("\\\\\\1", s)
 
 
 async def fetch_image(url):

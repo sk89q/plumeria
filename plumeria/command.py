@@ -6,6 +6,7 @@ from collections import namedtuple
 from functools import wraps
 from io import StringIO
 
+from plumeria.util.format import escape_markdown
 from .event import bus
 from .message import ProxyMessage, Response
 from .transaction import tx_log
@@ -207,7 +208,7 @@ class CommandManager:
 
         try:
             input = None
-            for command in self._split_piped(message.content):
+            for i, command in enumerate(self._split_piped(message.content)):
                 message = ProxyMessage(message)
                 if input:
                     command = command + " " + input.content
@@ -222,6 +223,9 @@ class CommandManager:
                         input.registers = message.registers
                     if not input.stack:
                         input.stack = message.stack
+                else:
+                    if i != 0:
+                        raise CommandError("Command not found: `{}`".format(escape_markdown(command)))
             return input
         except AuthorizationError as e:
             await message.respond("error: Whoops -- you can't use this.")

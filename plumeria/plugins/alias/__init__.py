@@ -3,7 +3,7 @@ from plumeria.event import bus
 from plumeria.message import ProxyMessage, Message
 from plumeria.perms import server_admins_only
 from plumeria.storage import migrations
-from plumeria.util.message import escape_markdown
+from plumeria.util.format import escape_markdown
 from .manager import AliasManager
 
 aliases = AliasManager()
