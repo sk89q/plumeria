@@ -14,3 +14,6 @@ CREATE INDEX idx_alias_aliases_transport
 
 CREATE INDEX idx_alias_aliases_transport_server
   ON alias_aliases (transport, server);
+
+ALTER TABLE alias_aliases
+  ADD CONSTRAINT ux_alias_aliases_transport_server_alias UNIQUE (transport, server, alias);
