@@ -62,7 +62,6 @@ class AliasManager:
         return mappings
 
     async def load(self, server: Server):
-        self.aliases.clear()
         async with pool.acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(
