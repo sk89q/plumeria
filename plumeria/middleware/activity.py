@@ -25,21 +25,22 @@ class ActivityTracker:
         if message.channel.multiple_participants:
             if self._is_loggable(message.timestamp):
                 server_id = message.channel.server.id if message.channel.server else None
-                key = (message.channel.transport.id, server_id, message.channel.id)
+                key = (message.channel.transport.id, server_id, message.channel.id, message.author.id)
                 self.cache[key] = message.author
 
     async def get_recent_users(self, channel: Channel):
         expected_key = (channel.transport.id, channel.server.id if channel.server else None, channel.id)
-        results = []
-        for key, user in self.cache.items():
-            if key == expected_key:
-                results.append(user)
 
-        if not len(results) and expected_key not in self.fetched_history:
+        if expected_key not in self.fetched_history:
             with await self.fetch_lock:
                 async for message in channel.get_history(limit=self.fetch_limit):
                     self.log(message)
                 self.fetched_history[expected_key] = True
+
+        results = []
+        for key, user in self.cache.items():
+            if tuple(key[:3]) == expected_key:
+                results.append(user)
 
         return results
 
