@@ -25,5 +25,6 @@ migrations = MigrationManager(pool)
 
 @bus.event('preinit')
 async def preinit():
-    pool.pool = await aiomysql.create_pool(host=host(), port=port(), user=user(), password=password(), db=db(), autocommit=True)
+    pool.pool = await aiomysql.create_pool(host=host(), port=port(), user=user(), password=password(), db=db(),
+                                           autocommit=True, charset='utf8mb4')
     await migrations.setup()
