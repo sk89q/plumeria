@@ -6,11 +6,11 @@ import sys
 import psutil as psutil
 
 from plumeria import config
-from plumeria.channel import TEXT_TYPE
 from plumeria.command import commands, CommandError
 from plumeria.perms import roles_only
 from plumeria.util.command import add_doc
 from plumeria.transport import transports
+from plumeria.transport.channel import TEXT_TYPE
 
 name = config.create("process_manager", "name",
                      fallback="arma3",

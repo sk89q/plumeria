@@ -4,10 +4,9 @@ import os.path
 
 import discord
 from plumeria import config
-from plumeria.channel import Channel
+from plumeria.transport import Channel, Server
 from plumeria.event import bus
 from plumeria.message import Message, Attachment
-from plumeria.server import Server
 from plumeria.transport import transports, Transport
 from plumeria.util import to_mimetype
 from plumeria.util.http import DefaultClientSession
@@ -45,9 +44,11 @@ class DiscordChannel(Channel):
     def server(self):
         return DiscordServer(self.delegate.server)
 
+    @property
     def is_default_channel(self):
         return self.delegate.is_default_channel()
 
+    @property
     def mention(self):
         return self.delegate.mention()
 
