@@ -100,6 +100,7 @@ class Message:
 
 class ProxyMessage(Message):
     def __init__(self, message):
+        super().__init__()
         self.delegate = message
 
     async def respond(self, content):
