@@ -228,16 +228,16 @@ class CommandManager:
                         raise CommandError("Command not found: `{}`".format(escape_markdown(command)))
             return input
         except AuthorizationError as e:
-            await message.respond("error: Whoops -- you can't use this.")
+            await message.respond("\N{WARNING SIGN} Whoops -- you can't use this.")
         except ComplexityError as e:
-            await message.respond("error: Your command was too complex to handle. Calm down.")
+            await message.respond("\N{WARNING SIGN} Your command was too complex to handle. Calm down.")
         except CommandError as e:
-            await message.respond("error: {}".format(str(e)))
+            await message.respond("\N{WARNING SIGN} {}".format(str(e)))
         except RateLimitExceeded as e:
-            await message.respond("error: Your command is hitting a rate limit. Try again later.")
+            await message.respond("\N{WARNING SIGN} Your command is hitting a rate limit. Try again later.")
         except Exception as e:
             logger.warning("Command raised an exception for '{}'".format(message.content), exc_info=True)
-            await message.respond("error: An unexpected error occurred.")
+            await message.respond("\N{WARNING SIGN} An unexpected error occurred.")
 
     def _split_piped(self, s):
         escaping = False
