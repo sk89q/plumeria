@@ -1,4 +1,4 @@
-from plumeria.api.youtube import YouTube
+from plumeria.middleware.api.youtube import YouTube
 from plumeria.command import commands, CommandError, channel_only
 from plumeria.message import Response
 from plumeria.util.ratelimit import rate_limit

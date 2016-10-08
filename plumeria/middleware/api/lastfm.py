@@ -1,6 +1,6 @@
 import collections
-from .. import config
-from ..util.http import BaseRestClient, APIError
+from plumeria import config
+from plumeria.util.http import BaseRestClient, APIError
 
 default_api_key = config.create("lastfm", "key",
                                 fallback="unset",

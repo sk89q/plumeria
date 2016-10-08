@@ -1,5 +1,5 @@
 from plumeria.command import commands, CommandError
-from plumeria.api.steam import SteamCommunity, parse_steam_id
+from plumeria.middleware.api.steam import SteamCommunity, parse_steam_id
 from plumeria.util.ratelimit import rate_limit
 
 steam_community = SteamCommunity()

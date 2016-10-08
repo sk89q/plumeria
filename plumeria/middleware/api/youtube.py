@@ -1,6 +1,6 @@
 import collections
-from .. import config
-from ..util.http import BaseRestClient
+from plumeria import config
+from plumeria.util.http import BaseRestClient
 
 default_api_key = config.create("youtube", "key",
                                 fallback="unset",

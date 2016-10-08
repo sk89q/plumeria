@@ -5,8 +5,8 @@ import aiohttp
 from bs4 import BeautifulSoup
 from valve.steam.id import SteamID as BrokenSteamID, UNIVERSE_INDIVIDUAL, TYPE_INDIVIDUAL, TYPE_CLAN, \
     community32_regex, community64_regex, letter_type_map, type_url_path_map, urlparse
-from ..command import CommandError
-from ..util.http import APIError, DefaultClientSession
+from plumeria.command import CommandError
+from plumeria.util.http import APIError, DefaultClientSession
 
 COMMUNITY_URL_ID_PATTERN = re.compile("https?://(?:www\\.)?steamcommunity\\.com/profiles/([0-9]+)(?:/[^ ]*)?", re.I)
 COMMUNITY_URL_NAME_PATTERN = re.compile("https?://(?:www\\.)?steamcommunity\\.com/id/([A-Za-z0-9_\\-]+)(?:/[^ ]*)?",

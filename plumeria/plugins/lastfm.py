@@ -1,7 +1,7 @@
 from plumeria.command import commands, CommandError
 from plumeria.message import Response
 from plumeria.util.ratelimit import rate_limit
-from plumeria.api.lastfm import LastFm
+from plumeria.middleware.api.lastfm import LastFm
 
 lastfm = LastFm()
 
