@@ -99,7 +99,7 @@ class Message:
         self.system_content = None
 
 
-class ProxyMessage(Message):
+class ProxyMessage:
     def __init__(self, message):
         super().__init__()
         self.delegate = message
