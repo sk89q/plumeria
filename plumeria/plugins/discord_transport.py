@@ -81,6 +81,12 @@ class DiscordWrapper:
         else:
             return self._wrap(attr)
 
+    def __str__(self):
+        return str(self.delegate)
+
+    def __repr__(self):
+        return repr(self.delegate)
+
     def __hash__(self):
         return self.delegate.__hash__()
 
