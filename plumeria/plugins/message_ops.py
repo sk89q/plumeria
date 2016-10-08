@@ -40,11 +40,12 @@ async def put(message):
 
         /put eax
     """
-    parts = message.content.split(" ", 2)
+    parts = message.content.split(" ", 1)
     key = parts[0].strip()
     message_copy = ProxyMessage(message)
     message_copy.content = parts[1]
     message.registers[key] = message_copy
+    return Response("", registers=message.registers)
 
 
 @commands.register('get', cost=0.05, category="Operations")
