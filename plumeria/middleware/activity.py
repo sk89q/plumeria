@@ -22,11 +22,18 @@ class ActivityTracker:
         return dt > datetime.now() - timedelta(seconds=self.ttl)
 
     def log(self, message: Message):
-        if message.channel.multiple_participants:
-            if self._is_loggable(message.timestamp):
-                server_id = message.channel.server.id if message.channel.server else None
-                key = (message.channel.transport.id, server_id, message.channel.id, message.author.id)
-                self.cache[key] = message.author
+        if message.author == message.channel.transport.user:
+            return
+
+        if not message.channel.multiple_participants:
+            return
+
+        if not self._is_loggable(message.timestamp):
+            return
+
+        server_id = message.channel.server.id if message.channel.server else None
+        key = (message.channel.transport.id, server_id, message.channel.id, message.author.id)
+        self.cache[key] = message.author
 
     async def get_recent_users(self, channel: Channel):
         expected_key = (channel.transport.id, channel.server.id if channel.server else None, channel.id)
