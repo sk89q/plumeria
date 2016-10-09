@@ -7,7 +7,7 @@ import aiohttp
 from PIL import Image
 from plumeria.command import CommandError, commands
 from plumeria.message import ImageAttachment, Response
-from plumeria.util.message import read_image
+from plumeria.message.image import read_image
 from plumeria.util.http import DefaultClientSession
 from plumeria.util.ratelimit import rate_limit
 

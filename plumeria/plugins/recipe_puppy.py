@@ -2,7 +2,7 @@ import re
 
 from plumeria.command import commands, CommandError
 from plumeria.util import http
-from plumeria.util.message import parse_list
+from plumeria.message.lists import parse_list
 from plumeria.util.ratelimit import rate_limit
 
 NEW_LINES_PATTERN = re.compile("[\\r\\n]")

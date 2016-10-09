@@ -1,6 +1,6 @@
 from plumeria.command import CommandError, commands
 from plumeria.message import Response, Message, ProxyMessage
-from plumeria.util.message import parse_list
+from plumeria.message.lists import parse_list
 
 
 @commands.register('push', 'psh', cost=0.05, category="Operations")

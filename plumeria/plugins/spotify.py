@@ -1,6 +1,6 @@
 from titlecase import titlecase
 from plumeria.command import commands, CommandError
-from plumeria.message.responses import list_response
+from plumeria.message.lists import build_list
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
@@ -128,4 +128,4 @@ async def discog(message):
             ))
             seen_names.add(e['name'])
 
-    return list_response(items)
+    return build_list(items)

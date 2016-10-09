@@ -12,7 +12,7 @@ from PIL import Image
 
 from plumeria.command import commands, CommandError
 from plumeria.message import Response, MemoryAttachment
-from plumeria.util.message import read_image
+from plumeria.message.image import read_image
 from plumeria.util.ratelimit import rate_limit
 
 VTFCMD_PATH = os.path.join("bin", "VTFCmd.exe")

@@ -11,7 +11,7 @@ from PIL import ImageChops
 
 from plumeria.command import commands, CommandError
 from plumeria.message import Response, MemoryAttachment, ImageAttachment
-from plumeria.util.message import parse_list, parse_numer_list
+from plumeria.message.lists import parse_list, parse_numeric_list
 from plumeria.util.ratelimit import rate_limit
 
 matplotlib.use('Agg')
@@ -168,7 +168,7 @@ async def histogram(message):
         /roll 500d10 | hist
 
     """
-    data = parse_numer_list(message.content)
+    data = parse_numeric_list(message.content)
 
     def execute():
         with lock:

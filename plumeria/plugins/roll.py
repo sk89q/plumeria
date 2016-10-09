@@ -2,7 +2,7 @@ import random
 
 import dice
 from plumeria.command import commands, CommandError
-from plumeria.util.message import parse_list
+from plumeria.message.lists import parse_list
 
 EIGHT_BALL_RESPONSES = (
     "It is certain",

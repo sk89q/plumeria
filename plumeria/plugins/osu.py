@@ -6,7 +6,7 @@ from plumeria import config
 from plumeria.command import commands, CommandError, ArgumentParser
 from plumeria.message import Response
 from plumeria.util import http
-from plumeria.util.message import fetch_image
+from plumeria.message.image import fetch_image
 from plumeria.util.ratelimit import rate_limit
 
 HEX_COLOR_PATTERN = re.compile("^#?([a-f0-9]{6})$")

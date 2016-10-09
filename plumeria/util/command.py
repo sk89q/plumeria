@@ -3,7 +3,7 @@ import asyncio
 from functools import wraps
 from ..command import CommandError
 from ..message import Response
-from ..util.message import read_image
+from plumeria.message.image import read_image
 from ..util.ratelimit import rate_limit
 
 
