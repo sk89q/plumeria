@@ -4,6 +4,7 @@ import urllib.parse
 import codecs
 import hashlib
 from plumeria.command import commands, CommandError
+from plumeria.message.lists import parse_list
 from plumeria.util.ratelimit import rate_limit
 from plumeria.util.command import string_filter
 
@@ -157,3 +158,21 @@ def find_url(text):
         return m.group(0)
     else:
         raise CommandError("No URL found in string")
+
+
+@commands.register('first', category='String')
+@string_filter
+def first(text):
+    """
+    Gets the first value of a list of items.
+    """
+    return parse_list(text, allow_spaces=True)[0]
+
+
+@commands.register('end', category='String')
+@string_filter
+def last(text):
+    """
+    Gets the last value of a list of items.
+    """
+    return parse_list(text, allow_spaces=True)[-1]
