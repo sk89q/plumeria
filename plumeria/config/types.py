@@ -1,3 +1,4 @@
+from datetime import datetime
 from distutils.util import strtobool
 
 
@@ -6,6 +7,11 @@ def boolstr(d):
         return d
     else:
         return strtobool(d)
+
+
+def dateformatstr(s):
+    datetime.now().strftime(s)
+    return s
 
 
 def list_of(type=str):

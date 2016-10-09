@@ -2,7 +2,9 @@ import asyncio
 import inspect
 import logging
 import os.path
+import re
 from enum import Enum
+from typing import Sequence, Optional
 
 import discord
 from discord import Client
@@ -13,6 +15,7 @@ from plumeria import config
 from plumeria.event import bus
 from plumeria.message import Message, Attachment
 from plumeria.transport import Channel, Server
+from plumeria.transport import User
 from plumeria.transport import transports, Transport
 from plumeria.transport.transport import ForbiddenError
 from plumeria.util import to_mimetype
@@ -26,6 +29,7 @@ discord_token = config.create("discord", "token", fallback="",
 logger = logging.getLogger(__name__)
 
 DICT_VALUES = {}.values().__class__
+MENTION_RE = re.compile("@?([^<> #]+)(?:#([0-9]{4}))?")
 
 
 def _wrap(o, transport):
@@ -63,7 +67,9 @@ class DiscordWrapper:
     def __getattr__(self, item):
         attr = getattr(self.delegate, item)
 
-        if inspect.iscoroutinefunction(attr) or hasattr(attr, "_is_coroutine") and attr._is_coroutine or inspect.iscoroutine(attr):
+        if inspect.iscoroutinefunction(attr) or hasattr(attr,
+                                                        "_is_coroutine") and attr._is_coroutine or inspect.iscoroutine(
+            attr):
             async def wrapper(*args, **kwargs):
                 return self._wrap(await attr(*args, **kwargs))
 
@@ -102,6 +108,29 @@ class DiscordTransport(DiscordWrapper, Transport):
         super().__init__(delegate, self)
         self.id = 'discord'
 
+    def resolve_user(self, q, hint: Optional[Sequence[User]] = None, domain: Optional[Sequence[User]] = None):
+        m = MENTION_RE.search(q)
+        if m:
+            name_id = m.group(1)
+            discrim = m.group(2)
+
+            if hint:
+                for user in hint:
+                    if discrim and discrim != str(user.discriminator):
+                        continue
+                    if name_id == str(user.id) or name_id.lower() == user.name.lower():
+                        return user
+
+            if not domain:
+                domain = self.get_all_members()
+
+            for user in domain:
+                if discrim and discrim != str(user.discriminator):
+                    continue
+                if name_id == str(user.id) or name_id.lower() == user.name.lower():
+                    return user
+        return None
+
     @property
     def servers(self):
         return [self._wrap(o) for o in self.delegate.servers]
@@ -127,9 +156,13 @@ class DiscordChannel(DiscordWrapper, Channel):
 
     @property
     def members(self):
-        for member in self.server.members:
-            if self.permissions_for(member).read_messages:
-                yield member
+        if self.is_private:
+            for user in self.recipients:
+                yield user
+        else:
+            for member in self.server.members:
+                if self.permissions_for(member).read_messages:
+                    yield member
 
     def get_history(self, limit=100):
         logs = self.transport.logs_from(self.delegate, limit=limit)

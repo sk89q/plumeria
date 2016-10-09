@@ -11,6 +11,11 @@ class Channel:
         """Gets history from a channel."""
         raise NotImplemented()
 
+    @property
+    def members(self):
+        """Gets members in the channel."""
+        raise NotImplemented()
+
     def __eq__(self, other):
         return isinstance(other, Channel) and self.server == other.server and self.id == other.id
 

@@ -18,6 +18,27 @@ class Transport:
     Represents an incoming source of messages and outgoing sink for responses.
     """
 
+    def resolve_user(self, q, hint=None, domain=None):
+        """
+        Resolves a string to a user.
+
+        Parameters
+        ----------
+        q : str
+            The username to find.
+        hint : Optional[:class:`plumeria.transport.User`]
+            A list of users to first try searching from.
+        domain : Optional[:class:`plumeria.transport.User`]
+            A list of users to search exclusively from.
+
+        Returns
+        -------
+        Optional[:class:`plumeria.transport.User`]
+            A user if one is found.
+        """
+
+        raise NotImplementedError("not implemented")
+
     def _ide_hint(self):
         # fix unresolved attribute errors
         self.id = None
