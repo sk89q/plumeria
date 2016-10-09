@@ -205,12 +205,13 @@ async def list_channel(message: Message):
     return results if len(results) else "none set"
 
 
-@commands.register('configs', 'config list', cost=4, category='Configuration')
+@commands.register('config all', 'configs', 'confs', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def list_all(message: Message):
     """
-    Get a list of configuration variables that have been set for this channel.
+    Get a list of configuration variables that have been set for this channel as well
+    as on the server that the channel is in.
     """
     server_results = "\n".join(map(map_sv, scoped_config.get_all_server(message.server)))
     channel_results = "\n".join(map(map_sv, scoped_config.get_all_channel(message.channel)))
