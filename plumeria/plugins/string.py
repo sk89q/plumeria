@@ -8,6 +8,7 @@ from plumeria.message.lists import parse_list
 from plumeria.util.ratelimit import rate_limit
 from plumeria.util.command import string_filter
 
+MD_BOLD_RE = re.compile("\\*\\*(.+?)\\*\\*")
 LINK_PATTERN = re.compile("<?((https?)://[^\s/$.?#<>].[^\s<>]*)>?", re.I)
 
 
@@ -176,6 +177,20 @@ def strip(text):
     Strings a string of surrounding whitespace.
     """
     return text.strip()
+
+
+@commands.register('extract', category='String')
+@string_filter
+def extract(text):
+    """
+    Tries to extract the first result from a string.
+    """
+    item = parse_list(text, allow_spaces=True)[0].strip()
+    m = MD_BOLD_RE.search(item)
+    if m:
+        return m.group(1)
+    else:
+        return item
 
 
 @commands.register('first', category='String')
