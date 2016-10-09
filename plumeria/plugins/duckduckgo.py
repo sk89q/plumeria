@@ -21,8 +21,11 @@ async def abstract(message):
         Knuckle Puck is an American rock band from the south suburbs of Chicago, Illinois. The group started...
 
     """
+    query = message.content.strip()
+    if not len(query):
+        raise CommandError("Supply a search term.")
     r = await http.get("https://api.duckduckgo.com/", params={
-        "q": message.content,
+        "q": query,
         "format": "json",
     })
     data = r.json()
