@@ -1,6 +1,9 @@
+from typing import Dict
+
+
 class TransportManager:
     def __init__(self):
-        self.transports = {}
+        self.transports = {}  # type: Dict[str, Transport]
 
     def register(self, name, transport):
         self.transports[name] = transport
