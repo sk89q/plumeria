@@ -34,3 +34,9 @@ class Server:
         self.member_count = None
         self.created_at = None
         self.role_hierarchy = None
+
+    async def create_custom_emoji(self, name, image):
+        raise NotImplementedError("not implemented")
+
+    async def delete_custom_emoji(self, emoji):
+        raise NotImplementedError("not implemented")

@@ -1,6 +1,10 @@
 from typing import Dict
 
 
+class ForbiddenError(Exception):
+    """Raised when the bot can't do something."""
+
+
 class TransportManager:
     def __init__(self):
         self.transports = {}  # type: Dict[str, Transport]

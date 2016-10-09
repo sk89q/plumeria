@@ -14,6 +14,7 @@ from plumeria.event import bus
 from plumeria.message import Message, Attachment
 from plumeria.transport import Channel, Server
 from plumeria.transport import transports, Transport
+from plumeria.transport.transport import ForbiddenError
 from plumeria.util import to_mimetype
 from plumeria.util.http import DefaultClientSession
 
@@ -147,7 +148,14 @@ class DiscordChannel(DiscordWrapper, Channel):
 
 
 class DiscordServer(DiscordWrapper, Server):
-    pass
+    async def create_custom_emoji(self, name, image):
+        try:
+            return await self.transport.create_custom_emoji(self.delegate, name=name, image=image)
+        except discord.errors.Forbidden as e:
+            raise ForbiddenError(str(e))
+
+    async def delete_custom_emoji(self, emoji):
+        return await self.transport.delete_custom_emoji(emoji)
 
 
 class DiscordMessage(DiscordWrapper, Message):
