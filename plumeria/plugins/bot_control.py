@@ -4,7 +4,7 @@ from plumeria.perms import owners_only
 from plumeria.transport import transports
 
 
-@commands.register('join', category='Discord')
+@commands.register('join', category='Utility')
 @owners_only
 async def join(message):
     """
