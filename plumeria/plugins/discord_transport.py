@@ -157,6 +157,9 @@ class DiscordServer(DiscordWrapper, Server):
     async def delete_custom_emoji(self, emoji):
         return await self.transport.delete_custom_emoji(emoji)
 
+    async def update(self, **kwargs):
+        return await self.transport.edit_server(self.delegate, **kwargs)
+
 
 class DiscordMessage(DiscordWrapper, Message):
     @property

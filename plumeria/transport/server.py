@@ -40,3 +40,6 @@ class Server:
 
     async def delete_custom_emoji(self, emoji):
         raise NotImplementedError("not implemented")
+
+    def update(self, **kwargs):
+        raise NotImplementedError("not implemented")
