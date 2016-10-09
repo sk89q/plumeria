@@ -63,3 +63,26 @@ def roles_only(*roles):
         return wrapper
 
     return inner
+
+
+def have_all_perms(*perms):
+    def decorator(f):
+        @wraps(f)
+        async def wrapper(message, *args, **kwargs):
+            if not hasattr(message.author, "roles"):
+                raise AuthorizationError("Permission data has not been loaded.")
+            resolved = message.channel.permissions_for(message.author)
+            if not resolved:
+                raise AuthorizationError("This command cannot be used here because there is no permission information.")
+            missing = set()
+            for perm in perms:
+                if not getattr(resolved, perm):
+                    missing.add(perm)
+            if len(missing):
+                raise AuthorizationError("Missing the following one or more permissions: {}".format(", ".join(perms)))
+            return await f(message, *args, **kwargs)
+
+        wrapper.server_admins_only = True
+        return wrapper
+
+    return decorator

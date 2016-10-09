@@ -2,17 +2,18 @@ import asyncio
 import io
 import re
 
-from plumeria.command import commands, CommandError
+from plumeria.command import commands, CommandError, channel_only
 from plumeria.message import Message
 from plumeria.message.image import read_image
-from plumeria.perms import server_admins_only
+from plumeria.perms import have_all_perms
 from plumeria.transport.transport import ForbiddenError
 
 VALID_EMOJI_NAME_RE = re.compile("^[A-Za-z0-9_]{2,20}$")
 
 
-@commands.register('emoji create', category='Management')
-@server_admins_only
+@commands.register('emoji create', 'emoji add', 'createemoji', 'addemoji', category='Management')
+@channel_only
+@have_all_perms('manage_emojis')
 async def create_emoji(message: Message):
     """
     Creates new emoji.
@@ -49,8 +50,9 @@ async def create_emoji(message: Message):
         raise CommandError("The bot doesn't have the permissions to do this: {}".format(str(e)))
 
 
-@commands.register('emoji delete', 'emoji remove', category='Management')
-@server_admins_only
+@commands.register('emoji delete', 'emoji remove', 'deleteemoji', 'removeemoji', category='Management')
+@channel_only
+@have_all_perms('manage_emojis')
 async def delete_emoji(message: Message):
     """
     Delete custom emoji with a certain name.

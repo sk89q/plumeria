@@ -1,16 +1,16 @@
 import asyncio
 import io
-import re
 
-from plumeria.command import commands, CommandError
+from plumeria.command import commands, CommandError, channel_only
 from plumeria.message import Message
 from plumeria.message.image import read_image
-from plumeria.perms import server_admins_only
+from plumeria.perms import have_all_perms
 from plumeria.transport.transport import ForbiddenError
 
 
-@commands.register('icon set', category='Management')
-@server_admins_only
+@commands.register('icon set', 'iconset', category='Management')
+@channel_only
+@have_all_perms('manage_server')
 async def set_icon(message: Message):
     """
     Set the server icon to the given image.
