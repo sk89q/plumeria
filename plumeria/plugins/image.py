@@ -1,10 +1,11 @@
 import asyncio
+from colour import Color
 import shlex
 import textwrap
 import pkg_resources
 
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
-from plumeria.command import commands, ArgumentParser
+from plumeria.command import commands, ArgumentParser, CommandError
 from plumeria.message import Response, ImageAttachment
 from plumeria.util.ratelimit import rate_limit
 from plumeria.util.command import image_filter
@@ -25,6 +26,7 @@ async def drawtext(message):
 
         /drawtext Hello there!
     """
+
     def execute():
         im = Image.new('RGB', (1, 1), (0, 0, 0, 0))
         draw = ImageDraw.Draw(im)
@@ -145,3 +147,50 @@ def bw(message, im):
     Requires an input image.
     """
     return im.convert('1').convert("RGB")
+
+
+@commands.register('square', category='Image')
+@image_filter
+def square(message, im):
+    """
+    Make the image a square by putting transparent areas around the image.
+
+    Example::
+
+        /drawtext Hello there! | square
+
+    Requires an input image.
+    """
+    width, height = im.size
+    max_dim = max(width, height)
+    size = (max_dim, max_dim)
+    background = Image.new('RGBA', size, (255, 255, 255, 0))
+    background.paste(im, ((size[0] - width) // 2, (size[1] - height) // 2))
+    return background
+
+
+
+@commands.register('bg', category='Image')
+@image_filter
+def bg(message, im):
+    """
+    Make all transparent areas white, or if supplied, a certain color.
+
+    Example::
+
+        /drawtext Hello there! | square | bg
+        /drawtext Hello there! | square | bg red
+
+    Requires an input image.
+    """
+    args = message.content.strip()
+    if len(args):
+        try:
+            color = Color(args)
+        except ValueError:
+            raise CommandError("Supplied text isn't a valid color.")
+    else:
+        color = Color("white")
+    background = Image.new('RGBA', im.size, (int(color.red * 255), int(color.green * 255), int(color.blue * 255), 255))
+    background.paste(im, (0, 0), im)
+    return background
