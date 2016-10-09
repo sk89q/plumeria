@@ -1,4 +1,8 @@
+import re
+
 from plumeria.command import CommandError
+
+LIST_CLEAN_RE = re.compile("^\N{BULLET} +")
 
 
 def parse_list(s, allow_spaces=True):
@@ -14,7 +18,7 @@ def parse_list(s, allow_spaces=True):
     else:
         return [s]
 
-    return list(filter(lambda s: len(s), map(lambda s: s.strip(), s.split(delimiter))))
+    return list(filter(lambda s: len(s), map(lambda s: LIST_CLEAN_RE.sub('', s.strip()), s.split(delimiter))))
 
 
 def parse_numeric_list(s):
