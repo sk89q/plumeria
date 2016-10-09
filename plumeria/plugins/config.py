@@ -71,12 +71,16 @@ async def do_unset(message, scope: Union[Server, Channel], scope_name: str):
 
 
 def map_sv(sv: ScopedValue):
-    return "**{}/{}**: {}".format(sv.section, sv.key, sv.value)
+    setting = config.get_setting(sv.section, sv.key)
+    if setting.private:
+        return "**{}/{}**: (private)".format(sv.section, sv.key, sv.value)
+    else:
+        return "**{}/{}**: {}".format(sv.section, sv.key, sv.value)
 
 
 def map_setting(setting: Setting):
     return "**{}/{}:** {} (value: {})".format(setting.section, setting.key, escape_markdown(setting.comment),
-                                              value_str(setting()))
+                                              value_str(setting()) if not setting.private else "(private)")
 
 
 @commands.register('set', 'set server', 'set s', cost=4, category='Configuration')
