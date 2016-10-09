@@ -17,7 +17,7 @@ async def set_icon(message: Message):
 
     Example::
 
-        /drawtext Hello there! | set icon
+        /drawtext Hello there! | icon set
 
     Requires an input image.
     """
