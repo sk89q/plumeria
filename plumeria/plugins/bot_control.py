@@ -4,15 +4,15 @@ from plumeria.perms import owners_only
 from plumeria.transport import transports
 
 
-@commands.register('accept invite', category='Discord')
+@commands.register('join', category='Discord')
 @owners_only
-async def accept_invite(message):
+async def join(message):
     """
     Accept an invite to join a server.
 
     Example::
 
-        /accept invite https://discord.gg/00000
+        /join https://discord.gg/00000
     """
     url = message.content.strip()
     results = []
