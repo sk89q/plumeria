@@ -188,7 +188,10 @@ class DiscordServer(DiscordWrapper, Server):
             raise ForbiddenError(str(e))
 
     async def delete_custom_emoji(self, emoji):
-        return await self.transport.delete_custom_emoji(emoji)
+        try:
+            return await self.transport.delete_custom_emoji(emoji)
+        except discord.errors.Forbidden as e:
+            raise ForbiddenError(str(e))
 
     async def update(self, **kwargs):
         return await self.transport.edit_server(self.delegate, **kwargs)
