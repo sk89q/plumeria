@@ -29,7 +29,7 @@ async def create_emoji(message: Message):
     if not attachment:
         raise CommandError("No image is available to process.")
 
-    name = message.content.strip()
+    name = message.content.strip().replace(":", "")
     if not VALID_EMOJI_NAME_RE.match(name):
         raise CommandError("Invalid emoji name.")
 
@@ -63,7 +63,7 @@ async def delete_emoji(message: Message):
 
         /emoji delete example
     """
-    name = message.content.strip()
+    name = message.content.strip().replace(":", "")
     try:
         count = 0
         for emoji in message.server.emojis:
