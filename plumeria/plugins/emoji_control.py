@@ -8,7 +8,7 @@ from plumeria.message.image import read_image
 from plumeria.perms import server_admins_only
 from plumeria.transport.transport import ForbiddenError
 
-VALID_EMOJI_NAME_RE = re.compile("^[A-Za-z0-9_]{2,20}")
+VALID_EMOJI_NAME_RE = re.compile("^[A-Za-z0-9_]{2,20}$")
 
 
 @commands.register('emoji create', category='Management')
@@ -23,13 +23,13 @@ async def create_emoji(message: Message):
 
     Requires an input image.
     """
-    name = message.content.strip()
-    if not VALID_EMOJI_NAME_RE.match(name):
-        raise CommandError("Invalid emoji name.")
-
     attachment = await read_image(message)
     if not attachment:
         raise CommandError("No image is available to process.")
+
+    name = message.content.strip()
+    if not VALID_EMOJI_NAME_RE.match(name):
+        raise CommandError("Invalid emoji name.")
 
     def execute():
         buffer = io.BytesIO()
