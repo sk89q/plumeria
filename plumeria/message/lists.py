@@ -5,7 +5,7 @@ from plumeria.command import CommandError
 LIST_CLEAN_RE = re.compile("^\N{BULLET} +")
 
 
-def parse_list(s, allow_spaces=True):
+def parse_list(s, allow_spaces=True, maxsplit=-1):
     s = s.strip()
     if '\n' in s:
         delimiter = '\n'
@@ -18,7 +18,7 @@ def parse_list(s, allow_spaces=True):
     else:
         return [s]
 
-    items = list(filter(lambda s: len(s), map(lambda s: LIST_CLEAN_RE.sub('', s.strip()), s.split(delimiter))))
+    items = list(filter(lambda s: len(s), map(lambda s: LIST_CLEAN_RE.sub('', s.strip()), s.split(delimiter, maxsplit))))
     if len(items):
         return items
     else:
