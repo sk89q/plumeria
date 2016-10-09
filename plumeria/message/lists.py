@@ -18,7 +18,11 @@ def parse_list(s, allow_spaces=True):
     else:
         return [s]
 
-    return list(filter(lambda s: len(s), map(lambda s: LIST_CLEAN_RE.sub('', s.strip()), s.split(delimiter))))
+    items = list(filter(lambda s: len(s), map(lambda s: LIST_CLEAN_RE.sub('', s.strip()), s.split(delimiter))))
+    if len(items):
+        return items
+    else:
+        return [""]
 
 
 def parse_numeric_list(s):
