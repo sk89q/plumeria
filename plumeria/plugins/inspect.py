@@ -61,7 +61,6 @@ async def user_info(message):
             ('Status', user.status),
             ('Game', user.game.name if user.game else "None"),
             ('Color', Color(red=user.colour.r / 255, green=user.colour.g / 255, blue=user.colour.b / 255).hex),
-            ('Top Role', user.top_role.name),
         ]
 
     return build_mapping(entries)
