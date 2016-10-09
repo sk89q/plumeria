@@ -1,15 +1,13 @@
 import asyncio
 import io
 import logging
-import re
 from collections import deque
-from datetime import datetime
 
 from PIL import Image
 
 from plumeria.transport import Channel
 from plumeria.transport import Server
-from .util.http import DefaultClientSession
+from plumeria.util.http import DefaultClientSession
 
 MAX_BODY_LENGTH = 1900
 MAX_LINES = 50

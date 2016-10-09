@@ -25,3 +25,4 @@ selenium>=2.53
 matplotlib>=2.0.0b3
 numpy>=1.11
 scipy>=0.18
+titlecase>=0.8.1

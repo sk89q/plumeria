@@ -1,6 +1,6 @@
-import re
-
+from titlecase import titlecase
 from plumeria.command import commands, CommandError
+from plumeria.message.responses import list_response
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
@@ -87,3 +87,45 @@ async def album(message):
         return "Spotify album search:\n{}".format("\n".join(results))
     else:
         raise CommandError("no results found")
+
+
+@commands.register("spotify discog", "discog", category="Music")
+@rate_limit()
+async def discog(message):
+    """
+    Get the albums of an artist.
+
+    Example::
+
+        /discog coheed and cambria
+
+    """
+    q = message.content.strip()
+    if not len(q):
+        raise CommandError("Search term required!")
+
+    r = await http.get("https://api.spotify.com/v1/search", params=[
+        ('q', 'artist:' + q),
+        ('type', 'artist')
+    ])
+    artist_data = r.json()
+    if not len(artist_data['artists']['items']):
+        raise CommandError("Couldn't find the supplied artist on Spotify.")
+
+    r = await http.get("https://api.spotify.com/v1/artists/{}/albums".format(artist_data['artists']['items'][0]['id']))
+    album_data = r.json()
+    if 'error' in album_data:
+        raise CommandError(album_data['message'])
+
+    seen_names = set() # there are 'duplicates' although they are not true duplicates
+    items = []
+    for e in album_data['items']:
+        if e['name'] not in seen_names:
+            items.append("**{name}** ({type}) - <{url}>".format(
+                name=e['name'],
+                type=titlecase(e['album_type']),
+                url=e['external_urls']['spotify'],
+            ))
+            seen_names.add(e['name'])
+
+    return list_response(items)

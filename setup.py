@@ -34,6 +34,7 @@ setup(name='Plumeria',
           'qrcode>=5.2.2',
           'rethinkdb>=2.3.0.post5',
           'selenium>=2.53',
+          'titlecase>=0.8.1',
       ],
       extras_require={
           'graphing': [
