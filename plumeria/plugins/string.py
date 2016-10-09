@@ -5,6 +5,7 @@ import codecs
 import hashlib
 from plumeria.command import commands, CommandError
 from plumeria.message.lists import parse_list
+from plumeria.message.mappings import parse_mapping
 from plumeria.util.ratelimit import rate_limit
 from plumeria.util.command import string_filter
 
@@ -209,3 +210,31 @@ def last(text):
     Gets the last value of a list of items.
     """
     return parse_list(text, allow_spaces=True)[-1]
+
+
+@commands.register('key', category='String')
+async def map_get(message):
+    """
+    Fetches a key from a "mapping." Some commands return a list of key: value lines.
+
+    Example::
+
+        /key display_name
+        ID: 32234
+        Display Name: Bob
+
+    Response::
+
+        Bob
+
+    """
+    parts = message.content.strip().split(" ", 1)
+    if len(parts) == 1:
+        raise CommandError("Need a key and then the mapping")
+    key = parts[0].strip()
+    test_key = key.lower()
+    text = parts[1]
+    for k, v in parse_mapping(text):
+        if k.replace(" ", "_").lower() == test_key:
+            return v
+    raise CommandError("Could not find '{}' in mapping".format(key))
