@@ -1,3 +1,5 @@
+import random
+
 from aiohttp import BasicAuth
 from plumeria import config, scoped_config
 from plumeria.command import commands, CommandError
@@ -28,12 +30,12 @@ async def image(message):
         raise CommandError("Search term required!")
     r = await http.get(SEARCH_URL, params=[
         ('$format', 'json'),
-        ('$top', '10'),
+        ('$top', '20'),
         ('Adult', "'Off'" if scoped_config.get(nsfw, message.channel) else "'Strict'"),
         ('Query', "'{}'".format(q)),
     ], auth=BasicAuth("", password=api_key()))
     data = r.json()['d']
     if len(data['results']):
-        return Response(data['results'][0]['MediaUrl'])
+        return Response(random.choice(data['results'])['MediaUrl'])
     else:
         raise CommandError("no results found")
