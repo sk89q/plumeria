@@ -1,6 +1,7 @@
 from aiohttp import BasicAuth
-from plumeria import config
+from plumeria import config, scoped_config
 from plumeria.command import commands, CommandError
+from plumeria.config.common import nsfw
 from plumeria.message import Response
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
@@ -28,6 +29,7 @@ async def image(message):
     r = await http.get(SEARCH_URL, params=[
         ('$format', 'json'),
         ('$top', '10'),
+        ('Adult', "'Off'" if scoped_config.get(nsfw, message.channel) else "'Strict'"),
         ('Query', "'{}'".format(q)),
     ], auth=BasicAuth("", password=api_key()))
     data = r.json()['d']
