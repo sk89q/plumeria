@@ -228,7 +228,11 @@ class CommandManager:
                         raise CommandError("Command not found: `{}`".format(escape_markdown(command)))
             return input
         except AuthorizationError as e:
-            await message.respond("\N{WARNING SIGN} Whoops -- you can't use this.")
+            err = str(e)
+            if len(err):
+                await message.respond("\N{WARNING SIGN} Auth error: {}".format(err))
+            else:
+                await message.respond("\N{WARNING SIGN} Whoops -- you can't use this.")
         except ComplexityError as e:
             await message.respond("\N{WARNING SIGN} Your command was too complex to handle. Calm down.")
         except CommandError as e:
@@ -328,6 +332,8 @@ async def on_message(message):
 
         response = await commands.execute(message, Context())
         if response:
+            if not len(response.content) and not len(response.attachments):
+                response = Response("\N{WARNING SIGN} Command returned empty text as a response.")
             tx_log.add_response(message, await message.respond(response))
 
 
