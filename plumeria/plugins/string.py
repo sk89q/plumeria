@@ -8,7 +8,7 @@ from plumeria.message.lists import parse_list
 from plumeria.util.ratelimit import rate_limit
 from plumeria.util.command import string_filter
 
-LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
+LINK_PATTERN = re.compile("<?((https?)://[^\s/$.?#<>].[^\s<>]*)>?", re.I)
 
 
 @commands.register('upper', category='String')
@@ -155,9 +155,27 @@ def find_url(text):
     """
     m = LINK_PATTERN.search(text)
     if m:
-        return m.group(0)
+        return m.group(1)
     else:
         raise CommandError("No URL found in string")
+
+
+@commands.register('stripurl', category='String')
+@string_filter
+def strip_html(text):
+    """
+    Strip URLs from a string.
+    """
+    return LINK_PATTERN.sub('', text)
+
+
+@commands.register('strip', category='String')
+@string_filter
+def strip(text):
+    """
+    Strings a string of surrounding whitespace.
+    """
+    return text.strip()
 
 
 @commands.register('first', category='String')
