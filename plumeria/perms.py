@@ -39,7 +39,7 @@ def owners_only(f):
 def server_admins_only(f):
     @wraps(f)
     async def wrapper(message, *args, **kwargs):
-        if is_server_admin(message.author):
+        if is_owner(message.author) or is_server_admin(message.author):
             return await f(message, *args, **kwargs)
         else:
             raise AuthorizationError()
@@ -54,7 +54,7 @@ def roles_only(*roles):
     def inner(f):
         @wraps(f)
         async def wrapper(message, *args, **kwargs):
-            if has_role_in(message.author, roles):
+            if is_owner(message.author) or has_role_in(message.author, roles):
                 return await f(message, *args, **kwargs)
             else:
                 raise AuthorizationError()
