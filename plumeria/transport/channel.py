@@ -31,3 +31,4 @@ class Channel:
         self.changed_roles = None
         self.is_default = None
         self.created_at = None
+        self.mention = None

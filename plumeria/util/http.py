@@ -53,7 +53,7 @@ async def request(*args, require_success=True, **kwargs):
     with DefaultClientSession() as session:
         async with session.request(*args, **kwargs) as resp:
             if require_success and resp.status != 200:
-                raise BadStatusCodeError(resp.status, "HTTP code is not 200; got {}".format(resp.status))
+                raise BadStatusCodeError(resp.status, "HTTP code is not 200; got {}\n\nCONTENT: {}".format(resp.status, await resp.text()))
             return Response(resp.status, await resp.text())
 
 

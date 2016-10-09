@@ -49,3 +49,33 @@ class DefaultOrderedDict(OrderedDict):
 
 def tree():
     return collections.defaultdict(tree)
+
+
+def tree_get(node, keys):
+    for key in keys:
+        if key in node:
+            node = node[key]
+        else:
+            return None
+    return node
+
+
+def tree_delete(node, keys):
+    last_index = len(keys) - 1
+    for i, key in enumerate(keys):
+        if i == last_index:
+            if key in node:
+                del node[key]
+                return True
+        elif key in node:
+            node = node[key]
+        else:
+            return False
+
+
+def gather_tree_nodes(results, node):
+    for k, v in node.items():
+        if isinstance(v, dict):
+            gather_tree_nodes(results, v)
+        else:
+            results.append(v)

@@ -1,12 +1,12 @@
 import collections
 import configparser
-from distutils.util import strtobool
 import logging
 import re
-from .util.collections import DefaultOrderedDict
+from typing import Optional, List
 
-__all__ = ('boolstr', 'Config', 'Value', 'Parser', 'ParseError', 'ConfigReader', 'Setting', 'ManagedConfig', 'list_of',
-           'set_of')
+from plumeria.util.collections import DefaultOrderedDict, gather_tree_nodes
+
+__all__ = ('Config', 'Value', 'Parser', 'ParseError', 'ConfigReader', 'Setting', 'ManagedConfig')
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +22,6 @@ def append(prev, new):
         return prev + "\n" + new
     else:
         return new
-
-
-def boolstr(d):
-    if isinstance(d, bool):
-        return d
-    else:
-        return strtobool(d)
 
 
 class Config:
@@ -239,13 +232,16 @@ class ConfigReader:
 
 
 class Setting:
-    def __init__(self, managed_config, section, key, type=str, fallback=_UNSET, comment=None):
+    def __init__(self, managed_config, section, key, type=str, fallback=_UNSET, comment=None, scoped=False,
+                 private=True):
         self.managed_config = managed_config
         self.section = section
         self.key = key
         self.type = type
         self.fallback = fallback
         self.comment = "\n".join((" " + s) for s in comment.splitlines()) if comment else None
+        self.scoped = scoped
+        self.private = private
 
     def set(self, value):
         return self.managed_config.reader.set(self.section, self.key, str(value))
@@ -305,27 +301,18 @@ class ManagedConfig:
                             self.reader.set(section, key, setting.fallback, comment=setting.comment)
             self.reader.write(f)
 
-    def create(self, section, key, type=str, fallback=_UNSET, comment=None):
-        setting = Setting(self, section, key, type, fallback, comment)
+    def create(self, section, key, type=str, fallback=_UNSET, comment=None, scoped=False, private=True) -> Setting:
+        setting = Setting(self, section, key, type, fallback, comment, scoped, private)
         self.settings[section][key] = setting
         return setting
 
+    def get_setting(self, section, key) -> Optional[Setting]:
+        if section in self.settings and key in self.settings[section]:
+            return self.settings[section][key]
+        else:
+            return None
 
-def list_of(type=str):
-    def reader(s):
-        items = s.split(",")
-        items = map(lambda s: s.strip(), items)
-        items = filter(lambda s: len(s), items)
-        return [type(s) for s in items]
-
-    return reader
-
-
-def set_of(type=str):
-    def reader(s):
-        items = s.split(",")
-        items = map(lambda s: s.strip(), items)
-        items = filter(lambda s: len(s), items)
-        return {type(s) for s in items}
-
-    return reader
+    def get_settings(self) -> List[Setting]:
+        results = []
+        gather_tree_nodes(results, self.settings)
+        return results
