@@ -1,7 +1,7 @@
 import collections
 import re
 
-from plumeria.command import commands, CommandError
+from plumeria.command import commands, CommandError, channel_only
 from plumeria.message import Response
 from plumeria.event import bus
 from plumeria.util.ratelimit import rate_limit
@@ -65,11 +65,12 @@ async def on_server_remove(server):
 @bus.event("self_message")
 async def on_message(message):
     channel = message.channel
-    history[channel.server.id][channel.id].read(message)
+    if not channel.is_private:
+        history[channel.server.id][channel.id].read(message)
 
 
 @commands.register('last text', 'lasttext', 'last', category='Utility')
-@rate_limit()
+@channel_only
 async def last_text(message):
     """
     Gets the last non-command message said in a channel.
@@ -89,7 +90,7 @@ async def last_text(message):
 
 
 @commands.register('last image', 'lastimage', category='Utility')
-@rate_limit()
+@channel_only
 async def last_image(message):
     """
     Gets the last image posted in a channel, which could either be a URL or an attachment.
@@ -109,7 +110,7 @@ async def last_image(message):
 
 
 @commands.register('last url', 'lasturl', 'last link', 'lastlink', category='Utility')
-@rate_limit()
+@channel_only
 async def last_image(message):
     """
     Gets the last link posted in a channel.

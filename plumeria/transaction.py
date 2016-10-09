@@ -44,6 +44,8 @@ class TransactionLog:
         return str(message.server.transport.id) + ":" + str(message.id)
 
     def add_response(self, message, response):
+        if message.channel.is_private:
+            return # not tracking private channels right now
         key = self.get_key(message)
         if key not in self.cache:
             tx = Transaction(message)

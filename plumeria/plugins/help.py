@@ -12,7 +12,7 @@ async def help(message):
     """
     Get a listing of commands.
     """
-    if hasattr(message.channel, "server"):
+    if not message.channel.is_private:
         server = message.channel.server.id
     else:
         server = "private"
