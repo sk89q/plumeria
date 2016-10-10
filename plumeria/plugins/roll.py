@@ -23,7 +23,7 @@ EIGHT_BALL_RESPONSES = (
 )
 
 
-@commands.register('8ball', category='Utility')
+@commands.register('8ball', category='Fun')
 async def eight_ball(message):
     """
     Chooses a random response from an 8-ball.
@@ -39,7 +39,7 @@ async def eight_ball(message):
     return "{} **{}**".format(message.content, random.choice(EIGHT_BALL_RESPONSES)).strip()
 
 
-@commands.register('roll', 'dice', category='Utility')
+@commands.register('roll', 'dice', category='Fun')
 async def roll(message):
     """
     Rolls dice with support for NdM syntax.
@@ -60,7 +60,7 @@ async def roll(message):
         raise CommandError("Invalid syntax. Use NdM to roll dice.")
 
 
-@commands.register('choice', 'choose', 'pick', category='Utility')
+@commands.register('choice', 'choose', 'pick', category='Fun')
 async def choice(message):
     """
     Chooses a random entry for a list of items separated by
@@ -81,7 +81,7 @@ async def choice(message):
         raise CommandError("Provide a comma-separated list of choices")
 
 
-@commands.register('coin', category='Utility')
+@commands.register('coin', category='Fun')
 async def coin(message):
     """
     Flips a coin.

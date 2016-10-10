@@ -16,7 +16,7 @@ def map_choice(choice):
     )
 
 
-@commands.register("group prob", "gp", category="Utility")
+@commands.register("group prob", "gp", category="Fun")
 @channel_only
 async def group_prob(message):
     """
