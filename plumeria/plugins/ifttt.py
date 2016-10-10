@@ -13,7 +13,7 @@ from plumeria.util.message import strip_html
 from plumeria.util.ratelimit import rate_limit
 
 EVENT_NAME_RE = re.compile("^[A-Za-z0-9_\\- ]{1,40}$")
-VALID_MAKER_KEY_RE = re.compile("^[A-Za-z0-9_\\- ]{1,40}$")
+VALID_MAKER_KEY_RE = re.compile("^[A-Za-z0-9_\\- ]{1,70}$")
 
 
 def valid_maker_key(s):
