@@ -33,7 +33,7 @@ async def set(message: Message):
         await prefs_manager.put(pref, message.author, raw_value)
         shown_value = raw_value if not pref.private else "(private)"
         return "Set **{}** to '{}' for yourself.".format(name, shown_value)
-    except NotImplementedError as e:
+    except (NotImplementedError, ValueError) as e:
         raise CommandError("Could not set **{}**: {}".format(name, str(e)))
 
 
