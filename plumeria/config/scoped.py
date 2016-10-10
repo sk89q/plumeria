@@ -29,7 +29,7 @@ class ScopedValue:
 
 class ScopedConfigProvider:
     async def get_all(self, server: Server) -> Sequence[ScopedValue]:
-        return []
+        raise NotImplementedError(NO_PROVIDER_ERROR)
 
     async def save(self, sv: ScopedValue):
         raise NotImplementedError(NO_PROVIDER_ERROR)

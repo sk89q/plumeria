@@ -310,9 +310,11 @@ class ManagedConfig:
         if section in self.settings and key in self.settings[section]:
             return self.settings[section][key]
         else:
-            return None
+            raise KeyError("{} / {}".format(section, key))
 
-    def get_settings(self) -> List[Setting]:
+    def get_settings(self, scoped=None) -> List[Setting]:
         results = []
         gather_tree_nodes(results, self.settings)
+        if scoped is not None:
+            results = list(filter(lambda s: s.scoped == scoped, results))
         return results

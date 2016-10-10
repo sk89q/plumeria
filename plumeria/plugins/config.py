@@ -6,6 +6,7 @@ from plumeria.command import channel_only, commands, CommandError
 from plumeria.config import Setting
 from plumeria.config.scoped import ScopedValue
 from plumeria.message import Message
+from plumeria.message.mappings import build_mapping
 from plumeria.perms import server_admins_only
 from plumeria.transport import Channel
 from plumeria.transport import Server
@@ -25,9 +26,9 @@ def find_setting(setting_key, non_private_only=True):
         raise CommandError("The setting name needs to be 'section/name'")
 
     # find setting
-    setting = config.get_setting(m.group(1), m.group(2))
-
-    if not setting:
+    try:
+        setting = config.get_setting(m.group(1), m.group(2))
+    except KeyError:
         raise CommandError("No such setting **{}** exists".format(setting_key))
 
     if not setting.scoped:
@@ -158,7 +159,7 @@ async def get(message: Message):
     return str(scoped_config.get(setting, message.channel))
 
 
-@commands.register('conf', 'config info', cost=4, category='Configuration')
+@commands.register('config info', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def info(message: Message):
@@ -179,40 +180,20 @@ async def info(message: Message):
     channel_value = scoped_config.get_channel(setting, message.channel)
     effective_value = scoped_config.get(setting, message.channel)
 
-    return "Global: {}\nServer: {}\nChannel: {}\n**Effective: {}**".format(
-        value_str(global_value),
-        value_str(server_value),
-        value_str(channel_value),
-        value_str(effective_value),
-    )
+    items = [
+        ('Global', value_str(global_value)),
+        ('Server', value_str(server_value)),
+        ('Channel', value_str(channel_value)),
+        ('Effective', value_str(effective_value)),
+    ]
+
+    return build_mapping(items)
 
 
-@commands.register('config server', 'config s', cost=4, category='Configuration')
+@commands.register('config list', 'configs', 'confs', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
-async def list_server(message: Message):
-    """
-    Get a list of server-wide configuration variables that have been set.
-    """
-    results = "\n".join(map(map_sv, scoped_config.get_all_server(message.server)))
-    return results if len(results) else "none set"
-
-
-@commands.register('config channel', 'config chan', 'config c', cost=4, category='Configuration')
-@channel_only
-@server_admins_only
-async def list_channel(message: Message):
-    """
-    Get a list of configuration variables that have been set for this channel.
-    """
-    results = "\n".join(map(map_sv, scoped_config.get_all_channel(message.channel)))
-    return results if len(results) else "none set"
-
-
-@commands.register('config all', 'configs', 'confs', cost=4, category='Configuration')
-@channel_only
-@server_admins_only
-async def list_all(message: Message):
+async def list(message: Message):
     """
     Get a list of configuration variables that have been set for this channel as well
     as on the server that the channel is in.
@@ -226,12 +207,17 @@ async def list_all(message: Message):
     )
 
 
-@commands.register('config keys', 'config available', cost=4, category='Configuration')
+@commands.register('config defaults', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
-async def show_available(message: Message):
+async def list_defaults(message: Message):
     """
     Get a list of configuration variables that can be set.
     """
-    results = "\n".join(map(map_setting, filter(lambda s: s.scoped, config.get_settings())))
-    return results if len(results) else "none available"
+    settings = config.get_settings(scoped=True)
+    if len(settings):
+        items = [(setting.section + "/" + setting.key, '{} (value: {})'.format(setting.comment, setting.fallback)) for
+                 setting in settings]
+        return build_mapping(items)
+    else:
+        raise CommandError("No preferences exist to be set.")
