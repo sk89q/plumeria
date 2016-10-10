@@ -2,34 +2,43 @@
 
 [![Documentation Status](https://readthedocs.org/projects/plumeria/badge/?version=latest)](http://plumeria.readthedocs.io/en/latest/?badge=latest)
 
-Plumeria is a fun & practical Discord bot for your Discord server. As Plumeria is fairly powerful, it is meant to be self-hosted by running the software on your computer or, preferably, on some sort of server.
+Plumeria is a fun and practical Discord bot and personal assistant for your Discord server.
 
-Writing new commands or plugins for Plumeria is also very easy. Plumeria is written in Python 3.
+* Easily find YouTube videos.
+* Look up movies and get their synopsis and IMDB ratings.
+* Lookup discography and music artists.
+* Turn on the lights in your home with the IFTTT plugin.
+* Create meme images on the fly.
+* Get driving directions between two places.
 
-Plumeria is designed to work on Windows, Mac OS X, and Linux.
+Plumeria is written in Python 3. Plumeria is designed to work on Windows, Mac OS X, and Linux.
 
 ![Plumeria Help](readme/help.png)
 
-## Features
+## Examples
 
-Plumeria has a *long* list of commands and most of the commands are non-trivial. Unique to Plumeria, however, is the ability to combine commands. **You can chain the output of one command to the input another,** which lets you quickly build awesome combinations. Save these awesome combination as aliases and refer to them repeatedly.
+One cool feature you'll find in Plumeria is the ability to chain commands together.
 
-Here are some examples:
+Here are some examples of commands and command chaining:
 
 * Searching the Internet for an image and overlaying text on it: 
-  `.image harambe | memetext2 screw this zoo, man`
+  `.image skateboard | mt do this`
 * Getting the top tracks for a music tag on last.fm and finding a YouTube video for it:
   `.tagtop rock | youtube`
 * Choosing between several entries:
-   `.choice pizza Chinese | echo What's for dinner?`
+   `.choice pizza, burger, hot dogs | echo What's for dinner?`
+* Email yourself the last message (requires setup on IFTTT):
+  `.last | ifttt email`
 * Drawing a pie graph of some Strawpoll.me results:
   `.results 18233 | pie`
-* Convert the previously posted image to a .vtf file
-  `.last image | make spray`
-* Putting a frame of hearts around an image of "harambe" (uses variables):
-  `i harambe | put url | render <div style="position: relative"><img src="#url#" style="max-width: 400px; max-height: 400px"><img src="http://i.imgur.com/PeBN4e1.jpg" style="position: absolute; top: 0; left :0; max-width: 400px ;max-height: 400px"></div>`
-* Blending two images from Bing image search together (uses variables):
-  `i adtr | put a | i knuckle puck | put b | render <div style="position: relative"><img src="#a#" style="max-width: 400px; max-height: 400px"><img src="#b#" style="position: absolute; top: 0; left: 0; opacity: 0.5; max-width: 400px; max-height: 400px"></div>`
+* Generate a directed graph:
+  `.digraph a -> b; b -> c`
+* Change the server icon to a random image search using Bing for "flower":
+  `.i flower | square | bg white | icon set`
+* Render a webpage and then make it an emoji:
+  `.render <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"><body bgcolor=white style="font-family: Pacifico, Arial, sans-serif; font-size:30pt;color:purple">pretty</body> | add emoji pretty`
+
+You can create aliases as well to reuse commands.
 
 ## Installation
 
@@ -41,21 +50,29 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 * alias
 * alias delete
+* alias get
+* alias export
+
+**Configuration**
+
+* set
+* set channel
+* unset
+* unset channel
+* config get
+* config info
+* config list
+* config defaults
 
 **Development**
 
 * pypi
+* packagist
+* random user
 * rubygems
 * unicode escape
 * unicode name
 * unicode code
-* packagist
-* random user
-
-**Discord**
-
-* roles
-* user id
 
 **Electronics**
 
@@ -63,13 +80,16 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 **Fun**
 
-* dudu
 * figlet
+* dudu
+* 8ball
+* roll
+* choice
+* coin
+* group prob
 
 **Games**
 
-* osu sig
-* osu stats
 * minecraft status
 * minecraft uuid
 * minecraft body
@@ -77,6 +97,8 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * minecraft face
 * minecraft skin
 * minecraft cape
+* osu sig
+* osu stats
 
 **GitLab**
 
@@ -90,17 +112,15 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 **Graphing**
 
+* graph
+* digraph
 * pie
 * bar
 * histogram
-* graph
-* digraph
 
 **Image**
 
 * qrcode
-* tex
-* make spray
 * fetch image
 * memetext
 * memetext2
@@ -111,18 +131,38 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * find edges
 * sharpen
 * bw
+* square
+* bg
+* make spray
+* tex
+
+**Inspection**
+
+* avatar
+* user
+* icon
+* server
+
+**Management**
+
+* emoji create
+* emoji delete
+* icon set
 
 **Music**
 
-* soundcloud
 * artist charts
 * charts
 * lyrics
+* soundcloud
 * lastfm
 * lastfm tag
+* lastfm artist
 * spotify artist
 * spotify track
 * spotify album
+* spotify discog
+* spotify top
 
 **Operations**
 
@@ -132,34 +172,44 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * get
 * argparse
 
+**SKCraft**
+
+* servers
+* upcoming
+* balance
+
 **Search**
 
+* strawpoll
+* strawpoll results
+* earthquakes
+* cheapshark
+* image
 * cve
+* translate
+* anime
+* imdb
+* woot
+* youtube
+* recipes
+* latlng
+* directions
+* wolfram
 * similar music
 * similar movies
 * similar shows
 * similar books
 * similar authors
 * similar games
-* wolfram
-* urban
-* woot
-* abstract
-* cheapshark
-* recipes
-* strawpoll
-* strawpoll results
-* xkcd
-* image
-* gravatar
+* beer
 * subreddit
 * reddit
-* beer
-* latlng
-* directions
-* earthquakes
-* youtube
-* imdb
+* gravatar
+* xkcd
+* wallhaven
+* urban
+* stats
+* abstract
 
 **Servers**
 
@@ -189,6 +239,9 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 **String**
 
+* uuid
+* dashuuid
+* hexuuid
 * upper
 * lower
 * rot13
@@ -204,24 +257,33 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * unurlescape
 * length
 * findurl
-* uuid
-* dashuuid
-* hexuuid
+* stripurl
+* strip
+* extract
+* first
+* end
+* key
+
+**User Preferences**
+
+* pref set
+* pref unset
+* pref get
+* pref list
+* pref defaults
 
 **Utility**
 
 * help
 * commands dump
-* timestamp
-* 8ball
-* roll
-* choice
-* coin
+* uptime
+* update
+* join
+* ifttt
 * last text
 * last image
 * last url
-* uptime
-* update
+* timestamp
 * screenshot
 * screenshot mobile
 * render crop
