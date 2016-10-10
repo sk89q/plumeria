@@ -41,6 +41,9 @@ async def ifttt_maker(message: Message):
 
         /ifttt email
 
+    Regarding variables: Value1 refers to the raw input data, Value2 refers to an HTML
+    version, and Value3 is a Markdown and HTML free version.
+
     """
     parts = message.content.strip().split(" ", 1)
     if len(parts) == 1:
