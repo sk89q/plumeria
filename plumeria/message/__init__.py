@@ -21,10 +21,21 @@ def create_stack():
 
 
 class Message:
+    """
+    Represents a message.
+
+    Attributes
+    ----------
+    direct : bool
+        Whether this message is directly from a user (for commands invoked from
+        aliases, this is false).
+
+    """
     def __init__(self):
         super().__init__()
         self.registers = {}
         self.stack = create_stack()
+        self.direct = False
 
     async def respond(self, content):
         if isinstance(content, Response):

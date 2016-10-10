@@ -9,7 +9,7 @@ from typing import Sequence, Optional
 import discord
 from discord import Client
 from discord import Server as _Server, Channel as _Channel, PrivateChannel as _PrivateChannel, Member as _Member, \
-    Message as _Message
+    Message as _Message, User as _User
 
 from plumeria import config
 from plumeria.event import bus
@@ -48,6 +48,8 @@ def _wrap(o, transport):
     elif isinstance(o, _Message):
         return DiscordMessage(o, transport)
     elif isinstance(o, _Member):
+        return DiscordWrapper(o, transport)
+    elif isinstance(o, _User):
         return DiscordWrapper(o, transport)
     elif isinstance(o, Enum):
         return str(o)

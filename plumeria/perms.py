@@ -1,7 +1,7 @@
 from functools import wraps
 from . import config
 from .config import set_of
-from .command import AuthorizationError
+from .command import AuthorizationError, CommandError
 
 owner_ids = config.create("perms", "admin_users", set_of(str), fallback="")
 
@@ -86,3 +86,16 @@ def have_all_perms(*perms):
         return wrapper
 
     return decorator
+
+
+def direct_only(f):
+    """Make sure that the command isn't being run in an alias."""
+
+    @wraps(f)
+    async def wrapper(message, *args, **kwargs):
+        if not message.direct:
+            raise CommandError("This command cannot be run from an alias.")
+        return await f(message, *args, **kwargs)
+
+    wrapper.direct_only = True
+    return wrapper

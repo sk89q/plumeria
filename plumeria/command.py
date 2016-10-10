@@ -195,7 +195,7 @@ class CommandManager:
         if not expect_prefix:
             return await self.execute_unprefixed(message, context)
 
-    async def execute(self, message, context, expect_prefix=True):
+    async def execute(self, message, context, expect_prefix=True, direct=False):
         if expect_prefix:
             prefix_test = message.content.lower()
             found = False
@@ -217,6 +217,7 @@ class CommandManager:
                     message.stack = input.stack
                 command = self._interpolate(command, message.registers)
                 message.content = command
+                message.direct = direct
                 input = await self.execute_prefixed(message, context, expect_prefix=False)
                 if input: # if there is no command, it will be None
                     if not input.registers:
@@ -330,7 +331,7 @@ async def on_message(message):
             logger.warning(str(e))
             return
 
-        response = await commands.execute(message, Context())
+        response = await commands.execute(message, Context(), direct=True)
         if response:
             if not len(response.content) and not len(response.attachments):
                 response = Response("\N{WARNING SIGN} Command returned empty text as a response.")
