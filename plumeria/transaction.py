@@ -41,7 +41,7 @@ class TransactionLog:
         self.cache = pylru.lrucache(400)
 
     def get_key(self, message: Message):
-        return str(message.server.transport.id) + ":" + str(message.id)
+        return str(message.channel.transport.id) + ":" + str(message.id)
 
     def add_response(self, message, response):
         if message.channel.is_private:
