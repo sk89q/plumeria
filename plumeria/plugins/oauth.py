@@ -2,6 +2,7 @@ from plumeria.command import CommandError, commands
 from plumeria.event import bus
 from plumeria.message import Message, Response
 from plumeria.middleware.oauth import oauth_manager, Endpoint, UnknownFlowError, FlowError
+from plumeria.perms import direct_only
 from plumeria.webserver import app, render_template
 
 
@@ -13,6 +14,7 @@ def find_endpoint(name) -> Endpoint:
 
 
 @commands.register('connect', cost=4, category='Services')
+@direct_only
 async def connect(message: Message):
     """
     Authenticate yourself to a service and provide the bot with permissions of your choosing.

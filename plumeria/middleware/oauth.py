@@ -23,13 +23,13 @@ NO_STORE_ERROR = "The bot doesn't have a plugin enabled that allows storing serv
 def catch_token_expiration(endpoint):
     def decorator(f):
         @functools.wraps(f)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             try:
-                return f(*args, **kwargs)
+                return await f(*args, **kwargs)
             except TokenExpirationError:
                 raise CommandError(
-                    "You will need to re-authorize me to do this command. Use the `/connect {}` command.".format(
-                        endpoint.name))
+                    "Please connect your account to use this command. If you did it previously, then it means "
+                    "that access expired or you revoked access. Use the `/connect {}` command.".format(endpoint.name))
 
         return wrapper
 
