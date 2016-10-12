@@ -85,7 +85,7 @@ class Message:
                 ret = await target_channel.send_message(response.content)
 
         if redirected:
-            await target_channel.send_message(
+            await self.channel.send_message(
                 "You ran a command that sent the results to a private channel, {}.".format(self.author.mention))
 
         return ret
