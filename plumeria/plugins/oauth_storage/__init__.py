@@ -29,7 +29,7 @@ class DatabaseTokens(TokenStore):
                 if row:
                     return Authorization(endpoint_name, transport, user, *row)
                 else:
-                    raise KeyError()
+                    return None
 
     async def remove(self, endpoint_name: str, transport: str, user: str):
         async with self.pool.acquire() as conn:
