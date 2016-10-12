@@ -135,5 +135,5 @@ async def pick_song(message):
     return build_list(["**{artist} - {name}** - <{url}>".format(
         artist=e['track']['artists'][0]['name'],
         name=e['track']['name'],
-        url=e['track']['external_urls']['spotify'],
+        url=e['track']['external_urls']['spotify'] if 'spotify' in e['track']['external_urls'] else "local track",
     ) for e in tracks[:5]])
