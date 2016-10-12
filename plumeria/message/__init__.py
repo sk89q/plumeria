@@ -31,50 +31,64 @@ class Message:
         aliases, this is false).
 
     """
+
     def __init__(self):
         super().__init__()
         self.registers = {}
         self.stack = create_stack()
         self.direct = False
 
-    async def respond(self, content):
-        if isinstance(content, Response):
-            if len(content.attachments):
-                return await self.channel.send_file(io.BytesIO(await content.attachments[0].read()),
-                                                    filename=content.attachments[0].filename,
-                                                    content=content.content)
-            else:
-                body = content.content.strip()
-                lines = body.splitlines()
+    async def respond(self, response):
+        if not isinstance(response, Response):
+            response = Response(response)
 
-                if len(body) > MAX_BODY_LENGTH or len(lines) > MAX_LINES:
-                    buffer = io.StringIO()
-                    current_length = len(CONTINUATION_STRING)
-                    line_count = 0
-                    first = True
+        target_channel = self.channel
+        redirected = False
 
-                    for line in lines:
-                        line_length = len(line)
-                        if current_length + line_length > MAX_BODY_LENGTH or line_count > MAX_LINES - 1:
-                            break
-                        else:
-                            if first:
-                                first = False
-                            else:
-                                buffer.write("\n")
-                            buffer.write(line)
-                            current_length += line_length
-                            line_count += 1
+        if response.private and not target_channel.is_private:
+            target_channel = await self.transport.start_private_message(self.author)
+            redirected = True
 
-                    truncated_body = buffer.getvalue() + CONTINUATION_STRING
-
-                    return await self.channel.send_file(io.BytesIO(body.encode("utf-8")),
-                                                        filename="continued.txt",
-                                                        content=truncated_body)
-                else:
-                    return await self.channel.send_message(content.content)
+        if len(response.attachments):
+            return await target_channel.send_file(io.BytesIO(await response.attachments[0].read()),
+                                                  filename=response.attachments[0].filename,
+                                                  content=response.content)
         else:
-            return await self.channel.send_message(content)
+            body = response.content.strip()
+            lines = body.splitlines()
+
+            if len(body) > MAX_BODY_LENGTH or len(lines) > MAX_LINES:
+                buffer = io.StringIO()
+                current_length = len(CONTINUATION_STRING)
+                line_count = 0
+                first = True
+
+                for line in lines:
+                    line_length = len(line)
+                    if current_length + line_length > MAX_BODY_LENGTH or line_count > MAX_LINES - 1:
+                        break
+                    else:
+                        if first:
+                            first = False
+                        else:
+                            buffer.write("\n")
+                        buffer.write(line)
+                        current_length += line_length
+                        line_count += 1
+
+                truncated_body = buffer.getvalue() + CONTINUATION_STRING
+
+                ret = await target_channel.send_file(io.BytesIO(body.encode("utf-8")),
+                                                      filename="continued.txt",
+                                                      content=truncated_body)
+            else:
+                ret = await target_channel.send_message(response.content)
+
+        if redirected:
+            await target_channel.send_message(
+                "You ran a command that sent the results to a private channel, {}.".format(self.author.mention))
+
+        return ret
 
     def __repr__(self, *args, **kwargs):
         return repr(self.__dict__)
@@ -121,11 +135,12 @@ class ProxyMessage:
 
 
 class Response:
-    def __init__(self, content="", attachments=None, registers=None, stack=None):
+    def __init__(self, content="", attachments=None, registers=None, stack=None, private=False):
         self.content = content
         self.attachments = attachments or []
         self.registers = registers
         self.stack = stack
+        self.private = private
 
 
 class Attachment:

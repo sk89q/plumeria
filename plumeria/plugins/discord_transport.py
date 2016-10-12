@@ -133,6 +133,9 @@ class DiscordTransport(DiscordWrapper, Transport):
                     return user
         return None
 
+    async def start_private_message(self, user):
+        return self._wrap(await self.delegate.start_private_message(user.delegate))
+
     @property
     def servers(self):
         return [self._wrap(o) for o in self.delegate.servers]

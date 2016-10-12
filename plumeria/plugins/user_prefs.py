@@ -2,6 +2,7 @@ from plumeria.command import commands, CommandError
 from plumeria.message import Message
 from plumeria.message.mappings import build_mapping
 from plumeria.middleware.user_prefs import prefs_manager
+from plumeria.perms import direct_only
 
 
 def find_preference(name):
@@ -12,6 +13,7 @@ def find_preference(name):
 
 
 @commands.register('pref set', 'prefs set', 'pset', cost=4, category='User Preferences')
+@direct_only
 async def set(message: Message):
     """
     Set a user preference for yourself.
@@ -38,6 +40,7 @@ async def set(message: Message):
 
 
 @commands.register('pref unset', 'prefs unset', 'punset', cost=4, category='User Preferences')
+@direct_only
 async def unset(message: Message):
     """
     Remove a user preference that you have set.
