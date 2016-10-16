@@ -7,10 +7,10 @@ from functools import wraps
 from io import StringIO
 
 from plumeria.util.format import escape_markdown
-from .event import bus
-from .message import ProxyMessage, Response
-from .transaction import tx_log
-from .util.ratelimit import MessageTokenBucket, RateLimitExceeded
+from plumeria.event import bus
+from plumeria.message import ProxyMessage, Response
+from plumeria.transaction import tx_log
+from plumeria.util.ratelimit import MessageTokenBucket, RateLimitExceeded
 
 __all__ = ('CommandManager',)
 
@@ -227,6 +227,8 @@ class CommandManager:
                 else:
                     if i != 0:
                         raise CommandError("Command not found: `{}`".format(escape_markdown(command)))
+                    else:
+                        break
             return input
         except AuthorizationError as e:
             err = str(e)
