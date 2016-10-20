@@ -13,6 +13,7 @@ async def join(message):
     Example::
 
         /join https://discord.gg/00000
+
     """
     url = message.content.strip()
     results = []

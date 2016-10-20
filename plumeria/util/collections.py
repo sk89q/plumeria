@@ -1,6 +1,66 @@
 from collections import OrderedDict, Callable
 
 import collections
+from typing import List, Tuple, Dict, Optional, Iterable
+from typing import Union
+
+
+class SafeStructure:
+    """
+    A wrapper around dictionaries and lists that allows safe
+    traversal through None values.
+
+    """
+
+    def __init__(self, o: Optional[Union[Iterable, List, Tuple, Dict]]):
+        """
+        Create a new instance.
+
+        Parameters
+        ----------
+        o : Optional[Union[Iterable, List, Tuple, Dict]]
+            The object to wrap
+        """
+        self.o = o
+
+    def _wrap(self, o):
+        if o is None:
+            return SafeStructure(None)
+        elif isinstance(o, dict) or isinstance(o, list) or isinstance(o, tuple):
+            return SafeStructure(o)
+        else:
+            return o
+
+    def __bool__(self):
+        return bool(self.o)
+
+    def __len__(self):
+        return len(self.o)
+
+    def __getattr__(self, item):
+        try:
+            return self._wrap(self.o[item])
+        except (IndexError, KeyError, TypeError):
+            return self._wrap(None)
+
+    def __getitem__(self, item):
+        if self.o is None:
+            return self._wrap(None)
+        return self._wrap(self.o.__getitem__(item))
+
+    def __contains__(self, item):
+        return self.o.__contains__(item)
+
+    def __iter__(self):
+        if self.o is not None:
+            for o in self.o:
+                yield self._wrap(o)
+
+    def __str__(self, *args, **kwargs):
+        return self.o.__str__(*args, **kwargs)
+
+    def __repr__(self, *args, **kwargs):
+        return self.o.__repr__(*args, **kwargs)
 
 
 class DefaultOrderedDict(OrderedDict):

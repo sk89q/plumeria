@@ -1,4 +1,4 @@
-from .config.config import ManagedConfig
+from .config.config import *
 from .config.scoped import ScopedConfig
 
 config = ManagedConfig()

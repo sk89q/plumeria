@@ -1,3 +1,5 @@
+"""A list of common configuration options that might be used by plugins."""
+
 from plumeria import config
 from plumeria.config.types import boolstr, dateformatstr
 

@@ -1,12 +1,17 @@
+"""Utilities to fetch images from a message."""
+
 import asyncio
 import io
 import re
+from typing import Awaitable
 
+import PIL
 import aiohttp
 from PIL import Image
 
 from plumeria.command import CommandError
 from plumeria.message import ImageAttachment, logger
+from plumeria.message import Message
 from plumeria.service import locator
 from plumeria.util.http import DefaultClientSession
 
@@ -16,7 +21,26 @@ MAX_LENGTH = 4000
 IMAGE_LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
 
 
-async def fetch_image(url):
+async def fetch_image(url: str) -> Awaitable[PIL.Image.Image]:
+    """
+    Fetch the image from the given URL.
+
+    Parameters
+    ----------
+    url : str
+        URL of the image
+
+    Returns
+    -------
+    Awaitable[PIL.Image.Image]
+        A PIL image
+
+    Raises
+    ------
+    :class:`CommandError`
+        Thrown if there is any problem fetching the image
+
+    """
     try:
         with DefaultClientSession() as session:
             async with session.get(url) as resp:
@@ -58,7 +82,27 @@ async def fetch_image(url):
         raise CommandError("Failed to read image from URL.")
 
 
-async def read_image(message):
+async def read_image(message: Message) -> Awaitable[PIL.Image.Image]:
+    """
+    Fetch the first image from the given message.
+
+    Parameters
+    ----------
+    message : :class:`plumeria.transport.Message`
+        The message
+
+    Returns
+    -------
+    Awaitable[PIL.Image.Image]
+        A PIL image
+
+    Raises
+    ------
+    :class:`CommandError`
+        Thrown if there is any problem getting an image
+
+    """
+
     # first try looking at attachments
     for attachment in message.attachments:
         try:
