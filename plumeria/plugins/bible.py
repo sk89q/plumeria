@@ -22,7 +22,8 @@ async def search_esv(message, verse):
     r = await http.get("http://www.esvapi.org/v2/rest/passageQuery", params={
         "key": "IP",
         "passage": verse,
-        "output-format": "crossway-xml-1.0"
+        "output-format": "crossway-xml-1.0",
+        "include-simple-entities": "true",
     })
 
     doc = BeautifulSoup(r.text(), features="lxml")
