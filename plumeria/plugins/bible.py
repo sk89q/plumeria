@@ -37,5 +37,5 @@ async def search_esv(message, verse):
         else:
             text = "".join([str(node) for node in verse_unit.children
                             if isinstance(node, NavigableString) and not isinstance(node, Comment)])
-        lines.append("({}) {}".format(num, text.strip()))
+        lines.append("**{}** {}".format(num, text.strip()))
     return "\n".join(lines)
