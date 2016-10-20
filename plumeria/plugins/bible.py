@@ -28,7 +28,14 @@ async def search_esv(message, verse):
     doc = BeautifulSoup(r.text(), features="lxml")
     if not doc.passage:
         raise CommandError("Verse not found.")
-    if doc.passage.content.find('woc'):
-        return doc.passage.content.find('woc').text
-    return "".join([str(node) for node in doc.passage.content.find('verse-unit').children
-                    if isinstance(node, NavigableString) and not isinstance(node, Comment)])
+    lines = []
+    for verse_unit in doc.passage.content.find_all('verse-unit'):
+        num = int(verse_unit.find('verse-num').text)
+        woc = verse_unit.find('woc')
+        if woc:
+            text = woc.text
+        else:
+            text = "".join([str(node) for node in verse_unit.children
+                            if isinstance(node, NavigableString) and not isinstance(node, Comment)])
+        lines.append("({}) {}".format(num, text.strip()))
+    return "\n".join(lines)
