@@ -19,12 +19,15 @@ async def have_i_been_pwned(message, query):
         pwned email@example.com
 
     """
-    r = await http.get("https://haveibeenpwned.com/api/v2/breachedaccount/" + query, headers=[
-        ('User-Agent', 'Plumeria chat bot (+https://gitlab.com/sk89q/Plumeria)')
-    ])
-
-    if not len(r.text().strip()):
-        raise CommandError("Account not found! (That's good.)")
+    try:
+        r = await http.get("https://haveibeenpwned.com/api/v2/breachedaccount/" + query, headers=[
+            ('User-Agent', 'Plumeria chat bot (+https://gitlab.com/sk89q/Plumeria)')
+        ])
+    except http.BadStatusCodeError as e:
+        if e.http_code == 404:
+            raise CommandError("Account not found! (That's good.)")
+        else:
+            raise e
 
     results = SafeStructure(r.json())
 
