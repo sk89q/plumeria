@@ -1,3 +1,5 @@
+"""Generate directed and non-directed graphs using Graphviz."""
+
 import asyncio
 import io
 import os
@@ -64,7 +66,7 @@ async def handle_request(message, type):
         raise CommandError("Parse error: {}".format(str(e)))
 
 
-@commands.register("graph", category="Graphing")
+@commands.create("graph", category="Graphing")
 @rate_limit()
 async def graph(message):
     """
@@ -81,7 +83,7 @@ async def graph(message):
     return await handle_request(message, "graph")
 
 
-@commands.register("digraph", category="Graphing")
+@commands.create("digraph", category="Graphing")
 @rate_limit()
 async def digraph(message):
     """
@@ -96,3 +98,8 @@ async def digraph(message):
 
     """
     return await handle_request(message, "digraph")
+
+
+def setup():
+    commands.add(graph)
+    commands.add(digraph)

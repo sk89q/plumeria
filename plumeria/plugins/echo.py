@@ -1,8 +1,10 @@
+"""Add an echo/say command that prints out text."""
+
 from plumeria.command import commands
 from plumeria.message import Response
 
 
-@commands.register('echo', 'say', cost=0.2, category="Utility")
+@commands.create('echo', 'say', cost=0.2, category="Utility")
 async def echo(message):
     """
     Simply returns the input string.
@@ -12,3 +14,7 @@ async def echo(message):
         /alias website echo Our website is http://example.com
     """
     return Response(message.content)
+
+
+def setup():
+    commands.add(echo)

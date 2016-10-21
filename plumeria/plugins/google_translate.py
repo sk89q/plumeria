@@ -1,3 +1,5 @@
+"""Translate some text with Google Translate."""
+
 import json
 import re
 
@@ -6,21 +8,23 @@ from titlecase import titlecase
 
 from plumeria.command import commands, CommandError
 from plumeria.message import Message
-from plumeria.message.lists import parse_list
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
+
 
 def find_language(code):
     try:
         return pycountry.languages.get(iso639_1_code=code)
-    except: pass
+    except:
+        pass
     try:
         return pycountry.languages.get(name=titlecase(code))
-    except: pass
+    except:
+        pass
     raise CommandError("Unknown language code: {}".format(code))
 
 
-@commands.register("translate", category="Search")
+@commands.create("translate", category="Search")
 @rate_limit()
 async def translate(message: Message):
     """
@@ -48,7 +52,8 @@ async def translate(message: Message):
         "dt": "t",
         "q": text,
     }, headers={
-        ('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36')
+        ('User-Agent',
+         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36')
     })
 
     # this isn't very right
@@ -63,3 +68,6 @@ async def translate(message: Message):
     else:
         raise CommandError("Translation not available.")
 
+
+def setup():
+    commands.add(translate)

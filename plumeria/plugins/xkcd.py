@@ -1,10 +1,12 @@
+"""Get xkcd comics by ID or get the latest."""
+
 from plumeria.command import commands, CommandError
 from plumeria.util import http
 from plumeria.util.http import BadStatusCodeError
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("xkcd", category="Search")
+@commands.create("xkcd", category="Search")
 @rate_limit()
 async def xkcd(message):
     """
@@ -32,3 +34,7 @@ async def xkcd(message):
             raise CommandError("comic does not exist or other error")
         except ValueError:
             raise CommandError("number expected")
+
+
+def setup():
+    commands.add(xkcd)

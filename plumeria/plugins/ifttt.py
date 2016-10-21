@@ -1,3 +1,5 @@
+"""Add ifttt integration so users can call their own ifttt hooks."""
+
 import json
 import re
 from json import JSONDecodeError
@@ -26,7 +28,7 @@ maker_key = prefs_manager.create("ifttt_maker_key", type=valid_maker_key, fallba
                                  private=True)
 
 
-@commands.register("ifttt", ".", category="Utility")
+@commands.create("ifttt", ".", category="Utility")
 @rate_limit()
 @direct_only
 async def ifttt_maker(message: Message):
@@ -76,3 +78,7 @@ async def ifttt_maker(message: Message):
         pass
 
     return r.text()
+
+def setup():
+    prefs_manager.add(maker_key)
+    commands.add(ifttt_maker)

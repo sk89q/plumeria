@@ -1,3 +1,5 @@
+"""Create and get the results of polls on strawpoll.me."""
+
 import re
 
 from plumeria.command import commands, CommandError
@@ -19,7 +21,7 @@ def parse_strawpoll_id(s):
         raise CommandError("No strawpoll.me link or ID found")
 
 
-@commands.register("strawpoll", category="Search")
+@commands.create("strawpoll", category="Search")
 @rate_limit()
 async def strawpoll(message):
     """
@@ -48,7 +50,7 @@ async def strawpoll(message):
         raise CommandError("Strawpolls.me reported an error: {}".format(data['errorMessage']))
 
 
-@commands.register("strawpoll results", "results", category="Search")
+@commands.create("strawpoll results", "results", category="Search")
 @rate_limit()
 async def strawpoll_results(message):
     """
@@ -74,3 +76,8 @@ async def strawpoll_results(message):
         return "\n".join(lines)
     else:
         raise CommandError("Strawpolls.me reported an error: {}".format(data['errorMessage']))
+
+
+def setup():
+    commands.add(strawpoll)
+    commands.add(strawpoll_results)

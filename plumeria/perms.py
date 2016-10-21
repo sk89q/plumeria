@@ -5,6 +5,8 @@ from .command import AuthorizationError, CommandError
 
 owner_ids = config.create("perms", "admin_users", set_of(str), fallback="")
 
+config.add(owner_ids)
+
 
 def has_role_in(user, roles):
     for role in user.roles:

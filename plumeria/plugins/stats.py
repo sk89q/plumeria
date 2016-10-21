@@ -1,3 +1,5 @@
+"""Commands to do statistics."""
+
 import statistics
 
 from plumeria.command import commands
@@ -9,7 +11,7 @@ def format_output(n):
     return "{:f}".format(n)
 
 
-@commands.register('mean', category='Statistics')
+@commands.create('mean', category='Statistics')
 @string_filter
 def mean(text):
     """
@@ -22,7 +24,7 @@ def mean(text):
     return format_output(statistics.mean(parse_numeric_list(text)))
 
 
-@commands.register('median', category='Statistics')
+@commands.create('median', category='Statistics')
 @string_filter
 def median(text):
     """
@@ -35,7 +37,7 @@ def median(text):
     return format_output(statistics.median(parse_numeric_list(text)))
 
 
-@commands.register('median low', category='Statistics')
+@commands.create('median low', category='Statistics')
 @string_filter
 def median_low(text):
     """
@@ -48,7 +50,7 @@ def median_low(text):
     return format_output(statistics.median_low(parse_numeric_list(text)))
 
 
-@commands.register('median high', category='Statistics')
+@commands.create('median high', category='Statistics')
 @string_filter
 def median_high(text):
     """
@@ -61,7 +63,7 @@ def median_high(text):
     return format_output(statistics.median_high(parse_numeric_list(text)))
 
 
-@commands.register('median grouped', category='Statistics')
+@commands.create('median grouped', category='Statistics')
 @string_filter
 def median_grouped(text):
     """
@@ -76,7 +78,7 @@ def median_grouped(text):
     return format_output(statistics.median_grouped(parse_numeric_list(text)))
 
 
-@commands.register('mode', category='Statistics')
+@commands.create('mode', category='Statistics')
 @string_filter
 def mode(text):
     """
@@ -89,7 +91,7 @@ def mode(text):
     return format_output(statistics.mode(parse_numeric_list(text)))
 
 
-@commands.register('pstdev', category='Statistics')
+@commands.create('pstdev', category='Statistics')
 @string_filter
 def pstdev(text):
     """
@@ -102,7 +104,7 @@ def pstdev(text):
     return format_output(statistics.pstdev(parse_numeric_list(text)))
 
 
-@commands.register('pvariance', category='Statistics')
+@commands.create('pvariance', category='Statistics')
 @string_filter
 def pvariance(text):
     """
@@ -115,7 +117,7 @@ def pvariance(text):
     return format_output(statistics.pvariance(parse_numeric_list(text)))
 
 
-@commands.register('stdev', category='Statistics')
+@commands.create('stdev', category='Statistics')
 @string_filter
 def stdev(text):
     """
@@ -128,7 +130,7 @@ def stdev(text):
     return format_output(statistics.stdev(parse_numeric_list(text)))
 
 
-@commands.register('variance', category='Statistics')
+@commands.create('variance', category='Statistics')
 @string_filter
 def variance(text):
     """
@@ -139,3 +141,16 @@ def variance(text):
         /variance 33 54 43 65 43 62
     """
     return format_output(statistics.variance(parse_numeric_list(text)))
+
+
+def setup():
+    commands.add(mean)
+    commands.add(median)
+    commands.add(median_low)
+    commands.add(median_high)
+    commands.add(median_grouped)
+    commands.add(mode)
+    commands.add(pstdev)
+    commands.add(pvariance)
+    commands.add(stdev)
+    commands.add(variance)

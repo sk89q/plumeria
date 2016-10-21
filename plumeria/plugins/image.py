@@ -1,3 +1,5 @@
+"""Image manipulation and creation."""
+
 import asyncio
 from colour import Color
 import shlex
@@ -16,7 +18,7 @@ with pkg_resources.resource_stream("plumeria", 'fonts/FiraSans-Regular.ttf') as 
     FONT = ImageFont.truetype(f, 22)
 
 
-@commands.register('drawtext', category='Image')
+@commands.create('drawtext', category='Image')
 @rate_limit(burst_size=2)
 async def drawtext(message):
     """
@@ -56,7 +58,7 @@ async def drawtext(message):
     return Response("", [ImageAttachment(im, "text.png")])
 
 
-@commands.register('blur', category='Image')
+@commands.create('blur', category='Image')
 @image_filter
 def blur(message, im):
     """
@@ -74,7 +76,7 @@ def blur(message, im):
     return im.filter(ImageFilter.GaussianBlur(radius=args.radius))
 
 
-@commands.register('edge enhance', 'edgeenhance', category='Image')
+@commands.create('edge enhance', 'edgeenhance', category='Image')
 @image_filter
 def edgeenhance(message, im):
     """
@@ -89,7 +91,7 @@ def edgeenhance(message, im):
     return im.filter(ImageFilter.EDGE_ENHANCE)
 
 
-@commands.register('emboss', category='Image')
+@commands.create('emboss', category='Image')
 @image_filter
 def emboss(message, im):
     """
@@ -104,7 +106,7 @@ def emboss(message, im):
     return im.filter(ImageFilter.EMBOSS)
 
 
-@commands.register('find edges', 'findedges', category='Image')
+@commands.create('find edges', 'findedges', category='Image')
 @image_filter
 def findedges(message, im):
     """
@@ -119,7 +121,7 @@ def findedges(message, im):
     return im.filter(ImageFilter.FIND_EDGES)
 
 
-@commands.register('sharpen', category='Image')
+@commands.create('sharpen', category='Image')
 @image_filter
 def sharpen(message, im):
     """
@@ -134,7 +136,7 @@ def sharpen(message, im):
     return im.filter(ImageFilter.SHARPEN)
 
 
-@commands.register('bw', 'blackandwhite', 'blacknwhite', 'blackwhite', category='Image')
+@commands.create('bw', 'blackandwhite', 'blacknwhite', 'blackwhite', category='Image')
 @image_filter
 def bw(message, im):
     """
@@ -149,7 +151,7 @@ def bw(message, im):
     return im.convert('1').convert("RGB")
 
 
-@commands.register('square', category='Image')
+@commands.create('square', category='Image')
 @image_filter
 def square(message, im):
     """
@@ -169,8 +171,7 @@ def square(message, im):
     return background
 
 
-
-@commands.register('bg', category='Image')
+@commands.create('bg', category='Image')
 @image_filter
 def bg(message, im):
     """
@@ -194,3 +195,15 @@ def bg(message, im):
     background = Image.new('RGBA', im.size, (int(color.red * 255), int(color.green * 255), int(color.blue * 255), 255))
     background.paste(im, (0, 0), im)
     return background
+
+
+def setup():
+    commands.add(drawtext)
+    commands.add(blur)
+    commands.add(edgeenhance)
+    commands.add(emboss)
+    commands.add(findedges)
+    commands.add(sharpen)
+    commands.add(bw)
+    commands.add(square)
+    commands.add(bg)

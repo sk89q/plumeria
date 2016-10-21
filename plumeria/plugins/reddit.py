@@ -1,3 +1,5 @@
+"""Query reddit.com for posts."""
+
 import re
 import shlex
 
@@ -45,7 +47,7 @@ async def get_subreddit_post(q, top=False, count=5):
         raise CommandError("Got {} error code".format(e.http_code))
 
 
-@commands.register("subreddit", "r/", category="Search")
+@commands.create("subreddit", "r/", category="Search")
 @rate_limit()
 async def subreddit(message):
     """
@@ -73,7 +75,7 @@ async def subreddit(message):
     return "/r/{}\n{}".format(args.subreddit, await get_subreddit_post(args.subreddit, count=args.count))
 
 
-@commands.register("reddit", "rs", category="Search")
+@commands.create("reddit", "rs", category="Search")
 @rate_limit()
 async def search_reddit(message):
     """
@@ -102,3 +104,8 @@ async def search_reddit(message):
         return "Search results:\n" + format_entries(r.json()['data']['children'], 5)
     except BadStatusCodeError as e:
         raise CommandError("Got {} error code".format(e.http_code))
+
+
+def setup():
+    commands.add(subreddit)
+    commands.add(search_reddit)

@@ -1,3 +1,5 @@
+"""Get recipes from a list of ingredients using recipepuppy.com."""
+
 import re
 
 from plumeria.command import commands, CommandError
@@ -8,7 +10,7 @@ from plumeria.util.ratelimit import rate_limit
 NEW_LINES_PATTERN = re.compile("[\\r\\n]")
 
 
-@commands.register("recipes", "recipe", category="Search")
+@commands.create("recipes", "recipe", category="Search")
 @rate_limit()
 async def recipes(message):
     """
@@ -34,3 +36,7 @@ async def recipes(message):
             url=e['href'].strip())), data['results'][:8]))
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    commands.add(recipes)

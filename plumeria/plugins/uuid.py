@@ -1,3 +1,5 @@
+"""Utility commands to work with UUIDS."""
+
 import uuid
 
 from plumeria.command import commands, CommandError
@@ -5,7 +7,7 @@ from plumeria.message import Response
 from plumeria.util.command import string_filter
 
 
-@commands.register('uuid', category='String')
+@commands.create('uuid', category='String')
 async def random_uuid(message):
     """
     Generates a random UUID.
@@ -13,7 +15,7 @@ async def random_uuid(message):
     return Response(str(uuid.uuid4()))
 
 
-@commands.register('dashuuid', category='String')
+@commands.create('dashuuid', category='String')
 @string_filter
 def dash_uuid(text):
     """
@@ -33,7 +35,7 @@ def dash_uuid(text):
         raise CommandError("Invalid UUID provided.")
 
 
-@commands.register('hexuuid', category='String')
+@commands.create('hexuuid', category='String')
 @string_filter
 def hex_uuid(text):
     """
@@ -51,3 +53,9 @@ def hex_uuid(text):
         return uuid.UUID(text).hex
     except ValueError as e:
         raise CommandError("Invalid UUID provided.")
+
+
+def setup():
+    commands.add(random_uuid)
+    commands.add(dash_uuid)
+    commands.add(hex_uuid)

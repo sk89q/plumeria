@@ -1,3 +1,5 @@
+"""Let users access their own personal Spotify account."""
+
 import random
 
 from plumeria import config
@@ -5,6 +7,7 @@ from plumeria.command import commands, CommandError
 from plumeria.message.lists import build_list
 from plumeria.middleware.oauth import oauth_manager, catch_token_expiration
 from plumeria.perms import direct_only
+from plumeria.plugin import PluginSetupError
 from plumeria.transport import User
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
@@ -60,7 +63,7 @@ async def fetch_paged_list(*args, limit=20, max_page_count=1, **kwargs):
     return items
 
 
-@commands.register("spotify playlists", category="Music")
+@commands.create("spotify playlists", category="Music")
 @direct_only
 @rate_limit()
 async def playlists(message):
@@ -88,7 +91,7 @@ async def playlists(message):
     ) for e in public_playlists])
 
 
-@commands.register("spotify pick", category="Music")
+@commands.create("spotify pick", category="Music")
 @direct_only
 @rate_limit()
 async def pick_song(message):
@@ -137,3 +140,17 @@ async def pick_song(message):
         name=e['track']['name'],
         url=e['track']['external_urls']['spotify'] if 'spotify' in e['track']['external_urls'] else "local track",
     ) for e in tracks[:5]])
+
+
+def setup():
+    config.add(client_id)
+    config.add(client_secret)
+
+    if not client_id() or not client_secret():
+        raise PluginSetupError("This plugin requires a client ID and client secret from Spotify. Registration is free. "
+                               "Create an application on https://developer.spotify.com/my-applications/ to get "
+                               "an ID and secret.")
+
+    oauth_manager.add(spotify_endpoint)
+    commands.add(playlists)
+    commands.add(pick_song)

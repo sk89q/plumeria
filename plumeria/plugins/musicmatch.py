@@ -1,7 +1,10 @@
+"""Fetch lyrics and artist charts from MusixMatch.com."""
+
 import re
 
 from plumeria import config
 from plumeria.command import commands, CommandError
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.message.geo import match_country
 from plumeria.util.ratelimit import rate_limit
@@ -23,9 +26,9 @@ def clean_copyright(s):
     return COPYRIGHT_CLEAN_PATTERN.sub("FOR NON-COMMERCIAL USE.", s).strip()
 
 
-@commands.register("artist charts", "acharts", category="Music")
+@commands.create("artist charts", "acharts", category="Music")
 @rate_limit()
-async def charts(message):
+async def artist_charts(message):
     """
     Get the top charting artists in a country, defaulting to USA if no country is
     provided. Powered by Musicmatch.
@@ -67,7 +70,7 @@ async def charts(message):
     return '\n'.join(map(map_artist, data['message']['body']['artist_list']))
 
 
-@commands.register("charts", category="Music")
+@commands.create("charts", category="Music")
 @rate_limit()
 async def charts(message):
     """
@@ -112,7 +115,7 @@ async def charts(message):
     return '\n'.join(map(map_track, data['message']['body']['track_list']))
 
 
-@commands.register("lyrics", category="Music")
+@commands.create("lyrics", category="Music")
 @rate_limit()
 async def lyrics(message):
     """
@@ -152,3 +155,13 @@ async def lyrics(message):
             copyright=copyright)
     else:
         return "no results (maybe lyrics are not available)"
+
+def setup():
+    config.add(api_key)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key from https://musixmatch.com. Registration is free.")
+
+    commands.add(artist_charts)
+    commands.add(charts)
+    commands.add(lyrics)

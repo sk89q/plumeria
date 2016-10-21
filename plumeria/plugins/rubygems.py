@@ -1,5 +1,8 @@
+"""Search for Ruby gems from RubyGems.org."""
+
 from plumeria import config
 from plumeria.command import commands, CommandError
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
@@ -8,7 +11,7 @@ api_key = config.create("rubygems", "key",
                         comment="An API key from RubyGems.org (make an account, edit your profile)")
 
 
-@commands.register("rubygems", "gems", category="Development")
+@commands.create("rubygems", "gems", category="Development")
 @rate_limit()
 async def gems(message):
     """
@@ -45,3 +48,12 @@ async def gems(message):
                              data))
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    config.add(api_key)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key from https://rubygems.org. Registration is free.")
+
+    commands.add(gems)

@@ -1,3 +1,5 @@
+"""Commands to update the bot and restart it."""
+
 import asyncio
 import logging
 import sys
@@ -11,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 async def get_git_id():
-    proc = await asyncio.create_subprocess_exec('git', 'describe', '--dirty', '--all', '--long', stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    proc = await asyncio.create_subprocess_exec('git', 'describe', '--dirty', '--all', '--long', stdin=PIPE,
+                                                stdout=PIPE, stderr=PIPE)
     (stdout, stderr) = await proc.communicate()
     if proc.returncode == 0:
         return stdout.decode('utf-8', 'ignore').strip()
@@ -19,7 +22,7 @@ async def get_git_id():
         return "unknown"
 
 
-@commands.register('update', category='Utility')
+@commands.create('update', category='Utility')
 @owners_only
 async def update(message):
     """
@@ -49,3 +52,7 @@ async def update(message):
             await message.respond("No update for the bot found.")
     else:
         raise CommandError("Update error: {}".format(stderr.decode("utf-8", "ignore")))
+
+
+def setup():
+    commands.add(update)

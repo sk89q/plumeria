@@ -1,16 +1,20 @@
+"""Query last.fm for information about music."""
+
 import io
 
+from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.message import Response
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.message import strip_html
 from plumeria.util.ratelimit import rate_limit
-from plumeria.middleware.api.lastfm import LastFm, default_api_key as api_key
+from plumeria.middleware.api.lastfm import LastFm, default_api_key as api_key, default_api_key
 
 lastfm = LastFm()
 
 
-@commands.register('lastfm', 'last scrobble', 'lastscrobble', category='Music')
+@commands.create('lastfm', 'last scrobble', 'lastscrobble', category='Music')
 @rate_limit()
 async def lastscrobble(message):
     """
@@ -33,7 +37,7 @@ async def lastscrobble(message):
             raise CommandError("No tracks have been scrobbled by that user.")
 
 
-@commands.register('lastfm tag', 'tagtop', category='Music')
+@commands.create('lastfm tag', 'tagtop', category='Music')
 @rate_limit()
 async def tagtop(message):
     """
@@ -55,7 +59,7 @@ async def tagtop(message):
             raise CommandError("Last.fm doesn't know about that tag.")
 
 
-@commands.register('lastfm artist', 'artist', category='Music')
+@commands.create('lastfm artist', 'artist', category='Music')
 @rate_limit()
 async def artist(message):
     """
@@ -115,3 +119,12 @@ async def artist(message):
     return buffer.getvalue()
 
 
+def setup():
+    config.add(default_api_key)
+
+    if not default_api_key():
+        raise PluginSetupError("This plugin requires an API key from http://last.fm. Registration is free.")
+
+    commands.add(lastscrobble)
+    commands.add(tagtop)
+    commands.add(artist)

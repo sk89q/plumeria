@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import asyncio
+import importlib
+import inspect
 import os.path
 import pkgutil
 import sys
@@ -9,6 +11,7 @@ from plumeria import config
 from plumeria.config import boolstr
 from plumeria.event import bus
 import plumeria.plugins
+from plumeria.plugin import PluginSetupError
 
 logger = logging.getLogger(__name__)
 
@@ -41,12 +44,14 @@ if __name__ == "__main__":
 
     discovered_modules = list(pkgutil.iter_modules(plumeria.plugins.__path__))
     modules_to_load = set()
+    modules = set()
+    load_errors = {}
 
     # Discover list of modules to load and save it to config
     config.load()
     for importer, modname, ispkg in discovered_modules:
         path = "plumeria.plugins." + modname
-        enabled = config.create("plugins", path, type=boolstr, fallback=False)
+        enabled = config.add(config.create("plugins", path, type=boolstr, fallback=False))
         if enabled():
             modules_to_load.add(path)
     config.save()
@@ -57,11 +62,27 @@ if __name__ == "__main__":
             modules_to_load.add(path)
 
     for path in modules_to_load:
-        logging.info("Loading {}...".format(path))
         try:
-            __import__(path)
-        except:
-            logging.warning("Failed to load {}".format(path), exc_info=True)
+            modules.add(importlib.import_module(path))
+        except Exception as e:
+            load_errors[path] = str(e)
+            logging.error("Failed to import {}".format(path), exc_info=True)
+
+    for module in modules:
+        try:
+            if hasattr(module, "setup"):
+                module.setup()
+            else:
+                raise PluginSetupError("No setup() entry point exists for the plugin. If this is your plugin, make "
+                                       "sure to add one. Plugins for older versions of Plumeria lack this and that "
+                                       "may be why you are getting this message.")
+            logging.info("Loaded {}.".format(module.__name__))
+        except PluginSetupError as e:
+            logging.error("Failed to load {}: {}".format(module.__name__, str(e)))
+            load_errors[module.__name__] = str(e)
+        except Exception as e:
+            logging.error("Failed to setup {}".format(module.__name__), exc_info=True)
+            load_errors[module.__name__] = str(e)
 
     config.load()
     config.save()

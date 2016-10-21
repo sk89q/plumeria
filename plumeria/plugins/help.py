@@ -1,3 +1,5 @@
+"""Adds a help webpage and query functions for commands."""
+
 import collections
 
 import io
@@ -7,7 +9,7 @@ from plumeria.message import Response, MemoryAttachment
 from plumeria.webserver import app, render_template
 
 
-@commands.register('help', 'commands', category='Utility')
+@commands.create('help', 'commands', category='Utility')
 async def help(message):
     """
     Get a listing of commands.
@@ -19,7 +21,7 @@ async def help(message):
     return Response(await app.get_base_url() + "/help/{}".format(server))
 
 
-@commands.register('commands dump', category='Utility')
+@commands.create('commands dump', category='Utility')
 async def dump_commands(message):
     """
     Get a listing of commands in Markdown as a text file.
@@ -55,3 +57,9 @@ async def handle(request):
         by_category[mapping.command.category].append(mapping)
     categories = sorted(categories)
     return render_template("help.html", commands=mappings, by_category=by_category, categories=categories)
+
+
+def setup():
+    commands.add(help)
+    commands.add(dump_commands)
+    app.add(handle)

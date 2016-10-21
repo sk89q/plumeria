@@ -1,3 +1,5 @@
+"""Server to render HTML and webpages for the main webcap plugin."""
+
 import asyncio
 import io
 import logging
@@ -15,6 +17,7 @@ from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 
 from plumeria import config
+from plumeria.plugin import PluginSetupError
 from plumeria.webserver import app
 
 VALID_URL_REGEX = re.compile("^(?:https?://|data:)", re.IGNORECASE)
@@ -112,3 +115,13 @@ async def handle(request):
         return Response(body=buffer.getvalue(), content_type="image/png")
 
     return await asyncio.get_event_loop().run_in_executor(None, execute)
+
+
+def setup():
+    config.add(api_key)
+    config.add(page_load_timeout)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key to be chosen.")
+
+    app.add(handle)

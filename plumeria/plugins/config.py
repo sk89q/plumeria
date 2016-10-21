@@ -1,3 +1,5 @@
+"""Commands to set configuration options per-server and per-channel."""
+
 import re
 from typing import Union
 
@@ -84,7 +86,7 @@ def map_setting(setting: Setting):
                                               value_str(setting()) if not setting.private else "(private)")
 
 
-@commands.register('set', 'set server', 'set s', cost=4, category='Configuration')
+@commands.create('set', 'set server', 'set s', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def set_server(message: Message):
@@ -98,7 +100,7 @@ async def set_server(message: Message):
     return await do_set(message, message.channel.server, "the server ({})".format(message.channel.server.name))
 
 
-@commands.register('set channel', 'set chan', 'set c', cost=4, category='Configuration')
+@commands.create('set channel', 'set chan', 'set c', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def set_channel(message: Message):
@@ -113,7 +115,7 @@ async def set_channel(message: Message):
     return await do_set(message, message.channel, message.channel.mention)
 
 
-@commands.register('unset', 'unset server', 'unset s', cost=4, category='Configuration')
+@commands.create('unset', 'unset server', 'unset s', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def unset_server(message: Message):
@@ -127,7 +129,7 @@ async def unset_server(message: Message):
     return await do_unset(message, message.channel.server, "the server ({})".format(message.channel.server.name))
 
 
-@commands.register('unset channel', 'unset chan', 'unset c', cost=4, category='Configuration')
+@commands.create('unset channel', 'unset chan', 'unset c', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def unset_channel(message: Message):
@@ -141,7 +143,7 @@ async def unset_channel(message: Message):
     return await do_unset(message, message.channel, message.channel.mention)
 
 
-@commands.register('config get', cost=4, category='Configuration')
+@commands.create('config get', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def get(message: Message):
@@ -159,7 +161,7 @@ async def get(message: Message):
     return str(scoped_config.get(setting, message.channel))
 
 
-@commands.register('config info', cost=4, category='Configuration')
+@commands.create('config info', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def info(message: Message):
@@ -190,7 +192,7 @@ async def info(message: Message):
     return build_mapping(items)
 
 
-@commands.register('config list', 'configs', 'confs', cost=4, category='Configuration')
+@commands.create('config list', 'configs', 'confs', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def list(message: Message):
@@ -207,7 +209,7 @@ async def list(message: Message):
     )
 
 
-@commands.register('config defaults', cost=4, category='Configuration')
+@commands.create('config defaults', cost=4, category='Configuration')
 @channel_only
 @server_admins_only
 async def list_defaults(message: Message):
@@ -221,3 +223,14 @@ async def list_defaults(message: Message):
         return build_mapping(items)
     else:
         raise CommandError("No preferences exist to be set.")
+
+
+def setup():
+    commands.add(set_server)
+    commands.add(set_channel)
+    commands.add(unset_server)
+    commands.add(unset_channel)
+    commands.add(get)
+    commands.add(info)
+    commands.add(list)
+    commands.add(list_defaults)

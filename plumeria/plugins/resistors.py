@@ -1,3 +1,5 @@
+"""Calculate resistor combinations to achieve a specific resistance."""
+
 import shlex
 from math import floor
 
@@ -24,6 +26,7 @@ class Combination:
 
     def __repr__(self):
         return self.__str__()
+
 
 class ResistorCalculator:
     # Copyright (C) 2001-2010 Claudio Girardi
@@ -158,7 +161,7 @@ class ResistorCalculator:
         return sorted(results, key=lambda e: abs(e.error))
 
 
-@commands.register("resistors", category="Electronics")
+@commands.create("resistors", category="Electronics")
 @rate_limit()
 async def resistors(message):
     """
@@ -189,3 +192,7 @@ async def resistors(message):
     calculator = ResistorCalculator()
     calculator.set_series(args.series.upper())
     return "```{}```".format("\n".join(map(str, calculator.calculate(args.value))))
+
+
+def setup():
+    commands.add(resistors)

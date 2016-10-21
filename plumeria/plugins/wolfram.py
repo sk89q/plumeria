@@ -1,7 +1,10 @@
+"""Ask WolframAlpha questions."""
+
 from bs4 import BeautifulSoup
 
 from plumeria import config
 from plumeria.command import commands, CommandError
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.format import escape_markdown
 from plumeria.util.ratelimit import rate_limit
@@ -11,7 +14,7 @@ api_key = config.create("wolfram", "key",
                         comment="An API key from http://products.wolframalpha.com/api/")
 
 
-@commands.register("wolfram", category="Search")
+@commands.create("wolfram", category="Search")
 @rate_limit()
 async def wolfram(message):
     """
@@ -53,3 +56,13 @@ async def wolfram(message):
             return "no data"
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    config.add(api_key)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key from http://products.wolframalpha.com/api. "
+                               "Registration is free.")
+
+    commands.add(wolfram)

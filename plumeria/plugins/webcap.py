@@ -1,3 +1,5 @@
+"""Render HTML and webpages to images."""
+
 import io
 import json
 import logging
@@ -9,6 +11,7 @@ from aiohttp import TCPConnector
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.message import Response, MemoryAttachment
+from plumeria.plugin import PluginSetupError
 from plumeria.util.http import DefaultClientSession
 from plumeria.util.ratelimit import rate_limit
 
@@ -47,7 +50,7 @@ async def render(url, width=1024, max_height=4096, trim_image=False):
                     raise CommandError("error occurred with status code {}".format(r.status))
 
 
-@commands.register('screenshot', 'ss', 'screenshot desktop', 'ss desktop', category='Utility')
+@commands.create('screenshot', 'ss', 'screenshot desktop', 'ss desktop', category='Utility')
 async def screenshot(message):
     """
     Generates a screenshot of a webpage.
@@ -68,7 +71,7 @@ async def screenshot(message):
     return await render(url)
 
 
-@commands.register('screenshot mobile', 'ss mobile', category='Utility')
+@commands.create('screenshot mobile', 'ss mobile', category='Utility')
 async def screenshot_mobile(message):
     """
     Generates a (mobile) screenshot of a webpage.
@@ -89,7 +92,7 @@ async def screenshot_mobile(message):
     return await render(url, width=410, max_height=1024)
 
 
-@commands.register('render crop', 'render', category='Utility')
+@commands.create('render crop', 'render', category='Utility')
 async def render_html(message):
     """
     Generates a screenshot of some HTML. Crops out whitespace.
@@ -105,7 +108,7 @@ async def render_html(message):
     return await render("data:text/html," + q, trim_image=True)
 
 
-@commands.register('render full', 'renderf', category='Utility')
+@commands.create('render full', 'renderf', category='Utility')
 async def render_html_full(message):
     """
     Generates a screenshot of some HTML without cropping.
@@ -119,3 +122,23 @@ async def render_html_full(message):
     if not q:
         raise CommandError("Some HTML required")
     return await render("data:text/html," + q, trim_image=False)
+
+
+def setup():
+    config.add(render_url)
+    config.add(api_key)
+
+    if not render_url():
+        raise PluginSetupError("A render URL must be configured in order to use this "
+                               "plugin. The actual rendering occurs on the separate webcap_server "
+                               "plugin, which should be in hosted in an isolated environment.")
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key for the webcap render server. Simply run the "
+                               "webcap server (ideally on a separate, isolated system) and copy the API key "
+                               "that was generated.")
+
+    commands.add(screenshot)
+    commands.add(screenshot_mobile)
+    commands.add(render_html)
+    commands.add(render_html_full)

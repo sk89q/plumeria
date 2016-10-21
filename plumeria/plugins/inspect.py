@@ -1,3 +1,5 @@
+"""Get details about users and servers, like avatar, and so on."""
+
 from colour import Color
 
 from plumeria import scoped_config
@@ -18,7 +20,7 @@ def find_user(message):
     return user
 
 
-@commands.register('avatar', 'user avatar', category='Inspection')
+@commands.create('avatar', 'user avatar', category='Inspection')
 async def avatar(message):
     """
     Gets the URL of a user's avatar or the avatar of the calling user if no username
@@ -36,7 +38,7 @@ async def avatar(message):
         raise CommandError("That user has no avatar.")
 
 
-@commands.register('user', 'user info', category='Inspection')
+@commands.create('user', 'user info', category='Inspection')
 async def user_info(message):
     """
     Get information about a user:
@@ -66,7 +68,7 @@ async def user_info(message):
     return build_mapping(entries)
 
 
-@commands.register('icon', 'server icon', category='Inspection')
+@commands.create('icon', 'server icon', category='Inspection')
 @channel_only
 async def icon(message):
     """
@@ -83,7 +85,7 @@ async def icon(message):
         raise CommandError("That server has no icon.")
 
 
-@commands.register('server', 'server info', category='Inspection')
+@commands.create('server', 'server info', category='Inspection')
 @channel_only
 async def server_info(message):
     """
@@ -112,3 +114,10 @@ async def server_info(message):
     ]
 
     return build_mapping(entries)
+
+
+def setup():
+    commands.add(avatar)
+    commands.add(user_info)
+    commands.add(icon)
+    commands.add(server_info)

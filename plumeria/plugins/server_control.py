@@ -1,3 +1,5 @@
+"""Commands to modify server settings."""
+
 import asyncio
 import io
 
@@ -8,7 +10,7 @@ from plumeria.perms import have_all_perms
 from plumeria.transport.transport import ForbiddenError
 
 
-@commands.register('icon set', 'iconset', 'set icon', 'seticon', category='Management')
+@commands.create('icon set', 'iconset', 'set icon', 'seticon', category='Management')
 @channel_only
 @have_all_perms('manage_server')
 async def set_icon(message: Message):
@@ -40,3 +42,7 @@ async def set_icon(message: Message):
         return "Server icon updated."
     except ForbiddenError as e:
         raise CommandError("The bot doesn't have the permissions to do this: {}".format(str(e)))
+
+
+def setup():
+    commands.add(set_icon)

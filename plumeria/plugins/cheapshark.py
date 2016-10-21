@@ -1,3 +1,5 @@
+"""Search CheapShark.com for deals."""
+
 import collections
 
 from plumeria.command import commands, CommandError
@@ -19,7 +21,7 @@ class CheapShark(BaseRestClient):
 cheapshark = CheapShark()
 
 
-@commands.register('cheapshark', 'gameprice', category='Search')
+@commands.create('cheapshark', 'gameprice', category='Search')
 @rate_limit()
 async def price(message):
     """
@@ -42,3 +44,7 @@ async def price(message):
             return Response("{} at ${} USD - {}".format(deal.name, deal.price, deal.url))
         else:
             raise CommandError("Couldn't find that game on CheapShark")
+
+
+def setup():
+    commands.add(price)

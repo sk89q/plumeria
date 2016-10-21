@@ -1,10 +1,11 @@
+"""Store OAuth credentials into the database."""
+
 import logging
 
 from plumeria.event import bus
 from plumeria.middleware.oauth import TokenStore, Authorization, oauth_manager
 from plumeria.storage import migrations
 from plumeria.storage import pool
-from plumeria.webserver import public_address
 
 logger = logging.getLogger(__name__)
 
@@ -53,13 +54,13 @@ class DatabaseTokens(TokenStore):
 
 store = DatabaseTokens(pool, migrations)
 
+def setup():
+    @bus.event('preinit')
+    async def preinit():
+        logger.info("Setting {} as the default store for OAuth storage".format(__name__))
+        oauth_manager.store = store
 
-@bus.event('preinit')
-async def preinit():
-    logger.info("Setting {} as the default store for OAuth storage".format(__name__))
-    oauth_manager.store = store
 
-
-@bus.event('init')
-async def init():
-    await store.initialize()
+    @bus.event('init')
+    async def init():
+        await store.initialize()

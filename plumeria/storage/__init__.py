@@ -10,6 +10,12 @@ user = config.create("storage", "user", fallback="plumeria", comment="The databa
 password = config.create("storage", "password", fallback="", comment="The database server password")
 db = config.create("storage", "db", fallback="plumeria", comment="The database name")
 
+config.add(host)
+config.add(port)
+config.add(user)
+config.add(password)
+config.add(db)
+
 
 class Pool:
     def __init__(self):

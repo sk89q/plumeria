@@ -9,3 +9,6 @@ nsfw = config.create("common", "nsfw", type=boolstr, fallback=False, comment="Wh
 short_date_time_format = config.create("common", "date_time_short", type=dateformatstr,
                                        fallback="%b %m, %Y %I:%M %p %Z", comment="Short date and time format",
                                        scoped=True, private=False)
+
+config.add(nsfw)
+config.add(short_date_time_format)

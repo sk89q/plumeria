@@ -1,14 +1,11 @@
-import asyncio
-import io
+"""Deprecated. Add a command to fetch a image from a URL."""
+
 import logging
 import re
 
-import aiohttp
-from PIL import Image
-from plumeria.command import CommandError, commands
-from plumeria.message import ImageAttachment, Response
+from plumeria.command import commands
+from plumeria.message import Response
 from plumeria.message.image import read_image
-from plumeria.util.http import DefaultClientSession
 from plumeria.util.ratelimit import rate_limit
 
 logger = logging.getLogger(__name__)
@@ -19,7 +16,7 @@ MAX_LENGTH = 4000
 IMAGE_LINK_PATTERN = re.compile("(https?://(?:[^ ]+)\\.(?:png|jpe?g|gif))", re.I)
 
 
-@commands.register("fetch image", "fetchimage", category="Image")
+@commands.create("fetch image", "fetchimage", category="Image")
 @rate_limit()
 async def fetch_image(message):
     """
@@ -33,3 +30,7 @@ async def fetch_image(message):
         /echo http://example.com/pete.jpg | fetchimage
     """
     return Response("", attachments=[await read_image(message)])
+
+
+def setup():
+    commands.add(fetch_image)

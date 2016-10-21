@@ -1,3 +1,5 @@
+"""Overlay text on images for memes."""
+
 import os.path
 import re
 import statistics
@@ -60,7 +62,7 @@ def draw_textbox(im, left_x, top_y, box_width, text, font, border_size=2, v_alig
 
 
 def render_meme_text(im, text, v_align):
-    text = text[:400] # limit text length
+    text = text[:400]  # limit text length
     w, h = im.size
     font_size = max(15, min(int(h * 0.9e-1), 200))
 
@@ -75,7 +77,7 @@ def render_meme_text(im, text, v_align):
                  border_size=max(1, min(int(w * h * 1e-5 * 2), 9)), v_align=v_align)
 
 
-@commands.register('memetext', 'mt', category='Image')
+@commands.create('memetext', 'mt', category='Image')
 @image_filter
 def memetext(message, im):
     """
@@ -91,7 +93,7 @@ def memetext(message, im):
     return im
 
 
-@commands.register('memetext2', 'mb', category='Image')
+@commands.create('memetext2', 'mb', category='Image')
 @image_filter
 def memetext2(message, im):
     """
@@ -105,3 +107,8 @@ def memetext2(message, im):
     """
     render_meme_text(im, message.content, 'bottom')
     return im
+
+
+def setup():
+    commands.add(memetext)
+    commands.add(memetext2)

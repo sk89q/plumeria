@@ -3,7 +3,7 @@ from plumeria import config
 from plumeria.util.http import BaseRestClient
 
 default_api_key = config.create("youtube", "key",
-                                fallback="unset",
+                                fallback="",
                                 comment="A YouTube API key. API keys can be registered at "
                                 "https://console.developers.google.com/")
 

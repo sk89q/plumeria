@@ -53,7 +53,10 @@ class PreferencesManager:
 
     def create(self, name, type=str, fallback=None, comment=None, private=True) -> Preference:
         preference = Preference(name, type, fallback, comment, private)
-        self.preferences[name] = preference
+        return preference
+
+    def add(self, preference):
+        self.preferences[preference.name] = preference
         return preference
 
     def get_preference(self, name) -> Optional[Preference]:

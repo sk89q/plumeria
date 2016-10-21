@@ -1,3 +1,5 @@
+"""Connect the bot to Discord."""
+
 import asyncio
 import inspect
 import logging
@@ -14,6 +16,7 @@ from discord import Server as _Server, Channel as _Channel, PrivateChannel as _P
 from plumeria import config
 from plumeria.event import bus
 from plumeria.message import Message, Attachment
+from plumeria.plugin import PluginSetupError
 from plumeria.transport import Channel, Server
 from plumeria.transport import User
 from plumeria.transport import transports, Transport
@@ -232,104 +235,98 @@ client = discord.Client()
 transport = DiscordTransport(client)
 
 
-@client.event
-async def on_ready():
-    logger.info("Discord logged in as {} ({})".format(client.user.name, client.user.id))
-    await bus.post("transport.ready", transport)
-    for server in transport.servers:
-        await bus.post("server.ready", server)
+def setup():
+    config.add(discord_user)
+    config.add(discord_pass)
+    config.add(discord_token)
 
+    if (not len(discord_user()) or not len(discord_pass())) and not len(discord_token()):
+        raise PluginSetupError("This plugin requires a username and password or login token from "
+                               "https://discordapp.com. Registration is free.")
 
-@client.event
-async def on_channel_update(before, after):
-    await bus.post("channel.before", _wrap(before, transport))
-    await bus.post("channel.after", _wrap(after, transport))
+    @client.event
+    async def on_ready():
+        logger.info("Discord logged in as {} ({})".format(client.user.name, client.user.id))
+        await bus.post("transport.ready", transport)
+        for server in transport.servers:
+            await bus.post("server.ready", server)
 
+    @client.event
+    async def on_channel_update(before, after):
+        await bus.post("channel.before", _wrap(before, transport))
+        await bus.post("channel.after", _wrap(after, transport))
 
-@client.event
-async def on_member_join(member):
-    await bus.post("server.member.join", _wrap(member, transport))
+    @client.event
+    async def on_member_join(member):
+        await bus.post("server.member.join", _wrap(member, transport))
 
+    @client.event
+    async def on_member_update(before, after):
+        await bus.post("server.member.update", _wrap(before, transport), _wrap(after, transport))
 
-@client.event
-async def on_member_update(before, after):
-    await bus.post("server.member.update", _wrap(before, transport), _wrap(after, transport))
+    @client.event
+    async def on_channel_delete(channel):
+        await bus.post("channel.delete", _wrap(channel, transport))
 
+    @client.event
+    async def on_server_join(server):
+        wrapped = _wrap(server, transport)
+        await bus.post("server.join", wrapped)
+        await bus.post("server.ready", wrapped)
 
-@client.event
-async def on_channel_delete(channel):
-    await bus.post("channel.delete", _wrap(channel, transport))
+    @client.event
+    async def on_server_update(before, after):
+        await bus.post("server.update", _wrap(before, transport), _wrap(after, transport))
 
+    @client.event
+    async def on_server_remove(server):
+        wrapped = _wrap(server, transport)
+        await bus.post("server.unready", wrapped)
+        await bus.post("server.remove", wrapped)
 
-@client.event
-async def on_server_join(server):
-    wrapped = _wrap(server, transport)
-    await bus.post("server.join", wrapped)
-    await bus.post("server.ready", wrapped)
+    @client.event
+    async def on_server_available(server):
+        await bus.post("server.available", _wrap(server, transport))
 
+    @client.event
+    async def on_server_unavailable(server):
+        await bus.post("server.unavailable", _wrap(server, transport))
 
-@client.event
-async def on_server_update(before, after):
-    await bus.post("server.update", _wrap(before, transport), _wrap(after, transport))
+    @client.event
+    async def on_group_join(server):
+        await bus.post("server.available", _wrap(server, transport))
 
+    @client.event
+    async def on_group_remove(server):
+        await bus.post("server.unavailable", _wrap(server, transport))
 
-@client.event
-async def on_server_remove(server):
-    wrapped = _wrap(server, transport)
-    await bus.post("server.unready", wrapped)
-    await bus.post("server.remove", wrapped)
-
-
-@client.event
-async def on_server_available(server):
-    await bus.post("server.available", _wrap(server, transport))
-
-
-@client.event
-async def on_server_unavailable(server):
-    await bus.post("server.unavailable", _wrap(server, transport))
-
-
-@client.event
-async def on_group_join(server):
-    await bus.post("server.available", _wrap(server, transport))
-
-
-@client.event
-async def on_group_remove(server):
-    await bus.post("server.unavailable", _wrap(server, transport))
-
-
-@client.event
-async def on_message(message):
-    if message.author != client.user:
-        await bus.post("message", _wrap(message, transport))
-    else:
-        await bus.post("self_message", _wrap(message, transport))
-
-
-@client.event
-async def on_message_delete(message):
-    await bus.post("message.delete", _wrap(message, transport))
-
-
-@client.event
-async def on_message_edit(before, after):
-    await bus.post("message.edit",
-                   _wrap(before, transport),
-                   _wrap(after, transport))
-
-
-@bus.event("init")
-async def init():
-    token = discord_token()
-    if len(token):
-        transports.register(transport.id, transport)
-        asyncio.get_event_loop().create_task(client.start(token))
-    else:
-        username = discord_user()
-        if username != "":
-            transports.register(transport.id, transport)
-            asyncio.get_event_loop().create_task(client.start(username, discord_pass()))
+    @client.event
+    async def on_message(message):
+        if message.author != client.user:
+            await bus.post("message", _wrap(message, transport))
         else:
-            logger.warning("No Discord username/password set! Not connecting to Discord...")
+            await bus.post("self_message", _wrap(message, transport))
+
+    @client.event
+    async def on_message_delete(message):
+        await bus.post("message.delete", _wrap(message, transport))
+
+    @client.event
+    async def on_message_edit(before, after):
+        await bus.post("message.edit",
+                       _wrap(before, transport),
+                       _wrap(after, transport))
+
+    @bus.event("init")
+    async def init():
+        token = discord_token()
+        if len(token):
+            transports.create(transport.id, transport)
+            asyncio.get_event_loop().create_task(client.start(token))
+        else:
+            username = discord_user()
+            if username != "":
+                transports.register(transport.id, transport)
+                asyncio.get_event_loop().create_task(client.start(username, discord_pass()))
+            else:
+                logger.warning("No Discord username/password set! Not connecting to Discord...")

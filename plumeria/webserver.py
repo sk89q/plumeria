@@ -20,11 +20,19 @@ env = Environment(loader=PackageLoader('plumeria', 'templates'),
 env.filters['rst2html'] = lambda s: publish_parts(s, writer_name='html')['html_body']
 
 
+class Route:
+    def __init__(self, path, methods):
+        self.path = path
+        self.methods = methods
+
+
 class Application:
     def __init__(self):
         self.app = web.Application()
         static_dir = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'static')  # does not work with eggs
         self.app.router.add_static('/static/', static_dir, name='static')
+        self.host = "127.0.0.1"
+        self.port = 80
 
     async def get_base_url(self):
         address = public_address()
@@ -43,19 +51,26 @@ class Application:
         if not methods: methods = ['GET']
 
         def decorator(f):
-            @wraps(f)
-            async def wrapper(*args, **kwargs):
-                ret = await f(*args, **kwargs)
-                if isinstance(ret, str):
-                    return web.Response(headers={"Content-Type": "text/html"}, body=ret.encode('utf-8'))
-                else:
-                    return ret
-
-            for method in methods:
-                self.app.router.add_route(method, path, wrapper)
+            f.webserver_route = Route(path, methods)
             return f
 
         return decorator
+
+    def add(self, f):
+        route = f.webserver_route
+
+        @wraps(f)
+        async def wrapper(*args, **kwargs):
+            ret = await f(*args, **kwargs)
+            if isinstance(ret, str):
+                return web.Response(headers={"Content-Type": "text/html"}, body=ret.encode('utf-8'))
+            else:
+                return ret
+
+        for method in route.methods:
+            self.app.router.add_route(method, route.path, wrapper)
+
+        return f
 
 
 def render_template(name, **params):

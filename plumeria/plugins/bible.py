@@ -1,3 +1,5 @@
+"""Fetch bible passages from the English Standard Version."""
+
 from bs4 import BeautifulSoup
 from bs4 import Comment
 from bs4 import NavigableString
@@ -8,7 +10,7 @@ from plumeria.command.parse import Text
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("bible", "esv", category="Search", params=[Text('verse')])
+@commands.create("bible", "esv", category="Search", params=[Text('verse')])
 @rate_limit()
 async def search_esv(message, verse):
     """
@@ -40,3 +42,7 @@ async def search_esv(message, verse):
                             if isinstance(node, NavigableString) and not isinstance(node, Comment)])
         lines.append("**{}** {}".format(num, text.strip()))
     return "\n".join(lines)
+
+
+def setup():
+    commands.add(search_esv)

@@ -1,5 +1,8 @@
+"""Search SoundCloud for music."""
+
 from plumeria import config
 from plumeria.command import commands, CommandError
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
@@ -10,7 +13,7 @@ client_id = config.create("soundcloud", "client_id",
                           comment="A client ID registered on soundcloud.com")
 
 
-@commands.register("soundcloud", category="Music")
+@commands.create("soundcloud", category="Music")
 @rate_limit()
 async def soundcloud(message):
     """
@@ -44,3 +47,11 @@ async def soundcloud(message):
         return "SoundCloud track search:\n{}".format("\n".join(results))
     else:
         raise CommandError("no results found")
+
+def setup():
+    config.add(client_id)
+
+    if not client_id():
+        raise PluginSetupError("This plugin requires a client ID from https://soundcloud.com. Registration is free.")
+
+    commands.add(soundcloud)

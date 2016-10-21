@@ -1,3 +1,5 @@
+"""Deprecated. Listen for GitLab events and announce them to channels."""
+
 import json
 import logging
 import re
@@ -26,23 +28,7 @@ def valid_project_path(s):
     raise ValueError("Invalid project! Must match regex `^[A-Za-z0-9\\-_]{1,100}/[A-Za-z0-9\\-_]{1,100}$`")
 
 
-@bus.event('preinit')
-async def preinit():
-    async def initial(conn):
-        await r.table_create(TOKENS_TABLE).run(conn)
-        await r.table(TOKENS_TABLE).index_create("server_id", r.row["server_id"]).run(conn)
-        await r.table_create(SUBSCRIPTIONS_TABLE).run(conn)
-        await r.table(SUBSCRIPTIONS_TABLE).index_create("server_id_channel_id",
-                                                        [r.row["server_id"], r.row["channel_id"]]).run(conn)
-        await r.table(SUBSCRIPTIONS_TABLE).index_create("server_id_channel_id_project_path",
-                                                        [r.row["server_id"], r.row["channel_id"],
-                                                         r.row['project_path']]).run(conn)
-
-    await migrations.migrate("gitlab_hooks",
-                             (("initial", initial),))
-
-
-@commands.register('gitlab url', category='GitLab')
+@commands.create('gitlab url', category='GitLab')
 @channel_only
 @server_admins_only
 async def url(message):
@@ -65,7 +51,7 @@ async def url(message):
     return "Send webhook POSTs to `{}{}`".format(await app.get_base_url(), WEB_HOOK_URL)
 
 
-@commands.register('gitlab addtoken', category='GitLab')
+@commands.create('gitlab addtoken', category='GitLab')
 @channel_only
 @server_admins_only
 async def add_token(message):
@@ -100,7 +86,7 @@ async def add_token(message):
             raise CommandError("Token '{}' was already added.".format(token))
 
 
-@commands.register('gitlab removetoken', 'gitlab deletetoken', category='GitLab')
+@commands.create('gitlab removetoken', 'gitlab deletetoken', category='GitLab')
 @channel_only
 @server_admins_only
 async def remove_token(message):
@@ -124,10 +110,10 @@ async def remove_token(message):
             raise CommandError("The token '{}' wasn't added yet.".format(token))
 
 
-@commands.register('gitlab tokens', category='GitLab')
+@commands.create('gitlab tokens', category='GitLab')
 @channel_only
 @server_admins_only
-async def subscriptions(message):
+async def tokens(message):
     """
     Get a list of active webhook tokens for this server.
 
@@ -148,7 +134,7 @@ async def subscriptions(message):
             raise CommandError("No tokens added yet!")
 
 
-@commands.register('gitlab subscribe', 'gitlab sub', category='GitLab')
+@commands.create('gitlab subscribe', 'gitlab sub', category='GitLab')
 @channel_only
 @server_admins_only
 async def subscribe(message):
@@ -192,7 +178,7 @@ async def subscribe(message):
                 events=", ".join(events))
 
 
-@commands.register('gitlab unsubscribe', 'gitlab unsub', category='GitLab')
+@commands.create('gitlab unsubscribe', 'gitlab unsub', category='GitLab')
 @channel_only
 @server_admins_only
 async def unsubscribe(message):
@@ -220,7 +206,7 @@ async def unsubscribe(message):
             raise CommandError("This channel wasn't subscribed to events from that repository.")
 
 
-@commands.register('gitlab subscriptions', 'gitlab subs', category='GitLab')
+@commands.create('gitlab subscriptions', 'gitlab subs', category='GitLab')
 @channel_only
 @server_admins_only
 async def subscriptions(message):
@@ -270,7 +256,8 @@ def format_message(payload):
                 author=payload['user_name'],
                 hash=payload['after'][:8],
                 commits=commits,
-                more="\n+{} more".format(commit_count - MAX_COMMITS_PER_MESSAGE) if commit_count > MAX_COMMITS_PER_MESSAGE else "",
+                more="\n+{} more".format(
+                    commit_count - MAX_COMMITS_PER_MESSAGE) if commit_count > MAX_COMMITS_PER_MESSAGE else "",
                 url=payload['repository']['homepage'])
 
 
@@ -316,3 +303,29 @@ async def handle(request):
                                 await channel.send_message(format_message(payload))
 
     return "OK"
+
+
+def setup():
+    @bus.event('preinit')
+    async def preinit():
+        async def initial(conn):
+            await r.table_create(TOKENS_TABLE).run(conn)
+            await r.table(TOKENS_TABLE).index_create("server_id", r.row["server_id"]).run(conn)
+            await r.table_create(SUBSCRIPTIONS_TABLE).run(conn)
+            await r.table(SUBSCRIPTIONS_TABLE).index_create("server_id_channel_id",
+                                                            [r.row["server_id"], r.row["channel_id"]]).run(conn)
+            await r.table(SUBSCRIPTIONS_TABLE).index_create("server_id_channel_id_project_path",
+                                                            [r.row["server_id"], r.row["channel_id"],
+                                                             r.row['project_path']]).run(conn)
+
+        await migrations.migrate("gitlab_hooks",
+                                 (("initial", initial),))
+
+    commands.add(add_token)
+    commands.add(remove_token)
+    commands.add(tokens)
+    commands.add(subscribe)
+    commands.add(unsubscribe)
+    commands.add(subscriptions)
+    commands.add(url)
+    app.add(handle)

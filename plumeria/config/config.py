@@ -672,6 +672,10 @@ class ManagedConfig:
                             self.reader.set(section, key, setting.fallback, comment=setting.comment)
             self.reader.write(f)
 
+    def add(self, setting):
+        self.settings[setting.section][setting.key] = setting
+        return setting
+
     def create(self, section: str, key: str, type=str, fallback: Any = _UNSET, comment: Optional[str] = None,
                scoped: bool = False, private: bool = True) -> Setting:
         """
@@ -701,9 +705,7 @@ class ManagedConfig:
             The setting object, which can be used to fetch the parsed value of the setting
 
         """
-        setting = Setting(self, section, key, type, fallback, comment, scoped, private)
-        self.settings[section][key] = setting
-        return setting
+        return Setting(self, section, key, type, fallback, comment, scoped, private)
 
     def get_setting(self, section, key) -> Optional[Setting]:
         """

@@ -1,10 +1,12 @@
+"""Useful commands for controlling the bot user."""
+
 from plumeria.command import commands, CommandError
 from plumeria.message.lists import build_list
 from plumeria.perms import owners_only
 from plumeria.transport import transports
 
 
-@commands.register('join', category='Utility')
+@commands.create('join', category='Utility')
 @owners_only
 async def join(message):
     """
@@ -32,3 +34,7 @@ async def join(message):
         return build_list(["**{}:** {}".format(e[0], e[1]) for e in results])
     else:
         raise CommandError("No transports available.")
+
+
+def setup():
+    commands.add(join)

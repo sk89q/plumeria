@@ -1,9 +1,11 @@
+"""Search Urban Dictionary for the definition of a word or phrase."""
+
 from plumeria.command import commands, CommandError
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("urban", "urb", category="Search")
+@commands.create("urban", "urb", category="Search")
 @rate_limit()
 async def urban_dictionary(message):
     """
@@ -27,3 +29,7 @@ async def urban_dictionary(message):
             definition=data['list'][0]['definition'])
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    commands.add(urban_dictionary)

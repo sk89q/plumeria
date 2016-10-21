@@ -1,10 +1,11 @@
+"""Commands to get the last message, image, or URL."""
+
 import collections
 import re
 
 from plumeria.command import commands, CommandError, channel_only
-from plumeria.message import Response
 from plumeria.event import bus
-from plumeria.util.ratelimit import rate_limit
+from plumeria.message import Response
 
 LINK_PATTERN = re.compile("https?://([^ ><]+)", re.I)
 IMAGE_PATTERN = re.compile("https?://([^ ><]+)\\.(?:png|jpe?g|gif)", re.I)
@@ -48,28 +49,7 @@ class LastMessage:
 history = collections.defaultdict(lambda: collections.defaultdict(lambda: LastMessage()))
 
 
-@bus.event("channel.delete")
-async def on_channel_delete(channel):
-    if channel.server.id in history:
-        if channel.id in history[channel.server.id]:
-            del history[channel.server.id][channel.id]
-
-
-@bus.event("server.remove")
-async def on_server_remove(server):
-    if server.id in history:
-        del history[server.id]
-
-
-@bus.event("message")
-@bus.event("self_message")
-async def on_message(message):
-    channel = message.channel
-    if not channel.is_private:
-        history[channel.server.id][channel.id].read(message)
-
-
-@commands.register('last text', 'lasttext', 'last', category='Utility')
+@commands.create('last text', 'lasttext', 'last', category='Utility')
 @channel_only
 async def last_text(message):
     """
@@ -89,7 +69,7 @@ async def last_text(message):
         raise CommandError("No last value found.")
 
 
-@commands.register('last image', 'lastimage', category='Utility')
+@commands.create('last image', 'lastimage', category='Utility')
 @channel_only
 async def last_image(message):
     """
@@ -109,9 +89,9 @@ async def last_image(message):
         raise CommandError("No last value found.")
 
 
-@commands.register('last url', 'lasturl', 'last link', 'lastlink', category='Utility')
+@commands.create('last url', 'lasturl', 'last link', 'lastlink', category='Utility')
 @channel_only
-async def last_image(message):
+async def last_url(message):
     """
     Gets the last link posted in a channel.
 
@@ -127,3 +107,27 @@ async def last_image(message):
         return value
     else:
         raise CommandError("No last value found.")
+
+
+def setup():
+    commands.add(last_text)
+    commands.add(last_image)
+    commands.add(last_url)
+
+    @bus.event("channel.delete")
+    async def on_channel_delete(channel):
+        if channel.server.id in history:
+            if channel.id in history[channel.server.id]:
+                del history[channel.server.id][channel.id]
+
+    @bus.event("server.remove")
+    async def on_server_remove(server):
+        if server.id in history:
+            del history[server.id]
+
+    @bus.event("message")
+    @bus.event("self_message")
+    async def on_message(message):
+        channel = message.channel
+        if not channel.is_private:
+            history[channel.server.id][channel.id].read(message)

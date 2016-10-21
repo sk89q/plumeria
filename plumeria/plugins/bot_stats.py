@@ -1,9 +1,11 @@
+"""Commands to get statistics about the bot instance."""
+
 from plumeria.command import commands
 from plumeria.transport import transports
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("stats", "statistics", category="Search")
+@commands.create("stats", "statistics", category="Search", params=[])
 @rate_limit()
 async def stats(message):
     """
@@ -35,3 +37,7 @@ async def stats(message):
         member_count,
         len(member_ids),
     )
+
+
+def setup():
+    commands.add(stats)

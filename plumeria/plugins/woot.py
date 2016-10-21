@@ -1,8 +1,11 @@
+"""Get ongoing sales off woot.com."""
+
 import re
 from functools import reduce
 
 from plumeria import config
-from plumeria.command import commands, CommandError
+from plumeria.command import commands
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.message import strip_html
 from plumeria.util.ratelimit import rate_limit
@@ -12,7 +15,7 @@ api_key = config.create("woot", "key",
                         comment="An API key from woot.com")
 
 
-@commands.register("woot", category="Search")
+@commands.create("woot", category="Search")
 @rate_limit()
 async def woot(message):
     """
@@ -37,3 +40,12 @@ async def woot(message):
         url=re.sub("\\?.*$", "", e['Url']),
         remaining=e['PercentageRemaining'],
     ), offers))
+
+
+def setup():
+    config.add(api_key)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key from https://woot.com. Registration is free.")
+
+    commands.add(woot)

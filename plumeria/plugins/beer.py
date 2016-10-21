@@ -1,17 +1,20 @@
+"""Search brewerydb.com for information about beers."""
+
 import plumeria.util.http as http
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.command.parse import Text
 from plumeria.message.mappings import build_mapping
+from plumeria.plugin import PluginSetupError
 from plumeria.util.collections import SafeStructure
 from plumeria.util.ratelimit import rate_limit
 
 api_key = config.create("brewerydb", "key",
-                        fallback="unset",
+                        fallback="",
                         comment="An API key from brewerydb.com")
 
 
-@commands.register("beer", category="Search", params=[Text('query')])
+@commands.create("beer", category="Search", params=[Text('query')])
 @rate_limit(burst_size=4)
 async def beer_search(message, query):
     """
@@ -58,3 +61,10 @@ async def beer_search(message, query):
         props.append(("Food pairings", beer.foodPairings.strip()))
 
     return build_mapping(props)
+
+
+def setup():
+    config.add(api_key)
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key from https://brewerydb.com. Registration is free.")
+    commands.add(beer_search)

@@ -1,3 +1,5 @@
+"""Search for desktop wallpapers on Wallhave.cc."""
+
 import random
 
 from bs4 import BeautifulSoup
@@ -7,7 +9,7 @@ from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("wallhaven", "wallbase", category="Search")
+@commands.create("wallhaven", "wallbase", category="Search")
 @rate_limit()
 async def wallhaven(message):
     """
@@ -41,3 +43,7 @@ async def wallhaven(message):
         return "{}\nGet it here: <{}>".format(*choice)
     else:
         raise CommandError("No wallpapers found!")
+
+
+def setup():
+    commands.add(wallhaven)

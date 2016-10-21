@@ -1,3 +1,5 @@
+"""Add support for OAuth to let users to connect the bot various services."""
+
 from plumeria.command import CommandError, commands
 from plumeria.event import bus
 from plumeria.message import Message, Response
@@ -13,7 +15,7 @@ def find_endpoint(name) -> Endpoint:
         raise CommandError("No such service **{}** exists.".format(name))
 
 
-@commands.register('connect', cost=4, category='Services')
+@commands.create('connect', cost=4, category='Services')
 @direct_only
 async def connect(message: Message):
     """
@@ -28,7 +30,8 @@ async def connect(message: Message):
     try:
         url = await endpoint.request_authorization(message.author)
         return Response("You will have to visit this link to connect your account: {}" \
-                        "\n\nYou can later disable access from your account settings on the website.".format(url), private=True)
+                        "\n\nYou can later disable access from your account settings on the website.".format(url),
+                        private=True)
     except NotImplementedError as e:
         raise CommandError("Could not connect service: {}".format(str(e)))
 
@@ -54,7 +57,10 @@ async def handle(request):
                                error="Something went wrong while connecting to the service. The service says: {}".format(
                                    error[:200]))
 
+def setup():
+    @bus.event('preinit')
+    async def preinit():
+        oauth_manager.redirect_uri = await app.get_base_url() + "/oauth2/callback/"
 
-@bus.event('preinit')
-async def preinit():
-    oauth_manager.redirect_uri = await app.get_base_url() + "/oauth2/callback/"
+    commands.add(connect)
+    app.add(handle)

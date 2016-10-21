@@ -1,8 +1,11 @@
+"""Query anime and manga information from MyAnimeList.com."""
+
 import aiohttp
 from bs4 import BeautifulSoup
 
 from plumeria import config
 from plumeria.command import commands, CommandError
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.message import strip_html
 from plumeria.util.ratelimit import rate_limit
@@ -14,7 +17,7 @@ password = config.create("myanimelist", "password", fallback="",
                          comment="Account password for API requests on myanimelist.net")
 
 
-@commands.register("anime", category="Search")
+@commands.create("anime", category="Search")
 @rate_limit()
 async def anime(message):
     """
@@ -54,7 +57,7 @@ async def anime(message):
     )
 
 
-@commands.register("manga", category="Search")
+@commands.create("manga", category="Search")
 @rate_limit()
 async def manga(message):
     """
@@ -94,3 +97,16 @@ async def manga(message):
         end=entry.end_date.text,
         synopsis=strip_html(entry.synopsis.text),
     )
+
+
+def setup():
+    config.add(username)
+    config.add(password)
+
+    if not username() or not password():
+        raise PluginSetupError("This plugin requires a username and password from https://myanimelist.net. "
+                               "Registration is free, and you may want to register a separate account for the "
+                               "bot as a precaution if you already use MyAnimeList.")
+
+    commands.add(anime)
+    commands.add(manga)

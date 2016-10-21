@@ -1,10 +1,11 @@
-from plumeria import config
+"""Search the PHP Packagist repository for PHP libraries."""
+
 from plumeria.command import commands, CommandError
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("packagist", "composer", category="Development")
+@commands.create("packagist", "composer", category="Development")
 @rate_limit()
 async def packagist(message):
     """
@@ -38,3 +39,7 @@ async def packagist(message):
                              data['results']))
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    commands.add(packagist)

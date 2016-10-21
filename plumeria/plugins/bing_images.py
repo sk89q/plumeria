@@ -1,3 +1,5 @@
+"""Search for images using Bing.com."""
+
 import random
 
 from aiohttp import BasicAuth
@@ -6,6 +8,7 @@ from plumeria.command import commands, CommandError
 from plumeria.command.parse import Text
 from plumeria.config.common import nsfw
 from plumeria.message import Response
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.collections import SafeStructure
 from plumeria.util.ratelimit import rate_limit
@@ -13,11 +16,11 @@ from plumeria.util.ratelimit import rate_limit
 SEARCH_URL = "https://api.datamarket.azure.com/Bing/Search/v1/Image"
 
 api_key = config.create("bing", "key",
-                        fallback="unset",
+                        fallback="",
                         comment="An API key from Bing")
 
 
-@commands.register("image", "images", "i", category="Search", params=[Text('query')])
+@commands.create("image", "images", "i", category="Search", params=[Text('query')])
 @rate_limit()
 async def image(message, query):
     """
@@ -39,3 +42,13 @@ async def image(message, query):
         return Response(random.choice(results).MediaUrl)
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    config.add(api_key)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires a Bing.com API key. Registration is free as of writing but "
+                               "Microsoft plans to charge for service.")
+
+    commands.add(image)

@@ -1,3 +1,5 @@
+"""Query the Python package repository for packages."""
+
 import asyncio
 import xmlrpc.client as xmlrpclib
 
@@ -7,7 +9,7 @@ from plumeria.util.ratelimit import rate_limit
 client = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')
 
 
-@commands.register("pypi", category="Development")
+@commands.create("pypi", category="Development")
 @rate_limit()
 async def pypi(message):
     """
@@ -40,3 +42,7 @@ async def pypi(message):
                              data))
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    commands.add(pypi)

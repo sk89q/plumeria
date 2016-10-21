@@ -383,6 +383,10 @@ class AccessManager:
         self.random = random.SystemRandom()
         self.redirect_uri = "http://localhost/oauth2/callback/"
 
+    def add(self, endpoint):
+        self.endpoints[endpoint.name] = endpoint
+        return endpoint
+
     def create_oauth2(self, name, client_id, client_secret, auth_url, token_url, requested_scopes: List[str],
                       auth_params: Optional[Mapping[str, str]] = None,
                       refresh_token_url: Optional[str] = None) -> Endpoint:
@@ -417,7 +421,6 @@ class AccessManager:
         """
         endpoint = Endpoint(self, name, client_id, client_secret, auth_url, token_url, requested_scopes, auth_params,
                             refresh_token_url)
-        self.endpoints[name] = endpoint
         return endpoint
 
     def _create_state(self, endpoint: Endpoint, user: User) -> str:

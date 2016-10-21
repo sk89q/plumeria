@@ -1,3 +1,5 @@
+"""Create new commands that call existing commands."""
+
 import io
 import json
 
@@ -12,17 +14,7 @@ from .manager import AliasManager
 aliases = AliasManager()
 
 
-@bus.event('init')
-async def init():
-    await migrations.migrate("alias", __name__)
-
-
-@bus.event('server.ready')
-async def server_available(server):
-    await aliases.load_soon(server)
-
-
-@commands.register('alias', 'alias create', cost=4, category='Alias')
+@commands.create('alias', 'alias create', cost=4, category='Alias')
 @channel_only
 @server_admins_only
 async def alias(message):
@@ -47,7 +39,7 @@ async def alias(message):
         raise CommandError("<alias> <command>")
 
 
-@commands.register('alias delete', 'alias remove', cost=4, category='Alias')
+@commands.create('alias delete', 'alias remove', cost=4, category='Alias')
 @channel_only
 @server_admins_only
 async def delete_alias(message: Message):
@@ -70,7 +62,7 @@ async def delete_alias(message: Message):
         raise CommandError("<alias>")
 
 
-@commands.register('alias get', 'alias info', cost=4, category='Alias')
+@commands.create('alias get', 'alias info', cost=4, category='Alias')
 @channel_only
 async def get_alias(message: Message):
     """
@@ -91,7 +83,7 @@ async def get_alias(message: Message):
         raise CommandError("<alias>")
 
 
-@commands.register('alias export', cost=4, category='Alias')
+@commands.create('alias export', cost=4, category='Alias')
 @channel_only
 @server_admins_only
 async def export_aliases(message: Message):
@@ -110,21 +102,34 @@ async def export_aliases(message: Message):
     ])
 
 
-@commands.enumerator
-async def alias_enumerator(server_id):
-    if server_id:
-        return aliases.get_mappings(server_id)
-    else:
-        return []
+def setup():
+    @bus.event('init')
+    async def init():
+        await migrations.migrate("alias", __name__)
 
+    @bus.event('server.ready')
+    async def server_available(server):
+        await aliases.load_soon(server)
 
-@commands.intercept
-async def alias_listener(original, alias, depth):
-    if not original.channel.is_private:  # public channels only
-        alias = aliases.get(original.channel.server, alias)
-        if alias:
-            message = ProxyMessage(original)
-            message.content = alias.command
-            message.registers['input'] = original
-            return await commands.execute(message, Context(), expect_prefix=False)
+    @commands.enumerator
+    async def alias_enumerator(server_id):
+        if server_id:
+            return aliases.get_mappings(server_id)
+        else:
+            return []
+
+    @commands.intercept
+    async def alias_listener(original, alias, depth):
+        if not original.channel.is_private:  # public channels only
+            alias = aliases.get(original.channel.server, alias)
+            if alias:
+                message = ProxyMessage(original)
+                message.content = alias.command
+                message.registers['input'] = original
+                return await commands.execute(message, Context(), expect_prefix=False)
         return False
+
+    commands.add(alias)
+    commands.add(delete_alias)
+    commands.add(get_alias)
+    commands.add(export_aliases)

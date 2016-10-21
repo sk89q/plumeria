@@ -1,3 +1,5 @@
+"""Query Google Maps for maps and other geo info."""
+
 import io
 import re
 import urllib.parse
@@ -6,6 +8,7 @@ import html2text
 
 from plumeria import config
 from plumeria.command import commands, CommandError
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
@@ -16,7 +19,7 @@ api_key = config.create("google", "key",
                         comment="An API key from https://console.developers.google.com/ with the proper APIs enabled")
 
 
-@commands.register("latlng", "latlong", "lat lng", "lat long", category="Search")
+@commands.create("latlng", "latlong", "lat lng", "lat long", category="Search")
 @rate_limit()
 async def lat_long(message):
     """
@@ -52,7 +55,7 @@ async def lat_long(message):
             data['error_message'] if 'error_message' in data else data['status']))
 
 
-@commands.register("directions", category="Search")
+@commands.create("directions", category="Search")
 @rate_limit()
 async def directions(message):
     """
@@ -113,3 +116,14 @@ async def directions(message):
     else:
         raise CommandError("Google Maps returned an error: {}".format(
             data['error_message'] if 'error_message' in data else data['status']))
+
+
+def setup():
+    config.add(api_key)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key from Google. Registration is free. Get keys from "
+                               "https://console.developers.google.com.")
+
+    commands.add(lat_long)
+    commands.add(directions)

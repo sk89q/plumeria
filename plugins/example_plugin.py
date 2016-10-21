@@ -9,7 +9,7 @@ from plumeria.command import commands
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register('example', category='Fun')
+@commands.create('example', category='Fun')
 @rate_limit()
 async def example(message):
     """
@@ -17,3 +17,8 @@ async def example(message):
 
     """
     return "Hello world"
+
+
+def setup():
+    # This method is called to start your plugin if it's enabled
+    commands.add(example)

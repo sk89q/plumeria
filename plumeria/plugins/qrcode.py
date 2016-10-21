@@ -1,3 +1,5 @@
+"""Generate QR codes."""
+
 import asyncio
 
 import qrcode
@@ -7,7 +9,7 @@ from plumeria.message import Response, ImageAttachment
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register('qrcode', 'qr', category='Image')
+@commands.create('qrcode', 'qr', category='Image')
 @rate_limit(burst_size=2)
 async def qr(message):
     """
@@ -28,3 +30,7 @@ async def qr(message):
 
     im = await asyncio.get_event_loop().run_in_executor(None, execute)
     return Response("", [ImageAttachment(im, "qr.png")])
+
+
+def setup():
+    commands.add(qr)

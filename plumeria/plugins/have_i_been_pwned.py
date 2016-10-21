@@ -1,5 +1,6 @@
+"""Check haveibeenpwned.com to find breached account information."""
+
 import plumeria.util.http as http
-from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.command.parse import Text
 from plumeria.message.mappings import build_mapping
@@ -7,7 +8,7 @@ from plumeria.util.collections import SafeStructure
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("haveibeenpwned", "pwned", category="Search", params=[Text('query')])
+@commands.create("haveibeenpwned", "pwned", category="Search", params=[Text('query')])
 @rate_limit(burst_size=4)
 async def have_i_been_pwned(message, query):
     """
@@ -34,3 +35,7 @@ async def have_i_been_pwned(message, query):
     return build_mapping(
         [(e.Title, "{} ({} breached) ({})".format(e.BreachDate, e.PwnCount, ", ".join(e.DataClasses))) for e in
          results])
+
+
+def setup():
+    commands.add(have_i_been_pwned)

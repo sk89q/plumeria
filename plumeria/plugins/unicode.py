@@ -1,10 +1,12 @@
+"""Utility commands to work Unicode data."""
+
 import unicodedata
 
 from plumeria.command import commands
 from plumeria.util.command import string_filter
 
 
-@commands.register('unicode escape', 'unicodeescape', category='Development')
+@commands.create('unicode escape', 'unicodeescape', category='Development')
 @string_filter
 def unicode_escape(text):
     """
@@ -26,7 +28,7 @@ def unicode_escape(text):
     return text.encode("unicode_escape").decode("utf-8")
 
 
-@commands.register('unicode name', 'unicodename', category='Development')
+@commands.create('unicode name', 'unicodename', category='Development')
 @string_filter
 def unicode_name(text):
     """
@@ -37,11 +39,17 @@ def unicode_name(text):
 
 
 
-@commands.register('unicode code', 'unicodecode', category='Development')
+@commands.create('unicode code', 'unicodecode', category='Development')
 @string_filter
-def unicode_name(text):
+def unicode_code(text):
     """
     Finds the Unicode code points for the given characters, up to 10 characters.
 
     """
     return "\n".join("{} **{}**".format(s, ord(s)) for s in text[:10])
+
+
+def setup():
+    commands.add(unicode_escape)
+    commands.add(unicode_name)
+    commands.add(unicode_code)

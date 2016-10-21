@@ -1,3 +1,5 @@
+"""Render charts and graphs using matplotlib."""
+
 import asyncio
 import io
 import re
@@ -58,7 +60,7 @@ def extract_data(message, pattern, normalize=False):
     return title, labels, data
 
 
-@commands.register("pie", category="Graphing")
+@commands.create("pie", category="Graphing")
 @rate_limit()
 async def pie(message):
     """
@@ -105,7 +107,7 @@ async def pie(message):
     return Response("", attachments=[MemoryAttachment(buf, "graph.png", "image/png")])
 
 
-@commands.register("bar", category="Graphing")
+@commands.create("bar", category="Graphing")
 @rate_limit()
 async def bar(message):
     """
@@ -155,7 +157,7 @@ async def bar(message):
     return Response("", attachments=[MemoryAttachment(buf, "graph.png", "image/png")])
 
 
-@commands.register("histogram", "hist", category="Graphing")
+@commands.create("histogram", "hist", category="Graphing")
 @rate_limit()
 async def histogram(message):
     """
@@ -192,7 +194,7 @@ async def histogram(message):
     return Response("", attachments=[MemoryAttachment(buf, "graph.png", "image/png")])
 
 
-@commands.register("tex", "latex", category="Image")
+@commands.create("tex", "latex", category="Image")
 @rate_limit()
 async def latex(message):
     """
@@ -222,3 +224,10 @@ async def latex(message):
     im = await asyncio.get_event_loop().run_in_executor(None, execute)
 
     return Response("", attachments=[ImageAttachment(im, "text.png")])
+
+
+def setup():
+    commands.add(pie)
+    commands.add(bar)
+    commands.add(histogram)
+    commands.add(latex)

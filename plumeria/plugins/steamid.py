@@ -1,3 +1,5 @@
+"""Commands to look up and convert Steam community ID and profiles."""
+
 from plumeria.command import commands, CommandError
 from plumeria.middleware.api.steam import SteamCommunity, parse_steam_id
 from plumeria.util.ratelimit import rate_limit
@@ -5,7 +7,7 @@ from plumeria.util.ratelimit import rate_limit
 steam_community = SteamCommunity()
 
 
-@commands.register("steam id", "steamid", category="Steam")
+@commands.create("steam id", "steamid", category="Steam")
 @rate_limit()
 async def steamid(message):
     """
@@ -20,7 +22,7 @@ async def steamid(message):
     )
 
 
-@commands.register("steam profile", "steamprofile", category="Steam")
+@commands.create("steam profile", "steamprofile", category="Steam")
 @rate_limit()
 async def steamprofile(message):
     """
@@ -36,7 +38,7 @@ async def steamprofile(message):
         profile.id.to_64())
 
 
-@commands.register("steam avatar", "steamavatar", category="Steam")
+@commands.create("steam avatar", "steamavatar", category="Steam")
 @rate_limit()
 async def steam_avatar(message):
     """
@@ -51,9 +53,9 @@ async def steam_avatar(message):
         raise CommandError("The user has no avatar.")
 
 
-@commands.register("steam id64", "steamid64", category="Steam")
+@commands.create("steam id64", "steamid64", category="Steam")
 @rate_limit()
-async def steamid(message):
+async def steamid_64(message):
     """
     Get a Steam user's 64-bit ID.
     """
@@ -61,11 +63,19 @@ async def steamid(message):
     return str((await parse_steam_id(s)).to_64())
 
 
-@commands.register("steam id32", "steamid32", category="Steam")
+@commands.create("steam id32", "steamid32", category="Steam")
 @rate_limit()
-async def steamid(message):
+async def steamid_32(message):
     """
     Get a Steam user's 32-bit ID.
     """
     s = message.content.strip()
     return (await parse_steam_id(s)).to_text()
+
+
+def setup():
+    commands.add(steamid)
+    commands.add(steamprofile)
+    commands.add(steam_avatar)
+    commands.add(steamid_64)
+    commands.add(steamid_32)

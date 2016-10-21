@@ -1,3 +1,5 @@
+"""Look up vulnerabilities in the CVE database."""
+
 import re
 import urllib.parse
 
@@ -8,7 +10,7 @@ from plumeria.util.ratelimit import rate_limit
 CVE_PATTERN = re.compile("^(CVE-\\d{4,5}-\d+)$", re.IGNORECASE)
 
 
-@commands.register("cve", category="Search")
+@commands.create("cve", category="Search")
 @rate_limit()
 async def cve(message):
     """
@@ -51,3 +53,7 @@ async def cve(message):
             url="https://cve.mitre.org/cgi-bin/cvename.cgi?name={}".format(urllib.parse.quote(data['id'])))
     else:
         raise CommandError("no results found")
+
+
+def setup():
+    commands.add(cve)

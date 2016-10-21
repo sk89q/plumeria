@@ -1,3 +1,5 @@
+"""Search Spotify for music."""
+
 from titlecase import titlecase
 
 from plumeria import config
@@ -21,7 +23,7 @@ async def get_artist_id(q):
     return artist_data['artists']['items'][0]['id']
 
 
-@commands.register("spotify artist", "spartist", category="Music")
+@commands.create("spotify artist", "spartist", category="Music")
 @rate_limit()
 async def artist(message):
     """
@@ -50,7 +52,7 @@ async def artist(message):
         raise CommandError("no results found")
 
 
-@commands.register("spotify track", "spotify", "sptrack", category="Music")
+@commands.create("spotify track", "spotify", "sptrack", category="Music")
 @rate_limit()
 async def track(message):
     """
@@ -79,7 +81,7 @@ async def track(message):
         raise CommandError("no results found")
 
 
-@commands.register("spotify album", "spalbum", category="Music")
+@commands.create("spotify album", "spalbum", category="Music")
 @rate_limit()
 async def album(message):
     """
@@ -103,7 +105,7 @@ async def album(message):
         raise CommandError("no results found")
 
 
-@commands.register("spotify discog", "discog", category="Music")
+@commands.create("spotify discog", "discog", category="Music")
 @rate_limit()
 async def discog(message):
     """
@@ -139,7 +141,7 @@ async def discog(message):
     return build_list(items)
 
 
-@commands.register("spotify top", "top songs", category="Music")
+@commands.create("spotify top", "top songs", category="Music")
 @rate_limit()
 async def top_songs(message):
     """
@@ -168,3 +170,12 @@ async def top_songs(message):
         album=e['album']['name'],
         url=e['external_urls']['spotify'],
     ) for e in data['tracks']])
+
+
+def setup():
+    config.add(default_country)
+    commands.add(artist)
+    commands.add(track)
+    commands.add(album)
+    commands.add(discog)
+    commands.add(top_songs)

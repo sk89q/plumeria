@@ -1,9 +1,11 @@
+"""Provides commands to work with a per-execution stack and set of registers."""
+
 from plumeria.command import CommandError, commands
-from plumeria.message import Response, Message, ProxyMessage
+from plumeria.message import Response, ProxyMessage
 from plumeria.message.lists import parse_list
 
 
-@commands.register('push', 'psh', cost=0.05, category="Operations")
+@commands.create('push', 'psh', cost=0.05, category="Operations")
 async def push(message):
     """
     Pushes a message to the stack.
@@ -15,7 +17,7 @@ async def push(message):
     message.stack.append(message)
 
 
-@commands.register('pop', cost=0.05, category="Operations")
+@commands.create('pop', cost=0.05, category="Operations")
 async def pop(message):
     """
     Pops a message from the stack.
@@ -31,7 +33,7 @@ async def pop(message):
         raise CommandError("stack is empty")
 
 
-@commands.register('put', 'store', 'stor', cost=0.05, category="Operations")
+@commands.create('put', 'store', 'stor', cost=0.05, category="Operations")
 async def put(message):
     """
     Puts a message into a given register.
@@ -48,7 +50,7 @@ async def put(message):
     return Response("", registers=message.registers)
 
 
-@commands.register('get', cost=0.05, category="Operations")
+@commands.create('get', cost=0.05, category="Operations")
 async def get(message):
     """
     Reads a message from a given register.
@@ -66,7 +68,7 @@ async def get(message):
         raise CommandError("no key '{}' in registers".format(key))
 
 
-@commands.register('argparse', cost=0.05, category="Operations")
+@commands.create('argparse', cost=0.05, category="Operations")
 async def argparse(message):
     """
     Parse arguments from input and save them into registers. To use the command,
@@ -100,3 +102,11 @@ async def argparse(message):
             new_message.content = args[i]
             new_message.attachments = []
             message.registers[key] = new_message
+
+
+def setup():
+    commands.add(push)
+    commands.add(pop)
+    commands.add(put)
+    commands.add(get)
+    commands.add(argparse)

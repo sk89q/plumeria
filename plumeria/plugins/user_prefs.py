@@ -1,3 +1,5 @@
+"""Manage the storage and retrieval of per-user preferences."""
+
 from plumeria.command import commands, CommandError
 from plumeria.message import Message
 from plumeria.message.mappings import build_mapping
@@ -12,7 +14,7 @@ def find_preference(name):
         raise CommandError("No such preference **{}** exists.".format(name))
 
 
-@commands.register('pref set', 'prefs set', 'pset', cost=4, category='User Preferences')
+@commands.create('pref set', 'prefs set', 'pset', cost=4, category='User Preferences')
 @direct_only
 async def set(message: Message):
     """
@@ -39,7 +41,7 @@ async def set(message: Message):
         raise CommandError("Could not set **{}**: {}".format(name, str(e)))
 
 
-@commands.register('pref unset', 'prefs unset', 'punset', cost=4, category='User Preferences')
+@commands.create('pref unset', 'prefs unset', 'punset', cost=4, category='User Preferences')
 @direct_only
 async def unset(message: Message):
     """
@@ -60,7 +62,7 @@ async def unset(message: Message):
         raise CommandError("Could not delete **{}**: {}".format(pref.name, str(e)))
 
 
-@commands.register('pref get', 'prefs get', 'pget', cost=4, category='User Preferences')
+@commands.create('pref get', 'prefs get', 'pget', cost=4, category='User Preferences')
 async def get(message: Message):
     """
     Get what you have set for a preference.
@@ -83,7 +85,7 @@ async def get(message: Message):
         raise CommandError("Could not get **{}**: {}".format(pref.name, str(e)))
 
 
-@commands.register('pref list', 'prefs list', 'prefs', cost=4, category='User Preferences')
+@commands.create('pref list', 'prefs list', 'prefs', cost=4, category='User Preferences')
 async def list(message: Message):
     """
     Get a list of preferences that have been set for yourself.
@@ -101,7 +103,7 @@ async def list(message: Message):
         raise CommandError("Could not get your preferences: {}".format(str(e)))
 
 
-@commands.register('pref defaults', 'prefs defaults', cost=4, category='User Preferences')
+@commands.create('pref defaults', 'prefs defaults', cost=4, category='User Preferences')
 async def list_defaults(message: Message):
     """
     Get a list of preferences that can be set.
@@ -112,3 +114,11 @@ async def list_defaults(message: Message):
         return build_mapping(items)
     else:
         raise CommandError("No preferences exist to be set.")
+
+
+def setup():
+    commands.add(set)
+    commands.add(unset)
+    commands.add(get)
+    commands.add(list)
+    commands.add(list_defaults)

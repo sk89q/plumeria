@@ -1,3 +1,5 @@
+"""Commands to manage emoji on a server."""
+
 import asyncio
 import io
 import re
@@ -11,8 +13,8 @@ from plumeria.transport.transport import ForbiddenError
 VALID_EMOJI_NAME_RE = re.compile("^[A-Za-z0-9_]{2,20}$")
 
 
-@commands.register('emoji create', 'emoji add', 'createemoji', 'addemoji', 'create emoji', 'add emoji',
-                   category='Management')
+@commands.create('emoji create', 'emoji add', 'createemoji', 'addemoji', 'create emoji', 'add emoji',
+                 category='Management')
 @channel_only
 @have_all_perms('manage_emojis')
 async def create_emoji(message: Message):
@@ -51,8 +53,8 @@ async def create_emoji(message: Message):
         raise CommandError("The bot doesn't have the permissions to do this: {}".format(str(e)))
 
 
-@commands.register('emoji delete', 'emoji remove', 'deleteemoji', 'removeemoji', 'delete emoji', 'remove emoji',
-                   category='Management')
+@commands.create('emoji delete', 'emoji remove', 'deleteemoji', 'removeemoji', 'delete emoji', 'remove emoji',
+                 category='Management')
 @channel_only
 @have_all_perms('manage_emojis')
 async def delete_emoji(message: Message):
@@ -73,3 +75,8 @@ async def delete_emoji(message: Message):
         return "{} deleted.".format(count)
     except ForbiddenError as e:
         raise CommandError("The bot doesn't have the permissions to do this: {}".format(str(e)))
+
+
+def setup():
+    commands.add(create_emoji)
+    commands.add(delete_emoji)

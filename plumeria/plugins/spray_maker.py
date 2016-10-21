@@ -1,3 +1,5 @@
+"""Create .vtf spray files for games that use Valve's Source engine."""
+
 import asyncio
 import io
 import logging
@@ -13,6 +15,7 @@ from PIL import Image
 from plumeria.command import commands, CommandError
 from plumeria.message import Response, MemoryAttachment
 from plumeria.message.image import read_image
+from plumeria.plugin import PluginSetupError
 from plumeria.util.ratelimit import rate_limit
 
 VTFCMD_PATH = os.path.join("bin", "VTFCmd.exe")
@@ -31,7 +34,7 @@ def resize_canvas(im, size):
     return resized
 
 
-@commands.register('make spray', 'makespray', category='Image')
+@commands.create('make spray', 'makespray', category='Image')
 @rate_limit(burst_size=2)
 async def make_spray(message):
     """
@@ -103,13 +106,14 @@ async def make_spray(message):
                         buffer.write(f.read())
                     return buffer
                 else:
-                    logger.warn("VTFCmd failed to create a file:\n\nargs: {}\nreturn code {}\nfiles:{}\n\nstderr: {}\n\nstdout: {}".format(
-                        " ".join(args),
-                        p.returncode,
-                        " ".join(os.listdir(temp_dir)),
-                        stderr.decode("utf-8", errors='ignore'),
-                        stdout.decode("utf-8", errors='ignore')
-                    ))
+                    logger.warn(
+                        "VTFCmd failed to create a file:\n\nargs: {}\nreturn code {}\nfiles:{}\n\nstderr: {}\n\nstdout: {}".format(
+                            " ".join(args),
+                            p.returncode,
+                            " ".join(os.listdir(temp_dir)),
+                            stderr.decode("utf-8", errors='ignore'),
+                            stdout.decode("utf-8", errors='ignore')
+                        ))
                 raise CommandError("Failed to create spray (the bot administrator can see the logs)")
             else:
                 logger.warn("VTFCmd failed to run:\n\nargs: {}\nreturn code {}\n\nstderr: {}\n\nstdout: {}".format(
@@ -124,3 +128,12 @@ async def make_spray(message):
 
     output = await asyncio.get_event_loop().run_in_executor(None, execute)
     return Response("", [MemoryAttachment(output, "spray.vtf", "application/octet-stream")])
+
+
+def setup():
+    if not os.path.exists(VTFCMD_PATH):
+        raise PluginSetupError("This plugin requires a copy of VTFCmd.exe to be put it into the bin folder. You can "
+                               "download VTFCmd for free from http://nemesis.thewavelength.net. Linux users can "
+                               "use this plugin if they install Wine.")
+
+    commands.add(make_spray)

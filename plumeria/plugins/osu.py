@@ -1,3 +1,5 @@
+"""Commands to query osu! (a game) stats for a user."""
+
 import shlex
 import urllib.parse
 import re
@@ -5,6 +7,7 @@ import re
 from plumeria import config
 from plumeria.command import commands, CommandError, ArgumentParser
 from plumeria.message import Response
+from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.message.image import fetch_image
 from plumeria.util.ratelimit import rate_limit
@@ -31,7 +34,7 @@ def validate_hex_color(s):
     raise CommandError("Invalid hex color code")
 
 
-@commands.register("osu sig", "osusig", category="Games")
+@commands.create("osu sig", "osusig", category="Games")
 @rate_limit()
 async def sig(message):
     """
@@ -63,7 +66,7 @@ async def sig(message):
                     attachments=[await fetch_image(url)])
 
 
-@commands.register("osu stats", "osu", category="Games")
+@commands.create("osu stats", "osu", category="Games")
 @rate_limit()
 async def stats(message):
     """
@@ -107,3 +110,14 @@ async def stats(message):
                "SS: {count_rank_ss:.0f} / S: {count_rank_s:.0f} / A: {count_rank_a:.0f}".format(**data[0])
     else:
         return "no results"
+
+
+def setup():
+    config.add(api_key)
+
+    if not api_key():
+        raise PluginSetupError("This plugin requires an API key from https://osu.ppy.sh/. Registration is free, but "
+                               "you have to download and install the game to complete registration.")
+
+    commands.add(sig)
+    commands.add(stats)

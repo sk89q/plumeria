@@ -1,3 +1,5 @@
+"""Get a list of recent earthquakes."""
+
 import plumeria.util.http as http
 from plumeria.command import commands, CommandError
 from plumeria.message import Response
@@ -6,7 +8,7 @@ from plumeria.util.ratelimit import rate_limit
 URL = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson"
 
 
-@commands.register("earthquakes", "quakes", category="Search")
+@commands.create("earthquakes", "quakes", category="Search")
 @rate_limit()
 async def earthquakes(message):
     """
@@ -32,3 +34,7 @@ async def earthquakes(message):
         return Response("\n".join(output))
     else:
         raise CommandError("No earthquakes are available.")
+
+
+def setup():
+    commands.add(earthquakes)

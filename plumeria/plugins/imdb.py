@@ -1,3 +1,5 @@
+"""Get information about movies from IMDB vua omdbapi."""
+
 import plumeria.util.http as http
 import re
 from plumeria.command import commands, CommandError
@@ -7,7 +9,7 @@ URL = "http://www.omdbapi.com/"
 NAME_PATTERN = re.compile("^(.+?)(?:\\( *([0-9]{4}) *\\))?$")
 
 
-@commands.register("imdb", category="Search")
+@commands.create("imdb", category="Search")
 @rate_limit()
 async def imdb(message):
     """
@@ -41,3 +43,7 @@ async def imdb(message):
                "\n{Plot}\n".format(**data)
     else:
         raise CommandError("No movie found with that name.")
+
+
+def setup():
+    commands.add(imdb)

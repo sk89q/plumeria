@@ -1,3 +1,5 @@
+"""Stores configuration in the database."""
+
 import logging
 from typing import Sequence
 
@@ -55,12 +57,13 @@ class DatabaseConfig(ScopedConfigProvider):
 db_config = DatabaseConfig(pool)
 
 
-@bus.event('preinit')
-async def preinit():
-    logger.info("Setting {} as the default store for scoped configuration".format(__name__))
-    scoped_config.provider = db_config
+def setup():
+    @bus.event('preinit')
+    async def preinit():
+        logger.info("Setting {} as the default store for scoped configuration".format(__name__))
+        scoped_config.provider = db_config
 
 
-@bus.event('init')
-async def init():
-    await db_config.init()
+    @bus.event('init')
+    async def init():
+        await db_config.init()

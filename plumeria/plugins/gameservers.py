@@ -1,3 +1,5 @@
+"""Query Valve game server status and player lists."""
+
 import valve
 from plumeria.command import commands, CommandError
 from plumeria.games import steam_query
@@ -8,7 +10,7 @@ from plumeria.util.network import AddressResolver, InvalidAddress
 resolver = AddressResolver(port_validator=lambda p: p >= 1000)
 
 
-@commands.register('a2squery', category='Servers')
+@commands.create('a2squery', category='Servers')
 @rate_limit()
 async def a2squery(message):
     """
@@ -32,3 +34,7 @@ async def a2squery(message):
         raise CommandError(str(e))
     except valve.source.a2s.NoResponseError as e:
         raise CommandError("Failed to query server info: {}".format(str(e)))
+
+
+def setup():
+    commands.add(a2squery)

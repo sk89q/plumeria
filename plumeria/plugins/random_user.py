@@ -1,9 +1,11 @@
+"""Generate random, fake user information using randomuser.me."""
+
 from plumeria.command import commands
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("random user", category="Development")
+@commands.create("random user", category="Development")
 @rate_limit()
 async def random_user(message):
     """
@@ -31,3 +33,7 @@ async def random_user(message):
         state=user['location']['state'].title(),
         dob=user['dob'].title(),
     )
+
+
+def setup():
+    commands.add(random_user)

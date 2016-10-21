@@ -285,9 +285,31 @@ class CommandManager:
             mappings.extend(await enumerator(server_id=server_id))
         return mappings
 
-    def register(self, *aliases: Sequence[str], **kwargs):
+    def add(self, f):
         """
-        A decorator to register a new command. Command aliases are case-insensitive.
+        Add a command to the manager.
+
+        Parameters
+        ----------
+        f : Callable
+            A function that has been passed through :method:`create`
+
+        Returns
+        -------
+        Callable
+            The supplied callable
+
+        """
+        if f.command_mapping in self.mappings:
+            raise KeyError('command already added')
+        self.mappings.append(f.command_mapping)
+        return f
+
+    def create(self, *aliases: Sequence[str], **kwargs):
+        """
+        A decorator to create a new command. Command aliases are case-insensitive.
+
+        Commands still have to be later registered using :method:`register`().
 
         Example of registering a command via decorator:
 
@@ -338,7 +360,7 @@ class CommandManager:
                     raise Exception("{} is already registered to {} -- cannot register to {}"
                                     .format(alias.lower(), root.content.executor, f))
                 root.content = command
-            self.mappings.append(Mapping(aliases, command))
+            f.command_mapping = Mapping(aliases, command)
             return f
 
         return decorator

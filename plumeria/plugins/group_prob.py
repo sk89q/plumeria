@@ -1,3 +1,5 @@
+"""Add a fun 'group 8 ball' command."""
+
 import random
 
 from plumeria.command import commands, channel_only, CommandError
@@ -16,7 +18,7 @@ def map_choice(choice):
     )
 
 
-@commands.register("group prob", "gp", category="Fun")
+@commands.create("group prob", "gp", category="Fun")
 @channel_only
 async def group_prob(message):
     """
@@ -60,3 +62,7 @@ async def group_prob(message):
         least=choices[-1][0],
         least_pct=choices[-1][1] * 100,
     )
+
+
+def setup():
+    commands.add(group_prob)

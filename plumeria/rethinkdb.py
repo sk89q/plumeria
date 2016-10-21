@@ -16,6 +16,13 @@ username = config.create("rethinkdb", "username", fallback="admin")
 password = config.create("rethinkdb", "password", fallback="")
 timeout = config.create("rethinkdb", "connection_timeout", type=int, fallback=3)
 
+config.add(host)
+config.add(port)
+config.add(db_name)
+config.add(username)
+config.add(password)
+config.add(timeout)
+
 
 class PooledConnection:
     """Context manager for RethinkDB pooled connections."""

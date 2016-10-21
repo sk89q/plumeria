@@ -1,3 +1,5 @@
+"""Commands to manipulate text."""
+
 import re
 import urllib.parse
 
@@ -13,7 +15,7 @@ MD_BOLD_RE = re.compile("\\*\\*(.+?)\\*\\*")
 LINK_PATTERN = re.compile("<?((https?)://[^\s/$.?#<>].[^\s<>]*)>?", re.I)
 
 
-@commands.register('upper', category='String')
+@commands.create('upper', category='String')
 @string_filter
 def upper(text):
     """
@@ -22,7 +24,7 @@ def upper(text):
     return text.upper()
 
 
-@commands.register('lower', category='String')
+@commands.create('lower', category='String')
 @string_filter
 def lower(text):
     """
@@ -31,7 +33,7 @@ def lower(text):
     return text.lower()
 
 
-@commands.register('rot13', category='String')
+@commands.create('rot13', category='String')
 @string_filter
 def rot13(text):
     """
@@ -40,7 +42,7 @@ def rot13(text):
     return codecs.encode(text, "rot_13")
 
 
-@commands.register('idna', category='String')
+@commands.create('idna', category='String')
 @string_filter
 def idna(text):
     """
@@ -49,7 +51,7 @@ def idna(text):
     return codecs.encode(text, "idna").decode('utf-8')
 
 
-@commands.register('punycode', category='String')
+@commands.create('punycode', category='String')
 @string_filter
 def punycode(text):
     """
@@ -58,7 +60,7 @@ def punycode(text):
     return codecs.encode(text, "punycode").decode('utf-8')
 
 
-@commands.register('base64', 'base64enc', category='String')
+@commands.create('base64', 'base64enc', category='String')
 @rate_limit()
 @string_filter
 def base64(text):
@@ -68,7 +70,7 @@ def base64(text):
     return codecs.encode(text.encode('utf-8'), "base64").decode('ascii')
 
 
-@commands.register('base64dec', category='String')
+@commands.create('base64dec', category='String')
 @rate_limit()
 @string_filter
 def base64_decode(text):
@@ -78,7 +80,7 @@ def base64_decode(text):
     return codecs.decode(text.encode('utf-8'), "base64").decode('utf-8', 'ignore')
 
 
-@commands.register('md5', category='String')
+@commands.create('md5', category='String')
 @rate_limit()
 @string_filter
 def md5(text):
@@ -88,7 +90,7 @@ def md5(text):
     return hashlib.md5(text)
 
 
-@commands.register('sha1', category='String')
+@commands.create('sha1', category='String')
 @rate_limit()
 @string_filter
 def sha1(text):
@@ -98,7 +100,7 @@ def sha1(text):
     return hashlib.sha1(text.encode('utf-8')).hexdigest()
 
 
-@commands.register('sha224', category='String')
+@commands.create('sha224', category='String')
 @rate_limit(burst_size=3)
 @string_filter
 def sha224(text):
@@ -108,7 +110,7 @@ def sha224(text):
     return hashlib.sha224(text.encode('utf-8')).hexdigest()
 
 
-@commands.register('sha256', category='String')
+@commands.create('sha256', category='String')
 @rate_limit(burst_size=3)
 @string_filter
 def sha256(text):
@@ -118,7 +120,7 @@ def sha256(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()
 
 
-@commands.register('urlescape', category='String')
+@commands.create('urlescape', category='String')
 @string_filter
 def urlescape(text):
     """
@@ -129,7 +131,7 @@ def urlescape(text):
     return urllib.parse.quote_plus(text)
 
 
-@commands.register('unurlescape', category='String')
+@commands.create('unurlescape', category='String')
 @string_filter
 def unurlescape(text):
     """
@@ -140,7 +142,7 @@ def unurlescape(text):
     return urllib.parse.unquote_plus(text)
 
 
-@commands.register('length', category='String')
+@commands.create('length', category='String')
 @string_filter
 def length(text):
     """
@@ -149,7 +151,7 @@ def length(text):
     return str(len(text))
 
 
-@commands.register('findurl', category='String')
+@commands.create('findurl', category='String')
 @string_filter
 def find_url(text):
     """
@@ -162,7 +164,7 @@ def find_url(text):
         raise CommandError("No URL found in string")
 
 
-@commands.register('stripurl', category='String')
+@commands.create('stripurl', category='String')
 @string_filter
 def strip_html(text):
     """
@@ -171,7 +173,7 @@ def strip_html(text):
     return LINK_PATTERN.sub('', text)
 
 
-@commands.register('strip', category='String')
+@commands.create('strip', category='String')
 @string_filter
 def strip(text):
     """
@@ -180,7 +182,7 @@ def strip(text):
     return text.strip()
 
 
-@commands.register('extract', category='String')
+@commands.create('extract', category='String')
 @string_filter
 def extract(text):
     """
@@ -194,7 +196,7 @@ def extract(text):
         return item
 
 
-@commands.register('first', category='String')
+@commands.create('first', category='String')
 @string_filter
 def first(text):
     """
@@ -203,7 +205,7 @@ def first(text):
     return parse_list(text, allow_spaces=True)[0]
 
 
-@commands.register('end', category='String')
+@commands.create('end', category='String')
 @string_filter
 def last(text):
     """
@@ -212,7 +214,7 @@ def last(text):
     return parse_list(text, allow_spaces=True)[-1]
 
 
-@commands.register('key', category='String')
+@commands.create('key', category='String')
 async def map_get(message):
     """
     Fetches a key from a "mapping." Some commands return a list of key: value lines.
@@ -238,3 +240,27 @@ async def map_get(message):
         if k.replace(" ", "_").lower() == test_key:
             return v
     raise CommandError("Could not find '{}' in mapping".format(key))
+
+
+def setup():
+    commands.add(upper)
+    commands.add(lower)
+    commands.add(rot13)
+    commands.add(idna)
+    commands.add(punycode)
+    commands.add(base64)
+    commands.add(base64_decode)
+    commands.add(md5)
+    commands.add(sha1)
+    commands.add(sha224)
+    commands.add(sha256)
+    commands.add(urlescape)
+    commands.add(unurlescape)
+    commands.add(length)
+    commands.add(find_url)
+    commands.add(strip_html)
+    commands.add(strip)
+    commands.add(extract)
+    commands.add(first)
+    commands.add(last)
+    commands.add(map_get)

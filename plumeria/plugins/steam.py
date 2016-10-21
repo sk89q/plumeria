@@ -1,3 +1,5 @@
+"""Get the current status of Valve's Steam."""
+
 from collections import namedtuple
 
 from plumeria.command import commands
@@ -8,6 +10,7 @@ from plumeria.util.ratelimit import rate_limit
 STEAM_STATUS_URL = "https://crowbar.steamdb.info/Barney"
 
 SteamStatus = namedtuple("SteamStatus", "online store community web_api steamos_repo")
+
 
 async def get_steam_status():
     with DefaultClientSession() as session:
@@ -23,7 +26,7 @@ async def get_steam_status():
                                )
 
 
-@commands.register("steam status", "steamstatus", category="Steam")
+@commands.create("steam status", "steamstatus", category="Steam")
 @rate_limit()
 async def steam_status(message):
     """
@@ -44,3 +47,7 @@ async def steam_status(message):
         status.web_api,
         status.steamos_repo
     ))
+
+
+def setup():
+    commands.add(steam_status)

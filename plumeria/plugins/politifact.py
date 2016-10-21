@@ -1,3 +1,5 @@
+"""Query Politifact.com to check the veracity of recent statements."""
+
 import re
 
 import plumeria.util.http as http
@@ -8,7 +10,7 @@ from plumeria.util.collections import SafeStructure
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("politifact", "fact check", category="Search", params=[Text('name')])
+@commands.create("politifact", "fact check", category="Search", params=[Text('name')])
 @rate_limit()
 async def politifact(message, name):
     """
@@ -33,3 +35,7 @@ async def politifact(message, name):
 
     return build_mapping(
         [(e.ruling.ruling, "{} ({})".format(e.ruling_headline, e.statement_context)) for e in results[:10]])
+
+
+def setup():
+    commands.add(politifact)

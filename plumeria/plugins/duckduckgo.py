@@ -1,10 +1,12 @@
+"""Search DuckDuckGo for information."""
+
 import plumeria.util.http as http
 from plumeria.command import commands, CommandError
 from plumeria.message import Response
 from plumeria.util.ratelimit import rate_limit
 
 
-@commands.register("abstract", "about", "define", category="Search")
+@commands.create("abstract", "about", "define", category="Search")
 @rate_limit()
 async def abstract(message):
     """
@@ -35,3 +37,7 @@ async def abstract(message):
         return Response(data['RelatedTopics'][0]['Text'])
     else:
         raise CommandError("No information available.")
+
+
+def setup():
+    commands.add(abstract)

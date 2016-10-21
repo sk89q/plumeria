@@ -1,6 +1,8 @@
+"""Start a web server that plugins can add pages to."""
+
 from plumeria import config
 from plumeria.event import bus
-from plumeria.webserver import app
+from plumeria.webserver import app, public_address
 
 webserver_host = config.create("webserver", "host",
                                fallback="localhost",
@@ -13,6 +15,11 @@ webserver_port = config.create("webserver", "port", type=int,
                                comment="Web server port to serve on.")
 
 
-@bus.event("init")
-async def init():
-    await app.run(host=webserver_host(), port=webserver_port())
+def setup():
+    config.add(webserver_host)
+    config.add(webserver_port)
+    config.add(public_address)
+
+    @bus.event("init")
+    async def init():
+        await app.run(host=webserver_host(), port=webserver_port())
