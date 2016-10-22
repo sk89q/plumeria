@@ -7,7 +7,6 @@ from asyncio.subprocess import PIPE
 
 from plumeria.command import commands, CommandError
 from plumeria.perms import owners_only
-from plumeria.plugins.discord_transport import client
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +45,6 @@ async def update(message):
         new_id = await get_git_id()
         if new_id != old_id:
             await message.respond("Downloaded {}! Now restarting...".format(new_id))
-            await client.logout()
             asyncio.get_event_loop().call_soon(sys.exit, 0)
         else:
             await message.respond("No update for the bot found.")

@@ -1,23 +1,31 @@
-import asyncio
-import sys
-from docutils.core import publish_parts
+"""Start a web server that plugins can add pages to."""
 
+import asyncio
 import os.path
-from aiohttp import web
+import sys
 from functools import wraps
+
+from aiohttp import web
+from docutils.core import publish_parts
 from jinja2 import Environment, PackageLoader
-from . import config
+
+from plumeria import config
+from plumeria.event import bus
+
+webserver_host = config.create("webserver", "host",
+                               fallback="localhost",
+                               comment="The hostname for the web server to bind to. Use 0.0.0.0 "
+                                       "to bind to all interfaces or 127.0.0.1 to only access "
+                                       "from localhost.")
+
+webserver_port = config.create("webserver", "port", type=int,
+                               fallback=8110,
+                               comment="Web server port to serve on.")
 
 public_address = config.create("webserver", "public_address",
                                fallback="",
                                comment="The public address used to access the internal web server. "
                                        "If not set, the address is detected automatically.")
-
-env = Environment(loader=PackageLoader('plumeria', 'templates'),
-                  autoescape=True,
-                  extensions=['jinja2.ext.autoescape'])
-
-env.filters['rst2html'] = lambda s: publish_parts(s, writer_name='html')['html_body']
 
 
 class Route:
@@ -29,7 +37,7 @@ class Route:
 class Application:
     def __init__(self):
         self.app = web.Application()
-        static_dir = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'static')  # does not work with eggs
+        static_dir = os.path.join(os.path.dirname(sys.modules[__name__].__file__), '..', 'static')  # does not work with eggs
         self.app.router.add_static('/static/', static_dir, name='static')
         self.host = "127.0.0.1"
         self.port = 80
@@ -73,8 +81,25 @@ class Application:
         return f
 
 
+env = Environment(loader=PackageLoader('plumeria', 'templates'),
+                  autoescape=True,
+                  extensions=['jinja2.ext.autoescape'])
+
+env.filters['rst2html'] = lambda s: publish_parts(s, writer_name='html')['html_body']
+
+
+app = Application()
+
+
 def render_template(name, **params):
     return env.get_template(name).render(params)
 
 
-app = Application()
+def setup():
+    config.add(webserver_host)
+    config.add(webserver_port)
+    config.add(public_address)
+
+    @bus.event("init")
+    async def init():
+        await app.run(host=webserver_host(), port=webserver_port())

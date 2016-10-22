@@ -1,9 +1,9 @@
 """Manage the storage and retrieval of per-user preferences."""
 
 from plumeria.command import commands, CommandError
+from plumeria.core.user_prefs import prefs_manager
 from plumeria.message import Message
 from plumeria.message.mappings import build_mapping
-from plumeria.middleware.user_prefs import prefs_manager
 from plumeria.perms import direct_only
 
 

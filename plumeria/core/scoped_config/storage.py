@@ -3,11 +3,9 @@
 import logging
 from typing import Sequence
 
-from plumeria import scoped_config
-from plumeria.config.scoped import ScopedConfigProvider, ScopedValue
-from plumeria.event import bus
-from plumeria.storage import pool, migrations
+from plumeria.storage import migrations
 from plumeria.transport import Server
+from .manager import ScopedConfigProvider, ScopedValue
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +41,8 @@ class DatabaseConfig(ScopedConfigProvider):
                     "(transport, server, channel, section, `key`, value) "
                     "VALUES "
                     "(%s, %s, %s, %s, %s, %s)",
-                    (sv.transport, sv.server, sv.channel if sv.channel is not None else "", sv.section, sv.key, sv.value))
+                    (sv.transport, sv.server, sv.channel if sv.channel is not None else "", sv.section, sv.key,
+                     sv.value))
 
     async def delete(self, sv: ScopedValue):
         async with self.pool.acquire() as conn:
@@ -52,18 +51,3 @@ class DatabaseConfig(ScopedConfigProvider):
                     "DELETE FROM config_values "
                     "WHERE transport = %s AND server = %s AND channel = %s AND section = %s AND `key` = %s",
                     (sv.transport, sv.server, sv.channel if sv.channel is not None else "", sv.section, sv.key))
-
-
-db_config = DatabaseConfig(pool)
-
-
-def setup():
-    @bus.event('preinit')
-    async def preinit():
-        logger.info("Setting {} as the default store for scoped configuration".format(__name__))
-        scoped_config.provider = db_config
-
-
-    @bus.event('init')
-    async def init():
-        await db_config.init()

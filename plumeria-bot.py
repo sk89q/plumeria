@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
+import argparse
 import asyncio
 import importlib
-import inspect
+import logging
 import os.path
 import pkgutil
 import sys
-import argparse
-import logging
+
+import plumeria.core
 from plumeria import config
 from plumeria.config import boolstr
 from plumeria.event import bus
-import plumeria.plugins
 from plumeria.plugin import PluginSetupError
 
 logger = logging.getLogger(__name__)
@@ -39,10 +39,10 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
 
     plugins_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "plugins"))
-    logging.info("Added {} as an extra source for plugins".format(plugins_dir))
     sys.path.insert(0, plugins_dir)
+    sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__))))
 
-    discovered_modules = list(pkgutil.iter_modules(plumeria.plugins.__path__))
+    discovered_modules = list(pkgutil.iter_modules(plumeria.core.__path__))
     modules_to_load = set()
     modules = set()
     load_errors = {}
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # Discover list of modules to load and save it to config
     config.load()
     for importer, modname, ispkg in discovered_modules:
-        path = "plumeria.plugins." + modname
+        path = "plumeria.core." + modname
         enabled = config.add(config.create("plugins", path, type=boolstr, fallback=False))
         if enabled():
             modules_to_load.add(path)

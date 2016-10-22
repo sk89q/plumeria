@@ -7,8 +7,8 @@ from json import JSONDecodeError
 import CommonMark
 
 from plumeria.command import commands, CommandError
+from plumeria.core.user_prefs import prefs_manager
 from plumeria.message import Message
-from plumeria.middleware.user_prefs import prefs_manager
 from plumeria.perms import direct_only
 from plumeria.util import http
 from plumeria.util.message import strip_html

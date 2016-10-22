@@ -2,10 +2,7 @@
 
 import logging
 
-from plumeria.event import bus
-from plumeria.middleware.oauth import TokenStore, Authorization, oauth_manager
-from plumeria.storage import migrations
-from plumeria.storage import pool
+from .manager import TokenStore, Authorization
 
 logger = logging.getLogger(__name__)
 
@@ -48,19 +45,6 @@ class DatabaseTokens(TokenStore):
                     "(transport, user, endpoint, access_token, token_type, expiration_at, refresh_token) "
                     "VALUES "
                     "(%s, %s, %s, %s, %s, %s, %s)",
-                    (auth.transport, auth.user, auth.endpoint_name, auth.access_token, auth.token_type, auth.expiration_at,
+                    (auth.transport, auth.user, auth.endpoint_name, auth.access_token, auth.token_type,
+                     auth.expiration_at,
                      auth.refresh_token))
-
-
-store = DatabaseTokens(pool, migrations)
-
-def setup():
-    @bus.event('preinit')
-    async def preinit():
-        logger.info("Setting {} as the default store for OAuth storage".format(__name__))
-        oauth_manager.store = store
-
-
-    @bus.event('init')
-    async def init():
-        await store.initialize()

@@ -6,7 +6,7 @@ import io
 
 from plumeria.command import commands
 from plumeria.message import Response, MemoryAttachment
-from plumeria.webserver import app, render_template
+from plumeria.core.webserver import app, render_template
 
 
 @commands.create('help', 'commands', category='Utility')

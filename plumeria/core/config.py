@@ -3,10 +3,11 @@
 import re
 from typing import Union
 
-from plumeria import config, scoped_config
+from plumeria import config
 from plumeria.command import channel_only, commands, CommandError
 from plumeria.config import Setting
-from plumeria.config.scoped import ScopedValue
+from plumeria.core import scoped_config
+from plumeria.core.scoped_config.manager import ScopedValue
 from plumeria.message import Message
 from plumeria.message.mappings import build_mapping
 from plumeria.perms import server_admins_only

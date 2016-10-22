@@ -5,7 +5,7 @@ import random
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.message.lists import build_list
-from plumeria.middleware.oauth import oauth_manager, catch_token_expiration
+from plumeria.core.oauth import oauth_manager, catch_token_expiration
 from plumeria.perms import direct_only
 from plumeria.plugin import PluginSetupError
 from plumeria.transport import User

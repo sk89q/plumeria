@@ -4,8 +4,8 @@ import collections
 
 from plumeria.command import commands, CommandError
 from plumeria.message import Response
+from plumeria.util.http import BaseRestClient
 from plumeria.util.ratelimit import rate_limit
-from ..util.http import BaseRestClient
 
 Deal = collections.namedtuple("Deal", "id name price url")
 

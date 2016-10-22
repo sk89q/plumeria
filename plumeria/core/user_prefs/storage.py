@@ -3,9 +3,8 @@
 import logging
 from typing import Mapping
 
-from plumeria.event import bus
-from plumeria.middleware.user_prefs import PreferencesProvider, prefs_manager, Preference
-from plumeria.storage import pool, migrations
+from .manager import PreferencesProvider, Preference
+
 from plumeria.transport import User
 
 logger = logging.getLogger(__name__)
@@ -63,17 +62,3 @@ class DatabasePreferences(PreferencesProvider):
                     "DELETE FROM prefs_values "
                     "WHERE transport = %s AND user = %s AND name = %s",
                     (user.transport.id, user.id, pref.name))
-
-
-provider = DatabasePreferences(pool, migrations)
-
-
-def setup():
-    @bus.event('preinit')
-    async def preinit():
-        logger.info("Setting {} as the default store for user preferences".format(__name__))
-        prefs_manager.provider = provider
-
-    @bus.event('init')
-    async def init():
-        await provider.initialize()

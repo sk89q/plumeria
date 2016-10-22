@@ -3,10 +3,11 @@
 import random
 
 from aiohttp import BasicAuth
-from plumeria import config, scoped_config
+from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.command.parse import Text
 from plumeria.config.common import nsfw
+from plumeria.core.scoped_config import scoped_config
 from plumeria.message import Response
 from plumeria.plugin import PluginSetupError
 from plumeria.util import http

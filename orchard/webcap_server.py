@@ -18,7 +18,7 @@ from selenium.common.exceptions import TimeoutException
 
 from plumeria import config
 from plumeria.plugin import PluginSetupError
-from plumeria.webserver import app
+from plumeria.core.webserver import app
 
 VALID_URL_REGEX = re.compile("^(?:https?://|data:)", re.IGNORECASE)
 

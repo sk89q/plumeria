@@ -28,10 +28,10 @@ class PreferencesProvider:
         raise KeyError()
 
     async def put(self, pref: Preference, user: User, value: str):
-        raise NotImplementedError()
+        raise NotImplementedError(NO_PROVIDER_ERROR)
 
     async def remove(self, pref: Preference, user: User):
-        raise NotImplementedError()
+        raise NotImplementedError(NO_PROVIDER_ERROR)
 
 
 class PreferencesManager:
@@ -74,5 +74,3 @@ class PreferencesManager:
                 results.append((pref, value))
         return results
 
-
-prefs_manager = PreferencesManager()

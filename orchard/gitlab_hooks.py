@@ -8,11 +8,11 @@ import shlex
 import rethinkdb as r
 
 from plumeria.command import commands, channel_only, CommandError, ArgumentParser
+from plumeria.core.webserver import app
 from plumeria.event import bus
 from plumeria.perms import server_admins_only
 from plumeria.rethinkdb import migrations, pool
 from plumeria.transport import transports
-from plumeria.webserver import app
 
 WEB_HOOK_URL = "/gitlab-webhooks/hook/"
 TOKENS_TABLE = "gitlabhooks_tokens"

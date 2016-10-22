@@ -2,9 +2,9 @@
 
 from colour import Color
 
-from plumeria import scoped_config
 from plumeria.command import commands, channel_only, CommandError
 from plumeria.config.common import short_date_time_format
+from plumeria.core.scoped_config import scoped_config
 from plumeria.message.mappings import build_mapping
 from plumeria.transport import User
 
