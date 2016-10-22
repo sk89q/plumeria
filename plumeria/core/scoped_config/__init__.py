@@ -1,7 +1,7 @@
 import logging
 
 from plumeria.core.storage import pool
-from .manager import ScopedConfig
+from .manager import ScopedConfig, ScopedValue
 from .storage import DatabaseConfig
 
 __requires__ = ['plumeria.core.storage']

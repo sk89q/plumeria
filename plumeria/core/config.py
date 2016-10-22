@@ -6,8 +6,7 @@ from typing import Union
 from plumeria import config
 from plumeria.command import channel_only, commands, CommandError
 from plumeria.config import Setting
-from plumeria.core import scoped_config
-from plumeria.core.scoped_config.manager import ScopedValue
+from plumeria.core.scoped_config import scoped_config, ScopedValue
 from plumeria.message import Message
 from plumeria.message.mappings import build_mapping
 from plumeria.perms import server_admins_only
