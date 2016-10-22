@@ -1,13 +1,15 @@
 """Add support for OAuth to let users to connect the bot various services."""
 
 from plumeria.command import commands
+from plumeria.core.storage import pool, migrations
 from plumeria.core.webserver import app, render_template
 from plumeria.event import bus
 from plumeria.message import Message, Response
 from plumeria.perms import direct_only
-from plumeria.storage import pool, migrations
 from .manager import *
 from .storage import *
+
+__requires__ = ['plumeria.core.storage']
 
 
 def find_endpoint(name) -> Endpoint:
@@ -60,17 +62,11 @@ async def handle(request):
                                    error[:200]))
 
 
-def setup():
+async def setup():
     commands.add(connect)
     app.add(handle)
 
     store = DatabaseTokens(pool, migrations)
-
-    @bus.event('preinit')
-    async def preinit():
-        oauth_manager.redirect_uri = await app.get_base_url() + "/oauth2/callback/"
-        oauth_manager.store = store
-
-    @bus.event('init')
-    async def init():
-        await store.initialize()
+    await store.initialize()
+    oauth_manager.redirect_uri = await app.get_base_url() + "/oauth2/callback/"
+    oauth_manager.store = store

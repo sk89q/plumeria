@@ -1,24 +1,17 @@
 import logging
 
-from plumeria.event import bus
-from plumeria.storage import pool
-
+from plumeria.core.storage import pool
 from .manager import ScopedConfig
 from .storage import DatabaseConfig
+
+__requires__ = ['plumeria.core.storage']
 
 logger = logging.getLogger(__name__)
 
 scoped_config = ScopedConfig()
 
 
-def setup():
+async def setup():
     db_config = DatabaseConfig(pool)
-
-    @bus.event('preinit')
-    async def preinit():
-        logger.info("Setting {} as the default store for scoped configuration".format(__name__))
-        scoped_config.provider = db_config
-
-    @bus.event('init')
-    async def init():
-        await db_config.init()
+    await db_config.init()
+    scoped_config.provider = db_config

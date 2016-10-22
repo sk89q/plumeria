@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 import argparse
 import asyncio
-import importlib
 import logging
 import os.path
-import pkgutil
 import sys
 
 import plumeria.core
 from plumeria import config
-from plumeria.config import boolstr
 from plumeria.event import bus
-from plumeria.plugin import PluginSetupError
+from plumeria.plugin import PluginFinder, PluginLoader
 
 logger = logging.getLogger(__name__)
 
@@ -42,54 +39,25 @@ if __name__ == "__main__":
     sys.path.insert(0, plugins_dir)
     sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__))))
 
-    discovered_modules = list(pkgutil.iter_modules(plumeria.core.__path__))
-    modules_to_load = set()
-    modules = set()
-    load_errors = {}
+    config.load()  # load list of plugins from config
+    finder = PluginFinder()
+    finder.search_package("plumeria.core", plumeria.core.__path__)
+    try:
+        import orchard
+        finder.search_package("orchard", orchard.__path__)
+    except ImportError:
+        pass
+    finder.from_config(config)
+    config.save()  # save list of plugins
 
-    # Discover list of modules to load and save it to config
-    config.load()
-    for importer, modname, ispkg in discovered_modules:
-        path = "plumeria.core." + modname
-        enabled = config.add(config.create("plugins", path, type=boolstr, fallback=False))
-        if enabled():
-            modules_to_load.add(path)
-    config.save()
+    loader = PluginLoader(config)
+    loader.load(finder.modules)
+    config.load()  # write new settings to config
+    config.save()  # save final config
 
-    # Add extra modules that are specified in the config file
-    for path in config.reader['plugins'].keys():
-        if boolstr(config.reader.get("plugins", path, fallback="")):
-            modules_to_load.add(path)
-
-    for path in modules_to_load:
-        try:
-            modules.add(importlib.import_module(path))
-        except Exception as e:
-            load_errors[path] = str(e)
-            logging.error("Failed to import {}".format(path), exc_info=True)
-
-    for module in modules:
-        try:
-            if hasattr(module, "setup"):
-                module.setup()
-            else:
-                raise PluginSetupError("No setup() entry point exists for the plugin. If this is your plugin, make "
-                                       "sure to add one. Plugins for older versions of Plumeria lack this and that "
-                                       "may be why you are getting this message.")
-            logging.info("Loaded {}.".format(module.__name__))
-        except PluginSetupError as e:
-            logging.error("Failed to load {}: {}".format(module.__name__, str(e)))
-            load_errors[module.__name__] = str(e)
-        except Exception as e:
-            logging.error("Failed to setup {}".format(module.__name__), exc_info=True)
-            load_errors[module.__name__] = str(e)
-
-    config.load()
-    config.save()
-
-    if len(modules_to_load):
+    if len(loader.plugins):
         loop.run_until_complete(startup())
         loop.run_forever()
     else:
-        logging.warning("Please enable at least one plugin in the configuration file")
-
+        logging.warning("No plugins are enabled! Exiting...")
+        sys.exit(1)

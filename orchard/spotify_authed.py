@@ -1,5 +1,7 @@
 """Let users access their own personal Spotify account."""
 
+__requires__ = ['plumeria.core.oauth']
+
 import random
 
 from plumeria import config

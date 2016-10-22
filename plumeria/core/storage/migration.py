@@ -4,8 +4,6 @@ import re
 
 import pkg_resources
 
-from plumeria.event import bus
-
 MIGRATION_FILE_PATTERN = re.compile("^V(?P<version>[0-9]+)__(?P<name>.+)$")
 
 
@@ -64,7 +62,7 @@ class MigrationManager:
 
     async def setup(self):
         list = MigrationList()
-        list.load_package("plumeria.storage")
+        list.load_package("plumeria.core.storage")
 
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:

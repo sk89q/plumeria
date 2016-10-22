@@ -3,9 +3,11 @@ import logging
 from typing import Sequence
 
 from plumeria.command import Command, Mapping
-from plumeria.storage import pool
+from plumeria.core.storage import pool, migrations
 from plumeria.transport import Server
 from plumeria.util.collections import tree
+
+__requires__ = ['plumeria.core.storage']
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,9 @@ class AliasManager:
         self.aliases = tree()
         self.load_queue = set()
         self.load_scheduled = False
+
+    async def initialize(self):
+        await migrations.migrate("alias", __name__)
 
     def _put_alias(self, alias: Alias):
         self.aliases[alias.transport.lower()][alias.server.lower()][alias.alias.lower()] = alias

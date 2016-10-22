@@ -3,7 +3,7 @@
 import logging
 from typing import Sequence
 
-from plumeria.storage import migrations
+from plumeria.core.storage import migrations
 from plumeria.transport import Server
 from .manager import ScopedConfigProvider, ScopedValue
 

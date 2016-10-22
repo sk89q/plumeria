@@ -7,9 +7,10 @@ from plumeria.command import commands, Context, CommandError, channel_only
 from plumeria.event import bus
 from plumeria.message import ProxyMessage, Message, Response, MemoryAttachment
 from plumeria.perms import server_admins_only
-from plumeria.storage import migrations
 from plumeria.util.format import escape_markdown
 from .manager import AliasManager
+
+__requires__ = ['plumeria.core.storage']
 
 aliases = AliasManager()
 
@@ -102,10 +103,8 @@ async def export_aliases(message: Message):
     ])
 
 
-def setup():
-    @bus.event('init')
-    async def init():
-        await migrations.migrate("alias", __name__)
+async def setup():
+    await aliases.initialize()
 
     @bus.event('server.ready')
     async def server_available(server):
