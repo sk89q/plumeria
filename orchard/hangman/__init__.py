@@ -25,24 +25,44 @@ with pkg_resources.resource_stream(__name__, "assets/word_list.txt") as f:
 cache = cachetools.LRUCache(maxsize=1000)
 
 
+def normalize(s):
+    return re.sub(" +", "", s.strip()).upper()
+
+
 class Game:
     def __init__(self, phrase: str):
-        self.phrase = phrase.upper()
+        self.phrase = normalize(phrase)
         self.obscured = list(re.sub("[A-Z]", "_", self.phrase))
         self.guessed = []
+        self.phrases_guessed = set()
         self.wrong_count = 0
 
-    def guess(self, letter: str):
-        letter = letter.upper()
-        if letter in self.guessed:
-            raise CommandError("'{}' was already guessed!".format(letter))
-        self.guessed.append(letter)
-        if letter in self.phrase:
-            for i, l in enumerate(self.phrase):
-                if l == letter:
-                    self.obscured[i] = l
+    def guess(self, guess: str):
+        guess = normalize(guess)
+
+        # letter guess
+        if re.match("^[A-Za-z]{1}$", guess):
+            if guess in self.guessed:
+                raise CommandError("'{}' was already guessed!".format(guess))
+            self.guessed.append(guess)
+            if guess in self.phrase:
+                for i, l in enumerate(self.phrase):
+                    if l == guess:
+                        self.obscured[i] = l
+                return "You got **{}**!".format(guess)
+            else:
+                self.wrong_count += 1
+                return "There's no **{}**!".format(guess)
         else:
-            self.wrong_count += 1
+            if guess in self.phrases_guessed:
+                raise CommandError("'{}' was already guessed!".format(guess))
+            self.phrases_guessed.add(guess)
+            if guess == self.phrase:
+                self.obscured = list(self.phrase)
+                return "You got the phrase!"
+            else:
+                self.wrong_count += 1
+                return "No, that's not the phrase."
 
     @property
     def won(self):
@@ -68,12 +88,35 @@ class Game:
         return await asyncio.get_event_loop().run_in_executor(None, self.create_image)
 
 
-@commands.create("hangman", "hang", "h", category="Games", params=[Word("action")])
+@commands.create("hangman start", "hang start", "h start", category="Games", params=[])
 @channel_only
 @games_allowed_only
-async def hangman(message, action):
+async def start(message):
     """
-    Play a game of hangman.
+    Starts a game of hangman.
+
+    Example::
+
+        hang start
+
+    """
+    key = (message.transport.id, message.server.id, message.channel.id)
+
+    if key in cache:
+        game = cache[key]
+    else:
+        game = Game(random.choice(word_list))
+        cache[key] = game
+
+    return Response("", attachments=[ImageAttachment(await game.create_image_async(), "hangman.png")])
+
+
+@commands.create("hangman", "hang", "h", category="Games", params=[Word("guess")])
+@channel_only
+@games_allowed_only
+async def guess(message, guess):
+    """
+    Guess a letter in a game of hangman.
 
     Start a game with::
 
@@ -85,36 +128,28 @@ async def hangman(message, action):
 
     """
     key = (message.transport.id, message.server.id, message.channel.id)
-    if action == "start":
-        if key in cache:
-            game = cache[key]
-        else:
-            game = Game(random.choice(word_list))
-            cache[key] = game
 
-        return Response("", attachments=[ImageAttachment(await game.create_image_async(), "hangman.png")])
-    elif re.match("^[A-Za-z]{1}$", action):
-        try:
-            game = cache[key]
-        except KeyError:
-            raise CommandError("Say 'start' to start a game first.")
-        game.guess(action)
+    try:
+        game = cache[key]
+    except KeyError:
+        raise CommandError("Say 'start' to start a game first.")
 
-        if game.won:
-            del cache[key]
-            return Response("\N{TROPHY} \N{TROPHY} WINNER WINNER CHICKEN DINNER!! \N{TROPHY} \N{TROPHY}", attachments=[
-                ImageAttachment(await game.create_image_async(), "hangman.png")
-            ])
-        elif game.lost:
-            del cache[key]
-            return Response("You all LOST! \N{LARGE RED CIRCLE}", attachments=[
-                ImageAttachment(await game.create_image_async(), "hangman.png")
-            ])
-        else:
-            return Response("", attachments=[ImageAttachment(await game.create_image_async(), "hangman.png")])
+    message = game.guess(guess)
+
+    if game.won:
+        del cache[key]
+        return Response("\N{TROPHY} \N{TROPHY} WINNER WINNER CHICKEN DINNER!! \N{TROPHY} \N{TROPHY}", attachments=[
+            ImageAttachment(await game.create_image_async(), "hangman.png")
+        ])
+    elif game.lost:
+        del cache[key]
+        return Response("\N{LARGE RED CIRCLE} You all LOST! The phrase was **{}**".format(game.phrase), attachments=[
+            ImageAttachment(await game.create_image_async(), "hangman.png")
+        ])
     else:
-        raise CommandError("Either say 'start' or supply one letter to guess.")
+        return Response(message, attachments=[ImageAttachment(await game.create_image_async(), "hangman.png")])
 
 
 def setup():
-    commands.add(hangman)
+    commands.add(start)
+    commands.add(guess)
