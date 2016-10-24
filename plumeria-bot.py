@@ -34,11 +34,11 @@ if __name__ == "__main__":
 
     if args.no_colors:
         logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
-                            format="%(asctime)s [%(levelname)s] %(message)s",
+                            format="%(asctime)s (%(levelname)s) [%(name)s] %(message)s",
                             datefmt="%H:%M:%S")
     else:
         coloredlogs.install(level=logging.DEBUG if args.verbose else logging.INFO,
-                            fmt="%(asctime)s %(levelname)s %(message)s",
+                            fmt="%(asctime)s %(levelname)s %(name)s %(message)s",
                             level_styles={'info': {},
                                           'notice': {'color': 'magenta'},
                                           'verbose': {'color': 'blue'},
@@ -46,7 +46,7 @@ if __name__ == "__main__":
                                           'error': {'color': 'red', 'bg': 'white'},
                                           'debug': {'color': 'green'},
                                           'warning': {'color': 'yellow'}},
-                            field_styles={'name': {'color': 'green'},
+                            field_styles={'name': {'color': 'blue'},
                                           'levelname': {'color': 'cyan', 'bold': True},
                                           'asctime': {'color': 'green'}},
                             datefmt="%H:%M:%S")
