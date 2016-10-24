@@ -5,6 +5,8 @@ import logging
 import os.path
 import sys
 
+import coloredlogs
+
 import plumeria.core
 from plumeria import config
 from plumeria.event import bus
@@ -14,22 +16,40 @@ logger = logging.getLogger(__name__)
 
 
 async def startup():
-    logging.info("Calling all setup handlers...")
+    logging.info("Firing 'setup' event...")
     await bus.post('setup')
-    logging.info("Calling all pre-init handlers...")
+    logging.info("Firing 'preinit' event...")
     await bus.post('preinit')
-    logging.info("Starting...")
+    logging.info("Firing 'init' event...")
     await bus.post('init')
+    logging.info("All systems GO.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", "-v", action='store_true', default=False)
+    parser.add_argument("--no-colors", action='store_true', default=False)
     parser.add_argument("--config", type=str, default="config.ini")
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
-                        format="%(levelname)s [%(name)s] %(message)s")
+    if args.no_colors:
+        logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
+                            format="%(asctime)s [%(levelname)s] %(message)s",
+                            datefmt="%H:%M:%S")
+    else:
+        coloredlogs.install(level=logging.DEBUG if args.verbose else logging.INFO,
+                            fmt="%(asctime)s %(levelname)s %(message)s",
+                            level_styles={'info': {},
+                                          'notice': {'color': 'magenta'},
+                                          'verbose': {'color': 'blue'},
+                                          'critical': {'color': 'red', 'bold': True},
+                                          'error': {'color': 'red', 'bg': 'white'},
+                                          'debug': {'color': 'green'},
+                                          'warning': {'color': 'yellow'}},
+                            field_styles={'name': {'color': 'green'},
+                                          'levelname': {'color': 'cyan', 'bold': True},
+                                          'asctime': {'color': 'green'}},
+                            datefmt="%H:%M:%S")
 
     config.file = args.config
 
@@ -44,6 +64,7 @@ if __name__ == "__main__":
     finder.search_package("plumeria.core", plumeria.core.__path__)
     try:
         import orchard
+
         finder.search_package("orchard", orchard.__path__)
     except ImportError:
         pass
