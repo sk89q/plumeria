@@ -3,7 +3,7 @@
 import random
 
 from plumeria.command import commands, channel_only, CommandError
-from plumeria.middleware.activity import tracker
+from plumeria.core.activity import tracker
 from plumeria.transport.status import ONLINE
 
 # maximum number of users if we don't have a list of recent chatters

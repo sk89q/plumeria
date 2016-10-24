@@ -1,3 +1,5 @@
+"""Keeps track of who has spoken on a channel recently."""
+
 import asyncio
 from datetime import datetime, timedelta
 
@@ -55,6 +57,7 @@ class ActivityTracker:
 tracker = ActivityTracker()
 
 
-@bus.event("message")
-async def on_message(message: Message):
-    tracker.log(message)
+def setup():
+    @bus.event("message")
+    async def on_message(message: Message):
+        tracker.log(message)

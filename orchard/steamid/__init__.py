@@ -1,8 +1,8 @@
 """Commands to look up and convert Steam community ID and profiles."""
 
 from plumeria.command import commands, CommandError
-from plumeria.middleware.api.steam import SteamCommunity, parse_steam_id
 from plumeria.util.ratelimit import rate_limit
+from .utils import SteamCommunity, parse_steam_id
 
 steam_community = SteamCommunity()
 

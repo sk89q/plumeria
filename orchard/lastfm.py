@@ -2,14 +2,59 @@
 
 import io
 
+import collections
+
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.message import Response
 from plumeria.plugin import PluginSetupError
 from plumeria.util import http
+from plumeria.util.http import BaseRestClient, APIError
 from plumeria.util.message import strip_html
 from plumeria.util.ratelimit import rate_limit
-from plumeria.middleware.api.lastfm import LastFm, default_api_key as api_key, default_api_key
+
+api_key = config.create("lastfm", "key",
+                        fallback="",
+                        comment="An API key from last.fm")
+
+Track = collections.namedtuple("Track", "artist title url")
+
+
+class LastFm(BaseRestClient):
+    URL = "http://ws.audioscrobbler.com/2.0/"
+    _api_key = None
+
+    @property
+    def api_key(self):
+        return self._api_key or api_key()
+
+    @api_key.setter
+    def api_key(self, value):
+        self._api_key = value
+
+    def preprocess(self, json):
+        if 'error' in json:
+            raise APIError(json['message'])
+        return json
+
+    async def recent_tracks(self, username):
+        json = await self.request("get", self.URL, params={
+            'method': "user.getrecenttracks",
+            'user': username,
+            'format': 'json',
+            'api_key': self.api_key,
+        })
+        return [Track(i['artist']['#text'], i['name'], i['url']) for i in json['recenttracks']['track']]
+
+    async def tag_tracks(self, tag):
+        json = await self.request("get", self.URL, params={
+            'method': "tag.gettoptracks",
+            'tag': tag,
+            'format': 'json',
+            'api_key': self.api_key,
+        })
+        return [Track(i['artist']['name'], i['name'], i['url']) for i in json['tracks']['track']]
+
 
 lastfm = LastFm()
 
@@ -120,9 +165,9 @@ async def artist(message):
 
 
 def setup():
-    config.add(default_api_key)
+    config.add(api_key)
 
-    if not default_api_key():
+    if not api_key():
         raise PluginSetupError("This plugin requires an API key from http://last.fm. Registration is free.")
 
     commands.add(lastscrobble)

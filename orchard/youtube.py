@@ -1,11 +1,50 @@
 """Search YouTube for videos."""
+import collections
 
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.message import Response
-from plumeria.middleware.api.youtube import YouTube, default_api_key
 from plumeria.plugin import PluginSetupError
+from plumeria.util.http import BaseRestClient
 from plumeria.util.ratelimit import rate_limit
+
+api_key = config.create("youtube", "key",
+                        fallback="",
+                        comment="A YouTube API key. API keys can be registered at "
+                                "https://console.developers.google.com/")
+
+YouTubeVideo = collections.namedtuple("YouTubeVideo", "id title description url")
+
+
+class YouTube(BaseRestClient):
+    _api_key = None
+
+    @property
+    def api_key(self):
+        return self._api_key or api_key()
+
+    @api_key.setter
+    def api_key(self, value):
+        self._api_key = value
+
+    async def search(self, query):
+        json = await self.request("get", "https://www.googleapis.com/youtube/v3/search", params={
+            "key": self.api_key,
+            "part": "snippet",
+            "maxResults": 5,
+            "order": "relevance",
+            "q": query,
+            "safeSearch": "none",
+            "type": "video"
+        })
+        videos = []
+        for item in json['items']:
+            videos.append(YouTubeVideo(item['id']['videoId'],
+                                       item['snippet']['title'],
+                                       item['snippet']['description'],
+                                       "https://www.youtube.com/watch?v={}".format(item['id']['videoId'])))
+        return videos
+
 
 youtube = YouTube()
 
@@ -29,9 +68,9 @@ async def yt(message):
 
 
 def setup():
-    config.add(default_api_key)
+    config.add(api_key)
 
-    if not default_api_key():
+    if not api_key():
         raise PluginSetupError("This plugin requires an API key from Google. Registration is free. Get keys from "
                                "https://console.developers.google.com.")
 
