@@ -16,6 +16,13 @@ def dateformatstr(s):
     return s
 
 
+def percent(d):
+    f = float(d)
+    if f < 0 or f > 100:
+        raise ValueError("Invalid percentage")
+    return f
+
+
 def list_of(type=str):
     def reader(s):
         items = s.split(",")

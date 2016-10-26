@@ -1,3 +1,4 @@
+import functools
 import random
 import re
 import string
@@ -11,10 +12,17 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
+from plumeria import config
 from plumeria.command import CommandError, commands, channel_only
 from plumeria.command.parse import Word
+from plumeria.config import percent
 from plumeria.config.common import games_allowed_only
+from plumeria.core.scoped_config import scoped_config
 from plumeria.message import ImageAttachment, Response
+from plumeria.perms import owners_only
+
+bomb_chance = config.create("minesweeper", "bomb_chance", type=percent, fallback=20, scoped=True, private=False,
+                            comment="The % of a cell being a bomb")
 
 POS_RE = re.compile("^([A-Za-z]+)([0-9]+)$")
 
@@ -78,6 +86,10 @@ class Game:
                     self.bomb_count += 1
                     self.remaining_unknown -= 1
 
+        if self.bomb_count == 0:
+            raise CommandError("No bombs found in created game! Make sure the bomb "
+                               "`minesweeper/bomb_chance` setting is not near 0%.")
+
         # start it off
         tries = 0
         while self.remaining_unknown > 0 and tries < 20:
@@ -88,7 +100,7 @@ class Game:
                 break
             tries += 1
 
-    def create_image(self) -> PIL.Image.Image:
+    def create_image(self, cheat=False) -> PIL.Image.Image:
         w = self.width * self.cell_size
         h = self.height * self.cell_size
         im = Image.new("RGBA", (w, h), "white")
@@ -113,10 +125,14 @@ class Game:
                     if count:
                         draw_centered_text(draw, cx, cy - 2, str(count), (217, 50, 50), font=self.count_font)
 
+                if cheat and self.bomb_map[x][y]:
+                    draw_centered_text(draw, cx, cy - 2, "XX", (217, 50, 50), font=self.count_font)
+
         return im
 
-    async def create_image_async(self):
-        return await asyncio.get_event_loop().run_in_executor(None, self.create_image)
+    async def create_image_async(self, *args, **kwargs):
+        return await asyncio.get_event_loop().run_in_executor(None,
+                                                              functools.partial(self.create_image, *args, **kwargs))
 
     def parse_pos(self, str):
         m = POS_RE.match(str)
@@ -158,7 +174,16 @@ class Game:
         return self._in_bounds(x, y) and self.bomb_map[x][y]
 
     def _count_adjacent_bombs(self, x, y):
-        return sum([self._is_bomb(x - 1, y), self._is_bomb(x, y - 1), self._is_bomb(x + 1, y), self._is_bomb(x, y + 1)])
+        return sum([
+            self._is_bomb(x - 1, y),
+            self._is_bomb(x, y - 1),
+            self._is_bomb(x + 1, y),
+            self._is_bomb(x, y + 1),
+            self._is_bomb(x - 1, y - 1),
+            self._is_bomb(x - 1, y + 1),
+            self._is_bomb(x + 1, y - 1),
+            self._is_bomb(x + 1, y + 1),
+        ])
 
     def _clear_cell(self, x, y, visited):
         if not self._in_bounds(x, y):
@@ -202,7 +227,7 @@ async def start(message):
     if key in cache:
         game = cache[key]
     else:
-        game = Game(12, 12, 0.2, random.Random())
+        game = Game(12, 12, scoped_config.get(bomb_chance, message.channel) / 100, random.Random())
         cache[key] = game
 
     return Response("", attachments=[ImageAttachment(await game.create_image_async(), "minesweeper.png")])
@@ -266,7 +291,27 @@ async def flag(message, position):
     return Response("", attachments=[ImageAttachment(await game.create_image_async(), "minesweeper.png")])
 
 
+@commands.create("minesweeper cheat", "mine cheat", category="Games", params=[])
+@channel_only
+@owners_only
+async def cheat(message):
+    """
+    Bot administrator command to show where bombs are for testing.
+
+    """
+    key = (message.transport.id, message.server.id, message.channel.id)
+
+    try:
+        game = cache[key]  # type: Game
+    except KeyError:
+        raise CommandError("Say 'start' to start a game first.")
+
+    return Response("", attachments=[ImageAttachment(await game.create_image_async(cheat=True), "minesweeper.png")])
+
+
 def setup():
+    config.add(bomb_chance)
     commands.add(start)
     commands.add(click)
     commands.add(flag)
+    commands.add(cheat)
