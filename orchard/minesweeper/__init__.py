@@ -31,7 +31,7 @@ def draw_centered_text(draw, x, y, text, *args, font, **kwargs):
 def load_tile_graphics():
     images = {}
     for play in Play:
-        with pkg_resources.resource_stream(__name__, "assets/{}.png".format(play.name)) as f:
+        with pkg_resources.resource_stream(__name__, "assets/{}.png".format(play.name.lower())) as f:
             images[play] = Image.open(f).convert('RGBA')
     return images
 
