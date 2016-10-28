@@ -28,15 +28,11 @@ async def startup():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", "-v", action='store_true', default=False)
-    parser.add_argument("--no-colors", action='store_true', default=False)
+    parser.add_argument("--colors", action='store_true', default=False)
     parser.add_argument("--config", type=str, default="config.ini")
     args = parser.parse_args()
 
-    if args.no_colors:
-        logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
-                            format="%(asctime)s (%(levelname)s) [%(name)s] %(message)s",
-                            datefmt="%H:%M:%S")
-    else:
+    if args.colors:
         coloredlogs.install(level=logging.DEBUG if args.verbose else logging.INFO,
                             fmt="%(asctime)s %(levelname)s %(name)s %(message)s",
                             level_styles={'info': {},
@@ -49,6 +45,10 @@ if __name__ == "__main__":
                             field_styles={'name': {'color': 'blue'},
                                           'levelname': {'color': 'cyan', 'bold': True},
                                           'asctime': {'color': 'green'}},
+                            datefmt="%H:%M:%S")
+    else:
+        logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
+                            format="%(asctime)s (%(levelname)s) [%(name)s] %(message)s",
                             datefmt="%H:%M:%S")
 
     config.file = args.config
