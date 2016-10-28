@@ -321,7 +321,7 @@ def setup():
     async def init():
         token = discord_token()
         if len(token):
-            transports.create(transport.id, transport)
+            transports.register(transport.id, transport)
             asyncio.get_event_loop().create_task(client.start(token))
         else:
             username = discord_user()
