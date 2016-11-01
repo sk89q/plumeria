@@ -163,8 +163,8 @@ class Game:
                 self.state = State.LOST
             else:
                 self._clear_cell(x, y, set())
-            if self.remaining_unknown == 0:
-                self.state = State.WON
+                if self.remaining_unknown == 0:
+                    self.state = State.WON
         else:
             raise CommandError("You can't flag that cell!")
 
