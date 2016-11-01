@@ -251,7 +251,7 @@ async def click(message):
 
     Then choose one or more cells::
 
-        mine b5 e-g7 a7 a1-3
+        mine b5 g7 a7 a1
 
     """
     key = (message.transport.id, message.server.id, message.channel.id)
@@ -284,7 +284,7 @@ async def click(message):
 @games_allowed_only
 async def flag(message):
     """
-    Toggle a flag on a cell on minesweeper.
+    Toggle flags on one or more cells on minesweeper.
 
     """
     key = (message.transport.id, message.server.id, message.channel.id)
