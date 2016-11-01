@@ -19,6 +19,7 @@ from plumeria.config import percent
 from plumeria.config.common import games_allowed_only
 from plumeria.core.scoped_config import scoped_config
 from plumeria.message import ImageAttachment, Response
+from plumeria.message.lists import parse_list
 from plumeria.perms import owners_only
 
 bomb_chance = config.create("minesweeper", "bomb_chance", type=percent, fallback=20, scoped=True, private=False,
@@ -237,20 +238,20 @@ async def start(message):
     return Response("", attachments=[ImageAttachment(await game.create_image_async(), "minesweeper.png")])
 
 
-@commands.create("minesweeper", "mine", "m", category="Games", params=[Word("position")])
+@commands.create("minesweeper", "mine", "m", category="Games")
 @channel_only
 @games_allowed_only
-async def click(message, position):
+async def click(message):
     """
-    Click a cell on minesweeper.
+    Click one or more cells on minesweeper.
 
     Start a game with::
 
          mine start
 
-    Then choose a cell::
+    Then choose one or more cells::
 
-        mine b5
+        mine b5 e-g7 a7 a1-3
 
     """
     key = (message.transport.id, message.server.id, message.channel.id)
@@ -260,7 +261,9 @@ async def click(message, position):
     except KeyError:
         raise CommandError("Say 'start' to start a game first.")
 
-    game.click(*game.parse_pos(position))
+    positions = parse_list(message.content)
+    for position in positions:
+        game.click(*game.parse_pos(position))
 
     if game.state == State.WON:
         del cache[key]
@@ -276,10 +279,10 @@ async def click(message, position):
         return Response("", attachments=[ImageAttachment(await game.create_image_async(), "minesweeper.png")])
 
 
-@commands.create("minesweeper flag", "mine flag", "m flag", category="Games", params=[Word("position")])
+@commands.create("minesweeper flag", "mine flag", "m flag", category="Games")
 @channel_only
 @games_allowed_only
-async def flag(message, position):
+async def flag(message):
     """
     Toggle a flag on a cell on minesweeper.
 
@@ -291,7 +294,9 @@ async def flag(message, position):
     except KeyError:
         raise CommandError("Say 'start' to start a game first.")
 
-    game.toggle_flag(*game.parse_pos(position))
+    positions = parse_list(message.content)
+    for position in positions:
+        game.toggle_flag(*game.parse_pos(position))
     return Response("", attachments=[ImageAttachment(await game.create_image_async(), "minesweeper.png")])
 
 
