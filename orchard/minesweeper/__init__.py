@@ -194,10 +194,14 @@ class Game:
         if self.play[x][y] in UNKNOWN_OR_FLAGGED and not self.bomb_map[x][y]:
             self._mutate_cell(x, y, Play.CLEAR)
             if not self._count_adjacent_bombs(x, y):
-                self._clear_cell(x, y - 1, visited)
-                self._clear_cell(x, y + 1, visited)
                 self._clear_cell(x - 1, y, visited)
+                self._clear_cell(x, y - 1, visited)
                 self._clear_cell(x + 1, y, visited)
+                self._clear_cell(x, y + 1, visited)
+                self._clear_cell(x - 1, y - 1, visited)
+                self._clear_cell(x - 1, y + 1, visited)
+                self._clear_cell(x + 1, y - 1, visited)
+                self._clear_cell(x + 1, y + 1, visited)
 
     def _mutate_cell(self, x, y, new_play: Play):
         if self.play[x][y] in UNKNOWN_OR_FLAGGED and new_play != Play.UNKNOWN:
