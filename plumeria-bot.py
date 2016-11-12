@@ -30,6 +30,8 @@ if __name__ == "__main__":
     parser.add_argument("--verbose", "-v", action='store_true', default=False)
     parser.add_argument("--colors", action='store_true', default=False)
     parser.add_argument("--config", type=str, default="config.ini")
+    parser.add_argument("--use-proactor", action='store_true', default=False,
+                        help="use the proactor event loop if on Windows")
     args = parser.parse_args()
 
     if args.colors:
@@ -52,6 +54,10 @@ if __name__ == "__main__":
                             datefmt="%H:%M:%S")
 
     config.file = args.config
+
+    if sys.platform == 'win32' and args.use_proactor:
+        loop = asyncio.ProactorEventLoop()
+        asyncio.set_event_loop(loop)
 
     loop = asyncio.get_event_loop()
 
