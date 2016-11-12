@@ -52,5 +52,22 @@ async def update(message):
         raise CommandError("Update error: {}".format(stderr.decode("utf-8", "ignore")))
 
 
+@commands.create('shutdown', category='Utility')
+@owners_only
+async def shutdown(message):
+    """
+    Shuts down the bot. If the bot is set to auto-restart (outside Plumeria), then it
+    may restart.
+
+    Example::
+
+        /shutdown
+    """
+
+    await message.respond("Shutting down!")
+    asyncio.get_event_loop().call_soon(sys.exit, 0)
+
+
 def setup():
     commands.add(update)
+    commands.add(shutdown)
