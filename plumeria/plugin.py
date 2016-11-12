@@ -5,9 +5,14 @@ import logging
 import pkgutil
 from enum import Enum
 
+from plumeria import config
 from plumeria.config import boolstr, ManagedConfig
 
 logger = logging.getLogger(__name__)
+
+enable_new = config.create("plugin_loader", "enable-new-plugins", type=boolstr, fallback="false",
+                           comment="Set true to automatically enable new detected plugins")
+config.add(enable_new)
 
 
 class PluginSetupError(Exception):
@@ -98,7 +103,7 @@ class PluginLoader:
         paths_to_load = []
 
         for path in paths:
-            enabled_by_default = path.startswith("plumeria.core.")
+            enabled_by_default = "True" if path.startswith("plumeria.core.") or enable_new() else "False"
             enabled = self.config.add(self.config.create("plugins", path, type=boolstr, fallback=enabled_by_default))
             if enabled():
                 if path not in self.plugins:
@@ -157,7 +162,7 @@ class PluginLoader:
         except PluginDisabledError as e:
             plugin.state = State.FAILED
             logger.error("Failed to load '{path}' because it needs the plugin '{dep}' to be enabled"
-                          .format(path=plugin.path, dep=e.path), exc_info=False)
+                         .format(path=plugin.path, dep=e.path), exc_info=False)
             raise PluginLoadError(path) from e
 
         except CircularDependencyError as e:
