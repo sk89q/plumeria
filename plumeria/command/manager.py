@@ -300,9 +300,21 @@ class CommandManager:
             The supplied callable
 
         """
-        if f.command_mapping in self.mappings:
-            raise KeyError('command already added')
-        self.mappings.append(f.command_mapping)
+        for alias in f.command_aliases:
+            root = self.commands
+            alias_lower = alias.lower()
+            prefixes = alias_lower.split(" ")
+            while len(prefixes):
+                prefix = prefixes.pop(0)
+                if prefix not in root.children:
+                    root.children[prefix] = PrefixTree()
+                root = root.children[prefix]
+            if root.content:
+                raise Exception("{} is already registered to {} -- cannot register to {}"
+                                .format(alias.lower(), root.content.executor, f))
+            root.content = f.command
+        command_mapping = Mapping(f.command_aliases, f.command)
+        self.mappings.append(command_mapping)
         return f
 
     def create(self, *aliases: Sequence[str], **kwargs):
@@ -346,21 +358,8 @@ class CommandManager:
         """
 
         def decorator(f):
-            command = Command(f, **kwargs)
-            for alias in aliases:
-                root = self.commands
-                alias_lower = alias.lower()
-                prefixes = alias_lower.split(" ")
-                while len(prefixes):
-                    prefix = prefixes.pop(0)
-                    if prefix not in root.children:
-                        root.children[prefix] = PrefixTree()
-                    root = root.children[prefix]
-                if root.content:
-                    raise Exception("{} is already registered to {} -- cannot register to {}"
-                                    .format(alias.lower(), root.content.executor, f))
-                root.content = command
-            f.command_mapping = Mapping(aliases, command)
+            f.command = Command(f, **kwargs)
+            f.command_aliases = aliases
             return f
 
         return decorator
