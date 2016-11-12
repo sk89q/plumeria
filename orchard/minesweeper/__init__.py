@@ -166,7 +166,7 @@ class Game:
                 if self.remaining_unknown == 0:
                     self.state = State.WON
         else:
-            raise CommandError("You can't flag that cell!")
+            raise CommandError("You can't click that cell!")
 
     def _in_bounds(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
@@ -263,6 +263,8 @@ async def click(message):
 
     positions = parse_list(message.content)
     for position in positions:
+        if game.state != State.IN_PLAY:
+            break
         game.click(*game.parse_pos(position))
 
     if game.state == State.WON:
@@ -296,6 +298,8 @@ async def flag(message):
 
     positions = parse_list(message.content)
     for position in positions:
+        if game.state != State.IN_PLAY:
+            break
         game.toggle_flag(*game.parse_pos(position))
     return Response("", attachments=[ImageAttachment(await game.create_image_async(), "minesweeper.png")])
 
