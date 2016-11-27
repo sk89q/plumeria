@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='Plumeria',
       version='1.0',
@@ -10,7 +10,7 @@ setup(name='Plumeria',
       keywords=['discord', 'bot', 'chat'],
       packages=['plumeria', 'orchard'],
       install_requires=[
-          'aiohttp>=0.22.5',
+          'aiohttp>=0.22.5,<1.1.0',
           'aiomysql>=0.0.9',
           'beautifulsoup4>=4',
           'cachetools>=2.0.0',
@@ -20,6 +20,7 @@ setup(name='Plumeria',
           'dice>=1.0.2',
           'discord.py>=0.14.3',
           'docutils>=0.12',
+          'humanfriendly>=2.1',
           'html2text>=2016.5.29',
           'IPy>=0.83',
           'Jinja2>=2.8',
@@ -47,7 +48,6 @@ setup(name='Plumeria',
           ],
       },
       classifiers=[
-          'Development Status :: 3 - Alpha',
           'Environment :: Console',
           'Topic :: Communications :: Chat',
           'Programming Language :: Python :: 3.4',
@@ -56,7 +56,7 @@ setup(name='Plumeria',
       ],
       entry_points={
           'console_scripts': [
-              'plumeria-bot:main',
+              'plumeria-bot = plumeria.__main__:main',
           ],
       },
       )

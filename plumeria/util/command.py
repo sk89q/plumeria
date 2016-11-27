@@ -1,10 +1,10 @@
 import asyncio
 
 from functools import wraps
-from ..command import CommandError
-from ..message import Response
+from plumeria.command import CommandError
+from plumeria.message import Response
 from plumeria.message.image import read_image
-from ..util.ratelimit import rate_limit
+from plumeria.util.ratelimit import rate_limit
 
 
 def image_filter(f):

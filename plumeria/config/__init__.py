@@ -1,2 +1,2 @@
-from .config import *
-from .types import *
+from plumeria.config.config import *
+from plumeria.config.types import *

@@ -2,7 +2,7 @@
 
 import logging
 
-from .manager import TokenStore, Authorization
+from plumeria.core.oauth.manager import TokenStore, Authorization
 
 logger = logging.getLogger(__name__)
 

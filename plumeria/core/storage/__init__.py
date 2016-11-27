@@ -2,9 +2,8 @@ import aiomysql
 from pymysql import OperationalError
 
 from plumeria import config
-from plumeria.event import bus
+from plumeria.core.storage.migration import MigrationManager
 from plumeria.plugin import PluginSetupError
-from .migration import MigrationManager
 
 host = config.create("storage", "host", fallback="localhost", comment="The database server host")
 port = config.create("storage", "port", type=int, fallback=3306, comment="The database server port")

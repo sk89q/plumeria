@@ -4,7 +4,7 @@ import aiohttp
 from aiohttp import TCPConnector
 from aiohttp.errors import ClientConnectionError
 
-from .network import NameResolver
+from plumeria.util.network import NameResolver
 
 
 class SelectiveConnector(TCPConnector):

@@ -3,11 +3,10 @@
 from plumeria.command import commands
 from plumeria.core.storage import pool, migrations
 from plumeria.core.webserver import app, render_template
-from plumeria.event import bus
 from plumeria.message import Message, Response
 from plumeria.perms import direct_only
-from .manager import *
-from .storage import *
+from plumeria.core.oauth.manager import *
+from plumeria.core.oauth.storage import *
 
 __requires__ = ['plumeria.core.storage']
 

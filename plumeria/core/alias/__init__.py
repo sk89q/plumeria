@@ -8,7 +8,7 @@ from plumeria.event import bus
 from plumeria.message import ProxyMessage, Message, Response, MemoryAttachment
 from plumeria.perms import server_admins_only
 from plumeria.util.format import escape_markdown
-from .manager import AliasManager
+from plumeria.core.alias.manager import AliasManager
 
 __requires__ = ['plumeria.core.storage']
 

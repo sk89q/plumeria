@@ -1,7 +1,7 @@
 from functools import wraps
-from . import config
-from .config import set_of
-from .command import AuthorizationError, CommandError
+from plumeria import config
+from plumeria.config import set_of
+from plumeria.command import AuthorizationError, CommandError
 
 owner_ids = config.create("perms", "admin_users", set_of(str), fallback="")
 

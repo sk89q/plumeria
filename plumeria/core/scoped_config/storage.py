@@ -5,7 +5,7 @@ from typing import Sequence
 
 from plumeria.core.storage import migrations
 from plumeria.transport import Server
-from .manager import ScopedConfigProvider, ScopedValue
+from plumeria.core.scoped_config.manager import ScopedConfigProvider, ScopedValue
 
 logger = logging.getLogger(__name__)
 

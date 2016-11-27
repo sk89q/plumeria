@@ -3,7 +3,7 @@
 import logging
 from typing import Mapping
 
-from .manager import PreferencesProvider, Preference
+from plumeria.core.user_prefs.manager import PreferencesProvider, Preference
 
 from plumeria.transport import User
 

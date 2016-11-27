@@ -6,8 +6,8 @@ from plumeria.core.user_prefs import prefs_manager
 from plumeria.message import Message
 from plumeria.message.mappings import build_mapping
 from plumeria.perms import direct_only
-from .manager import ScopedConfig, ScopedValue
-from .storage import DatabaseConfig
+from plumeria.core.scoped_config.manager import ScopedConfig, ScopedValue
+from plumeria.core.scoped_config.storage import DatabaseConfig
 
 __requires__ = ['plumeria.core.storage']
 

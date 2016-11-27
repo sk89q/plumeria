@@ -1,8 +1,8 @@
-from .transport import Transport, TransportManager
-from .channel import Channel
-from .server import Server
-from .user import User
-from .role import Role
-from .member import Member, VoiceState
+from plumeria.transport.transport import Transport, TransportManager
+from plumeria.transport.channel import Channel
+from plumeria.transport.server import Server
+from plumeria.transport.user import User
+from plumeria.transport.role import Role
+from plumeria.transport.member import Member, VoiceState
 
 transports = TransportManager()

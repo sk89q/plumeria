@@ -3,7 +3,7 @@
 import re
 from typing import Sequence, Dict, Any, Tuple
 
-from .exception import *
+from plumeria.command.exception import *
 
 __all__ = ('Parser', 'Parameter', 'Word', 'Float', 'Int', 'Text')
 

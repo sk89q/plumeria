@@ -6,10 +6,10 @@ import re
 from io import StringIO
 from typing import Dict, List, Sequence, Optional, Callable
 
+from plumeria.command.exception import *
 from plumeria.command.parse import Parser
 from plumeria.message import ProxyMessage, Response
 from plumeria.util.ratelimit import RateLimitExceeded
-from .exception import *
 
 __all__ = ('Command', 'CommandManager', 'split_piped', 'interpolate')
 

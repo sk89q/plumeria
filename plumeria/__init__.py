@@ -1,3 +1,3 @@
-from .config.config import *
+from plumeria.config.config import *
 
 config = ManagedConfig()

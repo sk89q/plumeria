@@ -1,7 +1,7 @@
 import sys
 
 if sys.version_info < (3, 5):
-    print("Python 3.5 or greater required", file=sys.stderr)
+    print("Python 3.5 or greater required")
     sys.exit(1)
 
 import logging
@@ -27,7 +27,7 @@ def download_file(url, path):
             f.write(u.read())
 
 
-def exec(command):
+def execute(command):
     ret_code = os.system(command)
     if ret_code != 0:
         logging.error("The command '{}' did not complete successfully (got return code {})".format(command, ret_code))
@@ -53,19 +53,19 @@ def main():
         zip.extractall('.')
 
     logging.info("Making sure that virtualenv is installed globally...")
-    exec("pip install virtualenv")
+    execute("pip install virtualenv")
 
     if not os.path.isdir(VIRTUAL_ENV_DIR):
         logging.info("Creating virtualenv...")
-        exec("python -m virtualenv {}".format(VIRTUAL_ENV_DIR))
+        execute("python -m virtualenv {}".format(VIRTUAL_ENV_DIR))
     else:
         logging.info("The folder {} already exists so no new virtualenv will be created".format(VIRTUAL_ENV_DIR))
 
     logging.info("Installing binary packages...")
-    exec("{}\\Scripts\\pip install -r packages\\{}.txt".format(VIRTUAL_ENV_DIR, "win64" if is_64bit else "win32"))
+    execute("{}\\Scripts\\pip install -r packages\\{}.txt".format(VIRTUAL_ENV_DIR, "win64" if is_64bit else "win32"))
 
     logging.info("Installing other packages...")
-    exec("{}\\Scripts\\pip install -r requirements.txt".format(VIRTUAL_ENV_DIR))
+    execute("{}\\Scripts\\pip install -r requirements.txt".format(VIRTUAL_ENV_DIR))
 
     logging.info("")
     logging.info("Installation was SUCCESSFUL!")
