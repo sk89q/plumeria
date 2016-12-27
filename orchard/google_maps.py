@@ -8,6 +8,7 @@ import html2text
 
 from plumeria import config
 from plumeria.command import commands, CommandError
+from plumeria.command.parse import Text
 from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
@@ -118,6 +119,24 @@ async def directions(message):
             data['error_message'] if 'error_message' in data else data['status']))
 
 
+@commands.create("map", category="Search", params=[Text('location')])
+@rate_limit()
+async def map(message, location):
+    """
+    Get a map from Google Maps of a location.
+
+    Example::
+
+        /map san francisco
+
+    """
+    return 'https://maps.googleapis.com/maps/api/staticmap?' + urllib.parse.urlencode({
+        'center': location,
+        'zoom': '11',
+        'size': '640x350'
+    })
+
+
 def setup():
     config.add(api_key)
 
@@ -127,3 +146,4 @@ def setup():
 
     commands.add(lat_long)
     commands.add(directions)
+    commands.add(map)
