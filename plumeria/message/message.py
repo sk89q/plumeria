@@ -116,38 +116,43 @@ class Message:
             target_channel = await self.transport.start_private_message(self.author)
             redirected = True
 
-        if len(response.attachments):
-            return await target_channel.send_file(io.BytesIO(await response.attachments[0].read()),
-                                                  filename=response.attachments[0].filename,
-                                                  content=response.content)
-        else:
-            body = response.content.strip()
-            lines = body.splitlines()
+        body = response.content.strip()
+        lines = body.splitlines()
 
-            if len(body) > MAX_BODY_LENGTH or len(lines) > MAX_LINES:
-                buffer = io.StringIO()
-                current_length = len(CONTINUATION_STRING)
-                line_count = 0
-                first = True
+        if len(body) > MAX_BODY_LENGTH or len(lines) > MAX_LINES:
+            buffer = io.StringIO()
+            current_length = len(CONTINUATION_STRING)
+            line_count = 0
+            first = True
 
-                for line in lines:
-                    line_length = len(line)
-                    if current_length + line_length > MAX_BODY_LENGTH or line_count > MAX_LINES - 1:
-                        break
+            for line in lines:
+                line_length = len(line)
+                if current_length + line_length > MAX_BODY_LENGTH or line_count > MAX_LINES - 1:
+                    break
+                else:
+                    if first:
+                        first = False
                     else:
-                        if first:
-                            first = False
-                        else:
-                            buffer.write("\n")
-                        buffer.write(line)
-                        current_length += line_length
-                        line_count += 1
+                        buffer.write("\n")
+                    buffer.write(line)
+                    current_length += line_length
+                    line_count += 1
 
-                truncated_body = buffer.getvalue() + CONTINUATION_STRING
+            truncated_body = buffer.getvalue() + CONTINUATION_STRING
 
+            if len(response.attachments):
+                ret = await target_channel.send_file(io.BytesIO(await response.attachments[0].read()),
+                                                      filename=response.attachments[0].filename,
+                                                      content=truncated_body)
+            else:
                 ret = await target_channel.send_file(io.BytesIO(body.encode("utf-8")),
                                                      filename="continued.txt",
                                                      content=truncated_body)
+        else:
+            if len(response.attachments):
+                ret = await target_channel.send_file(io.BytesIO(await response.attachments[0].read()),
+                                                     filename=response.attachments[0].filename,
+                                                     content=response.content)
             else:
                 ret = await target_channel.send_message(response.content)
 
