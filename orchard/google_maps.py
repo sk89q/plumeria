@@ -9,6 +9,8 @@ import html2text
 from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.command.parse import Text
+from plumeria.message import Response
+from plumeria.message.image import read_image, fetch_image
 from plumeria.plugin import PluginSetupError
 from plumeria.util import http
 from plumeria.util.ratelimit import rate_limit
@@ -88,7 +90,7 @@ async def directions(message):
     parts = LOCATION_SPLIT_PATTERN.split(q)
     if len(parts) != 2:
         raise CommandError("Origin and destination required! Separate with one mention of the word 'to'.")
-    origin, destination = map(lambda s: s.strip(), parts)
+    origin, destination = parts[0].strip(), parts[1].strip()
     if not len(origin):
         raise CommandError("Empty origin provided")
     if not len(destination):
@@ -106,14 +108,22 @@ async def directions(message):
         raise CommandError("No routes found")
     elif data['status'] == "OK":
         buffer = io.StringIO()
-        for leg in data['routes'][0]['legs']:
+        route = data['routes'][0]
+        image_url = 'http://maps.googleapis.com/maps/api/staticmap?' + urllib.parse.urlencode({
+            'path': 'weight:2|color:red|enc:{}'.format(route['overview_polyline']['points']),
+            'sensor': 'false',
+            'size': '640x350'
+        })
+        overview_attachment = await fetch_image(image_url)
+        overview_attachment.filename = "overview.png"
+        for leg in route['legs']:
             buffer.write(":map: {} ({}) <https://maps.google.com/?q={}>\n".format(
                 leg['distance']['text'], leg['duration']['text'], urllib.parse.quote(q)))
             for i, step in enumerate(leg['steps']):
                 buffer.write("{}. {} ({})\n".format(i + 1, html2text.html2text(step['html_instructions']).replace("\n",
                                                                                                                   " ").strip(),
                                                     step['duration']['text']))
-        return buffer.getvalue().strip()
+        return Response(buffer.getvalue().strip(), attachments=[overview_attachment])
     else:
         raise CommandError("Google Maps returned an error: {}".format(
             data['error_message'] if 'error_message' in data else data['status']))
