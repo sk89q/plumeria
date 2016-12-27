@@ -132,7 +132,6 @@ async def map(message, location):
     """
     return 'https://maps.googleapis.com/maps/api/staticmap?' + urllib.parse.urlencode({
         'center': location,
-        'zoom': '11',
         'size': '640x350'
     })
 
