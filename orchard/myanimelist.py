@@ -7,6 +7,7 @@ from plumeria import config
 from plumeria.command import commands, CommandError
 from plumeria.plugin import PluginSetupError
 from plumeria.util import http
+from plumeria.util.http import BadStatusCodeError
 from plumeria.util.message import strip_html
 from plumeria.util.ratelimit import rate_limit
 
@@ -32,9 +33,14 @@ async def anime(message):
     if not len(query):
         raise CommandError("Supply the name of an anime to search.")
     auth = aiohttp.BasicAuth(username(), password())
-    r = await http.get("https://myanimelist.net/api/anime/search.xml", params=[
-        ('q', query)
-    ], auth=auth)
+    try:
+        r = await http.get("https://myanimelist.net/api/anime/search.xml", params=[
+            ('q', query)
+        ], auth=auth)
+    except BadStatusCodeError as e:
+        if e.http_code in (204, 404):
+            raise CommandError("No anime results for '{query}'.".format(query=query))
+        raise
     doc = BeautifulSoup(r.text(), features="lxml")
     entries = doc.anime.find_all("entry", recursive=False)
     if not len(entries):
@@ -72,9 +78,14 @@ async def manga(message):
     if not len(query):
         raise CommandError("Supply the name of a manga to search.")
     auth = aiohttp.BasicAuth(username(), password())
-    r = await http.get("https://myanimelist.net/api/manga/search.xml", params=[
-        ('q', query)
-    ], auth=auth)
+    try:
+        r = await http.get("https://myanimelist.net/api/manga/search.xml", params=[
+            ('q', query)
+        ], auth=auth)
+    except BadStatusCodeError as e:
+        if e.http_code in (204, 404):
+            raise CommandError("No manga results for '{query}'.".format(query=query))
+        raise
     doc = BeautifulSoup(r.text(), features="lxml")
     entries = doc.manga.find_all("entry", recursive=False)
     if not len(entries):
