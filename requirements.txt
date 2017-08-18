@@ -6,7 +6,7 @@ colour>=0.1.2
 coloredlogs>=5.1
 commonmark>=0.7.2
 dice>=1.0.2
-discord.py>=0.14.3
+discord.py==0.16.9
 docutils>=0.12
 html2text>=2016.5.29
 IPy>=0.83
