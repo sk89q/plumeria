@@ -100,7 +100,10 @@ class ImageAttachment(Attachment):
     async def read(self):
         def execute():
             out = io.BytesIO()
-            self.image.save(out, 'png')
+            if self.mime_type == 'image/jpeg':
+                self.image.save(out, 'jpeg')
+            else:
+                self.image.save(out, 'png')
             return out.getvalue()
 
         return await asyncio.get_event_loop().run_in_executor(None, execute)
