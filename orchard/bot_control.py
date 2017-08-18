@@ -1,6 +1,7 @@
 """Useful commands for controlling the bot user."""
 
 from plumeria.command import commands, CommandError
+from plumeria.message.image import read_image
 from plumeria.message.lists import build_list
 from plumeria.perms import owners_only
 from plumeria.transport import transports
@@ -36,5 +37,22 @@ async def join(message):
         raise CommandError("No transports available.")
 
 
+@commands.create('set avatar', category='Utility')
+@owners_only
+async def set_avatar(message):
+    """
+    Set the bot's avatar.
+
+    """
+    attachment = await read_image(message)
+    if not attachment:
+        raise CommandError("Supply an image.")
+    for transport in transports.transports.values():
+        await transport.edit_profile(avatar=await attachment.read())
+
+    return "Avatar set."
+
+
 def setup():
     commands.add(join)
+    commands.add(set_avatar)
