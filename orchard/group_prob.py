@@ -1,6 +1,7 @@
 """Add a fun 'group 8 ball' command."""
 
 import random
+import re
 
 from plumeria.command import commands, channel_only, CommandError
 from plumeria.core.activity import tracker
@@ -52,11 +53,12 @@ async def group_prob(message):
     if len(users) < 2:
         raise CommandError("Not enough people have said anything recently to do this command.")
 
-    choices = list(map(lambda user: (user.name, random.random()), users))
+    choices = list(map(lambda user: (user.display_name, random.random()), users))
     choices.sort(key=lambda c: -c[1])
 
-    return "The most likely to **{question}** is {most} " \
+    return "The {statement} **{question}** is {most} " \
            "and the *least* likely is **{least}** ({least_pct:.0f}%)".format(
+        statement='probability of' if re.search("^[A-Za-z-]+ing\s", query, re.IGNORECASE) else 'most likely to',
         question=query,
         most=", ".join(map(map_choice, choices[:-1][:3])),
         least=choices[-1][0],
