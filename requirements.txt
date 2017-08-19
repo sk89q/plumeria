@@ -10,6 +10,7 @@ dice>=1.0.2
 discord.py==0.16.9
 docutils>=0.12
 html2text>=2016.5.29
+html5lib==0.999999999
 IPy>=0.83
 Jinja2>=2.8
 lxml>=3.6
