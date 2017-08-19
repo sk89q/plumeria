@@ -10,6 +10,7 @@ from typing import Sequence, Optional
 
 import discord
 from discord import Client
+from discord import Permissions
 from discord import Server as _Server, Channel as _Channel, PrivateChannel as _PrivateChannel, Member as _Member, \
     Message as _Message, User as _User
 
@@ -253,6 +254,9 @@ def setup():
         await bus.post("transport.ready", transport)
         for server in transport.servers:
             await bus.post("server.ready", server)
+        if discord_token():
+            app_info = await client.application_info()
+            logger.info("Use this link to add the bot to a server: {}".format(discord.utils.oauth_url(app_info.id, Permissions.all())))
 
     @client.event
     async def on_channel_update(before, after):
