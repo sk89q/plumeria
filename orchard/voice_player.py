@@ -2,11 +2,9 @@ import asyncio
 import functools
 import logging
 import re
-import shlex
 
 import youtube_dl
 from youtube_dl import DownloadError
-from youtube_dl import parseOpts
 
 from plumeria import config
 from plumeria.command import CommandError
@@ -21,8 +19,8 @@ log = logging.getLogger(__name__)
 
 LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
 
-youtube_dl_args = config.create("voice_player", "youtube_dl_args", fallback="",
-                                comment="Extra command-line arguments for youtube-dl")
+source_address = config.create("voice_player", "source_address", fallback="",
+                               comment="Source address for youtube_dl")
 
 
 @commands.create('join voice', category='Player', params=[])
@@ -51,10 +49,6 @@ async def play(message, url):
         /play https://www.youtube.com/watch?v=U9DZkj8Rq6g
 
     """
-    try:
-        _, custom_opts, _ = parseOpts(['_'] + shlex.split(youtube_dl_args()))
-    except (SystemExit, Exception) as e:
-        raise CommandError("There's wrong with the configuration for youtube_dl for this bot.")
 
     m = LINK_PATTERN.search(url)
     if not m:
@@ -64,9 +58,9 @@ async def play(message, url):
     # check to see if we can play this URL
     opts = {
         'format': 'webm[abr>0]/bestaudio/best',
-        'prefer_ffmpeg': True
+        'prefer_ffmpeg': True,
+        'source_address': source_address(),
     }
-    opts.update(vars(custom_opts))
     ydl = youtube_dl.YoutubeDL(opts)
     func = functools.partial(ydl.extract_info, url, download=False)
     try:
@@ -90,7 +84,7 @@ async def play(message, url):
 
     # queue that stuff up
     async def factory(entry: QueueEntry):
-        return await voice_client.create_ytdl_player(url, ytdl_options=custom_opts, after=entry.on_end)
+        return await voice_client.create_ytdl_player(url, ytdl_options=opts, after=entry.on_end)
 
     meta = EntryMeta(title=title, description=description, url=url)
     entry = await queue.add(factory, channel=voice_client.channel, meta=meta)
@@ -105,6 +99,6 @@ async def play(message, url):
 
 
 def setup():
-    config.add(youtube_dl_args)
+    config.add(source_address)
     commands.add(join)
     commands.add(play)
