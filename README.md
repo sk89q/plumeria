@@ -39,6 +39,7 @@ Cool stuff for plugin authors:
 * Embedded web server that you can hook into
 * Built-in OAuth support (i.e. used by the Spotify plugin so people can link their accounts)
 * Support for images is implicit... you just call `read_image()` and it could have been a user-uploaded image, a linked image, or an OpenGraph image embedded on a webpage
+* Built-in basic protection against SSRF and DNS rebinding attacks (but only if you use Plumeria's HTTP library(!))
 
 ## Installation
 
@@ -66,13 +67,13 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 **Development**
 
-* pypi
-* packagist
-* random user
-* rubygems
 * unicode escape
 * unicode name
 * unicode code
+* random user
+* pypi
+* packagist
+* rubygems
 
 **Electronics**
 
@@ -81,7 +82,6 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 **Fun**
 
 * figlet
-* dudu
 * 8ball
 * roll
 * choice
@@ -99,31 +99,23 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * minecraft cape
 * osu sig
 * osu stats
-
-**GitLab**
-
-* gitlab url
-* gitlab addtoken
-* gitlab removetoken
-* gitlab tokens
-* gitlab subscribe
-* gitlab unsubscribe
-* gitlab subscriptions
+* minesweeper start
+* minesweeper
+* minesweeper flag
+* minesweeper cheat
+* hangman start
+* hangman
 
 **Graphing**
 
-* graph
-* digraph
 * pie
 * bar
 * histogram
+* graph
+* digraph
 
 **Image**
 
-* qrcode
-* fetch image
-* memetext
-* memetext2
 * drawtext
 * blur
 * edge enhance
@@ -134,7 +126,11 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * square
 * bg
 * make spray
+* fetch image
 * tex
+* memetext
+* memetext2
+* qrcode
 
 **Inspection**
 
@@ -145,16 +141,17 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 **Management**
 
+* icon set
 * emoji create
 * emoji delete
-* icon set
 
 **Music**
 
+* events
+* soundcloud
 * artist charts
 * charts
 * lyrics
-* soundcloud
 * lastfm
 * lastfm tag
 * lastfm artist
@@ -163,6 +160,8 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * spotify album
 * spotify discog
 * spotify top
+* spotify playlists
+* spotify pick
 
 **Operations**
 
@@ -172,48 +171,57 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * get
 * argparse
 
-**SKCraft**
-
-* servers
-* upcoming
-* balance
-
 **Search**
 
-* strawpoll
-* strawpoll results
-* earthquakes
+* stats
+* politifact
 * cheapshark
-* image
-* cve
-* translate
-* anime
-* imdb
-* woot
-* youtube
-* recipes
-* latlng
-* directions
-* wolfram
+* bible
 * similar music
 * similar movies
 * similar shows
 * similar books
 * similar authors
 * similar games
-* beer
+* woot
+* wikipedia
+* image
+* recipes
+* abstract
+* ore
+* wolfram
+* cve
+* giphy
+* sticker
+* haveibeenpwned
+* translate
+* earthquakes
 * subreddit
 * reddit
+* tumblr tag
+* tumblr blog
+* youtube
+* latlng
+* directions
+* map
+* beer
+* strawpoll
+* strawpoll results
 * gravatar
-* xkcd
+* imdb
+* anime
+* manga
 * wallhaven
+* xkcd
 * urban
-* stats
-* abstract
 
 **Servers**
 
 * a2squery
+
+**Services**
+
+* connect
 
 **Statistics**
 
@@ -239,9 +247,6 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 **String**
 
-* uuid
-* dashuuid
-* hexuuid
 * upper
 * lower
 * rot13
@@ -263,6 +268,9 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 * first
 * end
 * key
+* uuid
+* dashuuid
+* hexuuid
 
 **User Preferences**
 
@@ -274,21 +282,24 @@ To run Plumeria, see the [documentation](http://plumeria.readthedocs.io/en/lates
 
 **Utility**
 
-* help
-* commands dump
-* uptime
-* update
-* join
 * ifttt
+* join
+* set avatar
+* echo
 * last text
 * last image
 * last url
-* timestamp
 * screenshot
 * screenshot mobile
 * render crop
 * render full
-* echo
+* update
+* shutdown
+* uptime
+* help
+* commands dump
+* timestamp
+* changelog
 
 ## License
 

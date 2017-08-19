@@ -9,7 +9,7 @@ Rather than :code:`config.ini`, a different configuration file can be used by pa
 
 .. code-block:: console
 
-./plumeria-bot.py --config something_else.ini
+    ./plumeria-bot.py --config something_else.ini
 
 Enabling Plugins
 ----------------
@@ -18,15 +18,15 @@ If no plugins are enabled (which is the case if the configuration file has just 
 
 .. code-block:: ini
 
-[plugins]
-plumeria.plugins.message_ops = True
-plumeria.plugins.figlet = True
-plumeria.plugins.string = False
-plumeria.plugins.webserver = True
-plumeria.plugins.memetext = False
-plumeria.plugins.imdb = True
-plumeria.plugins.gravatar = True
-# and so on
+    [plugins]
+    plumeria.plugins.message_ops = True
+    plumeria.plugins.figlet = True
+    plumeria.plugins.string = False
+    plumeria.plugins.webserver = True
+    plumeria.plugins.memetext = False
+    plumeria.plugins.imdb = True
+    plumeria.plugins.gravatar = True
+    # and so on
 
 You can change entries to :code:`True` to turn on the plugin and :code:`False` to turn off the plugin.
 
@@ -41,13 +41,13 @@ For example, until you actually enable the Discord transport plugin and then run
 
 .. code-block:: ini
 
-[discord]
-# The Discord token to login with (overrides password login if set)
-token =
-# The Discord password to login with
-password =
-# The Discord username to login to
-username =
+    [discord]
+    # The Discord token to login with (overrides password login if set)
+    token =
+    # The Discord password to login with
+    password =
+    # The Discord username to login to
+    username =
 
 Permissions
 -----------
@@ -61,8 +61,8 @@ To add yourself as a bot administrator, you will first need to find you Discord 
 
 .. code-block:: ini
 
-        [perms]
-        admin_users = 0000000000000000
+    [perms]
+    admin_users = 0000000000000000
 
 Server Administrators
 ~~~~~~~~~~~~~~~~~~~~~
