@@ -8,6 +8,7 @@ from typing import Awaitable
 import PIL
 import aiohttp
 from PIL import Image
+from aiounfurl.views import fetch_all
 
 from plumeria.command import CommandError
 from plumeria.message import ImageAttachment, logger
@@ -82,6 +83,18 @@ async def fetch_image(url: str) -> Awaitable[PIL.Image.Image]:
         raise CommandError("Failed to read image from URL.")
 
 
+async def unfurl_image_url(url: str) -> Awaitable[str]:
+    with DefaultClientSession() as session:
+        results = await fetch_all(session, url)
+        if 'twitter_cards' in results and 'image' in results['twitter_cards']:
+            return results['twitter_cards']['image']
+        if 'open_graph' in results and 'image' in results['open_graph']:
+            return results['open_graph']['image']
+        if 'oembed' in results and 'thumbnail_url' in results['oembed']:
+            return results['oembed']['thumbnail_url']
+        raise CommandError("Couldn't extract an image from the URL '{}'".format(url))
+
+
 async def read_image(message: Message) -> Awaitable[PIL.Image.Image]:
     """
     Fetch the first image from the given message.
@@ -129,6 +142,9 @@ async def read_image(message: Message) -> Awaitable[PIL.Image.Image]:
                     url, message.author, message.channel))
             # hack to modify message because the URL appears in arguments
             message.content = message.content.replace(m.group(1), "", 1)
-            return await fetch_image(url)
+            try:
+                return await fetch_image(url)
+            except OSError as e:
+                return await fetch_image(await unfurl_image_url(url))
 
     return None
