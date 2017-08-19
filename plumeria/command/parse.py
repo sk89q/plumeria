@@ -8,6 +8,7 @@ from plumeria.command.exception import *
 __all__ = ('Parser', 'Parameter', 'Word', 'Float', 'Int', 'Text')
 
 NEXT_WORD_RE = re.compile("^\s*([^\s]+)(.*)$")
+SAFE_FILENAME_RE = re.compile("^\s*([A-Za-z0-9_\\- ~\\.,]{1,30})(.*)$")
 _UNSET = object()
 
 
@@ -130,11 +131,23 @@ class Word(Parameter):
                 "You didn't provide enough parameters for the command! Supply a **{}**.".format(self.name))
 
 
+class SafeFilename(Parameter):
+    """Parses a single filename."""
+
+    def parse(self, text: str) -> Tuple[str, str]:
+        m = SAFE_FILENAME_RE.search(text)
+        if m:
+            return m.group(1).strip(), m.group(2)
+        else:
+            raise MissingArgumentError(
+                "You didn't provide enough parameters for the command! Supply a **{}**.".format(self.name))
+
+
 class Float(Word):
     """Parses a single floating-point number."""
 
     def parse(self, text: str) -> Tuple[float, str]:
-        value, text = super().__call__(text)
+        value, text = super().parse(text)
         try:
             return float(value), text
         except ValueError:
@@ -145,7 +158,7 @@ class Int(Word):
     """Parses a single integer."""
 
     def parse(self, text: str) -> Tuple[int, str]:
-        value, text = super().__call__(text)
+        value, text = super().parse(text)
         try:
             return int(value), text
         except ValueError:
