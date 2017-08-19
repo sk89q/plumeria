@@ -14,6 +14,15 @@ SFX_EXTS = {'.wav', '.mp3', '.mp4', '.ogg', '.m4a', '.flac'}
 log = logging.getLogger(__name__)
 
 
+def get_sfx_names():
+    names = []
+    for filename in os.listdir(SFX_PATH):
+        name, ext = os.path.splitext(filename)
+        if ext.lower() in SFX_EXTS:
+            names.append(name)
+    return names
+
+
 def find_sfx(expected):
     try:
         for filename in os.listdir(SFX_PATH):
@@ -23,6 +32,19 @@ def find_sfx(expected):
         raise CommandError("Couldn't find the effect '{}'.".format(expected))
     except FileNotFoundError:
         raise CommandError("There isn't even a sound effect folder.")
+
+
+@commands.create('sfx list', 'effect list', 'fx list', cost=2, category='Player', params=[])
+@channel_only
+async def sfx_list(message):
+    """
+    Gets a list of usable SFX.
+
+    """
+    names = get_sfx_names()
+    if not len(names):
+        raise CommandError("No SFX available.")
+    return " ".join(names)
 
 
 @commands.create('sfx', 'effect', 'fx', category='Player', params=[SafeFilename("name")])
@@ -61,3 +83,4 @@ async def sfx(message, name):
 
 def setup():
     commands.add(sfx)
+    commands.add(sfx_list)
