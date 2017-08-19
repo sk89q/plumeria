@@ -28,7 +28,9 @@ pytz>=2016.6.1
 qrcode>=5.2.2
 rethinkdb>=2.3.0.post5
 selenium>=2.53
+sortedcontainers==1.5.7
 matplotlib>=2.0.0b3
 numpy>=1.11
 scipy>=0.18
 titlecase>=0.8.1
+youtube-dl

@@ -13,6 +13,7 @@ from discord import Client
 from discord import Permissions
 from discord import Server as _Server, Channel as _Channel, PrivateChannel as _PrivateChannel, Member as _Member, \
     Message as _Message, User as _User
+from discord import VoiceClient
 
 from plumeria import config
 from plumeria.event import bus
@@ -55,6 +56,8 @@ def _wrap(o, transport):
         return DiscordWrapper(o, transport)
     elif isinstance(o, _User):
         return DiscordWrapper(o, transport)
+    elif isinstance(o, VoiceClient):
+        return DiscordWrapper(o, transport)
     elif isinstance(o, Enum):
         return str(o)
 
@@ -66,6 +69,9 @@ class DiscordWrapper:
         super().__init__()
         self.transport = transport  # type: DiscordTransport
         self.delegate = delegate
+
+    def voice_client_in(self, server):
+        return self._wrap(self.delegate.voice_client_in(server))
 
     def _wrap(self, object):
         return _wrap(object, self.transport)

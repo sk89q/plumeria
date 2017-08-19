@@ -18,6 +18,9 @@ class Transport:
     Represents an incoming source of messages and outgoing sink for responses.
     """
 
+    def perma_id(self):
+        return self.id
+
     def resolve_user(self, q, hint=None, domain=None):
         """
         Resolves a string to a user.

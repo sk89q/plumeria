@@ -16,3 +16,5 @@ venv
 /tmp
 *.egg-info
 /dist
+/ffmpeg*
+/sfx
