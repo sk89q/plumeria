@@ -14,7 +14,7 @@ from plumeria.transport import Server
 
 log = logging.getLogger(__name__)
 
-volume_default = config.create("voice_queue", "volume_default", type=float, fallback=60, scoped=True, private=False,
+volume_default = config.create("voice_queue", "volume_default", type=float, fallback=20, scoped=True, private=False,
                                comment="The default volume level of the played audio")
 queue_size = config.create("voice_queue", "queue_size", type=int, fallback=10, scoped=True, private=False,
                            comment="The number of entries that can be queued")
