@@ -2,43 +2,43 @@
 
 [![Documentation Status](https://readthedocs.org/projects/plumeria/badge/?version=latest)](http://plumeria.readthedocs.io/en/latest/?badge=latest)
 
-Plumeria is a fun and practical Discord bot and personal assistant for your Discord server.
+Plumeria is madness distilled into a Discord bot. Sure, you can do things like search YouTube for a video, look up osu! stats, and do all those things, ***but*** 
 
-* Easily find YouTube videos.
-* Look up movies and get their synopsis and IMDB ratings.
-* Lookup discography and music artists.
-* Turn on the lights in your home with the IFTTT plugin.
-* Create meme images on the fly.
-* Get driving directions between two places.
+...you can feed the output of one command into another!
+
+1. You like a YouTube video? `.yt waterparks stupid`
+2. Want to write on it? `.last | mb i like`
+3. Really like it? Let's make it black and white! `.last | bw` 
+4. Make it an emoji? `.last | add emoji :waterparks:`
+
+What a terrible emoji. Let's make a new composition just with just Discord:
+
+1. `.render <b style="background: red; color: white">=')</b>`
+2. Oh yeah... make it an emoji! `.last | add emoji :imhappy:`
+
+Let's make it personal! Let's say you have a private Spotify playlist named *70's classics* and you want to show everyone a random song from it:
+
+1. `.spotify connect` (first, connect your account to Spotify -- a one time thing)
+2. `.spotify pick 70's classics`
+3. Whoa... that's a list... let's play one of those songs on YouTube: `.last | first | stripurl | yt`
+
+Discord rocks! `.mt https://www.discordapp.com Discord | mb ROCKS!`
+
+There's *very* flexible support for command prefixes: `.mt` works, but so does `. mt` (helpful on mobile keyboards), but also `. Mt` or `/mt`, `!mt`, and so on.
 
 Plumeria is written in Python 3. Plumeria is designed to work on Windows, Mac OS X, and Linux.
 
 ![Plumeria Help](readme/help.png)
 
-## Examples
+## For Da Nerds
 
-One cool feature you'll find in Plumeria is the ability to chain commands together.
+Cool stuff for plugin authors:
 
-Here are some examples of commands and command chaining:
-
-* Searching the Internet for an image and overlaying text on it: 
-  `.image skateboard | mt do this`
-* Getting the top tracks for a music tag on last.fm and finding a YouTube video for it:
-  `.tagtop rock | youtube`
-* Choosing between several entries:
-   `.choice pizza, burger, hot dogs | echo What's for dinner?`
-* Email yourself the last message (requires setup on IFTTT):
-  `.last | ifttt email`
-* Drawing a pie graph of some Strawpoll.me results:
-  `.results 18233 | pie`
-* Generate a directed graph:
-  `.digraph a -> b; b -> c`
-* Change the server icon to a random image search using Bing for "flower":
-  `.i flower | square | bg white | icon set`
-* Render a webpage and then make it an emoji:
-  `.render <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"><body bgcolor=white style="font-family: Pacifico, Arial, sans-serif; font-size:30pt;color:purple">pretty</body> | add emoji pretty`
-
-You can create aliases as well to reuse commands.
+* Everything is a plugin! Everything! Even Discord support :smile:
+* Support for command names with spaces in them
+* Embedded web server that you can hook into
+* Built-in OAuth support (i.e. used by the Spotify plugin so people can link their accounts)
+* Support for images is implicit... you just call `read_image()` and it could have been a user-uploaded image, a linked image, or an OpenGraph image embedded on a webpage
 
 ## Installation
 
