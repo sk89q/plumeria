@@ -51,7 +51,10 @@ async def play(message, url):
         /play https://www.youtube.com/watch?v=U9DZkj8Rq6g
 
     """
-    parser, youtube_dl_opts, args = parseOpts(['_'] + shlex.split(youtube_dl_args()))
+    try:
+        parser, custom_opts, args = parseOpts(['_'] + shlex.split(youtube_dl_args()))
+    except (SystemExit, Exception) as e:
+        raise CommandError("There's wrong with the configuration for youtube_dl for this bot.")
 
     m = LINK_PATTERN.search(url)
     if not m:
@@ -63,6 +66,7 @@ async def play(message, url):
         'format': 'webm[abr>0]/bestaudio/best',
         'prefer_ffmpeg': True
     }
+    opts.update(custom_opts)
     ydl = youtube_dl.YoutubeDL(opts)
     func = functools.partial(ydl.extract_info, url, download=False)
     try:
@@ -86,7 +90,7 @@ async def play(message, url):
 
     # queue that stuff up
     async def factory(entry: QueueEntry):
-        return await voice_client.create_ytdl_player(url, ytdl_options=youtube_dl_opts, after=entry.on_end)
+        return await voice_client.create_ytdl_player(url, ytdl_options=opts, after=entry.on_end)
 
     meta = EntryMeta(title=title, description=description, url=url)
     entry = await queue.add(factory, channel=voice_client.channel, meta=meta)
