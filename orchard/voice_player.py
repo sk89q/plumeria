@@ -2,10 +2,13 @@ import asyncio
 import functools
 import logging
 import re
+import shlex
 
 import youtube_dl
 from youtube_dl import DownloadError
+from youtube_dl import parseOpts
 
+from plumeria import config
 from plumeria.command import CommandError
 from plumeria.command import commands, channel_only
 from plumeria.command.parse import Text
@@ -17,6 +20,9 @@ __requires__ = ['plumeria.core.voice_queue']
 log = logging.getLogger(__name__)
 
 LINK_PATTERN = re.compile("((https?)://[^\s/$.?#<>].[^\s<>]*)", re.I)
+
+youtube_dl_args = config.create("voice_player", "youtube_dl_args", fallback="",
+                                comment="Extra command-line arguments for youtube-dl")
 
 
 @commands.create('join voice', category='Player', params=[])
@@ -45,6 +51,8 @@ async def play(message, url):
         /play https://www.youtube.com/watch?v=U9DZkj8Rq6g
 
     """
+    parser, youtube_dl_opts, args = parseOpts(['_'] + shlex.split(youtube_dl_args()))
+
     m = LINK_PATTERN.search(url)
     if not m:
         raise CommandError("You need to provide a URL to play.")
@@ -78,7 +86,7 @@ async def play(message, url):
 
     # queue that stuff up
     async def factory(entry: QueueEntry):
-        return await voice_client.create_ytdl_player(url, after=entry.on_end)
+        return await voice_client.create_ytdl_player(url, ytdl_options=youtube_dl_opts, after=entry.on_end)
 
     meta = EntryMeta(title=title, description=description, url=url)
     entry = await queue.add(factory, channel=voice_client.channel, meta=meta)
@@ -93,5 +101,6 @@ async def play(message, url):
 
 
 def setup():
+    config.add(youtube_dl_args)
     commands.add(join)
     commands.add(play)
