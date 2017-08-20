@@ -14,7 +14,7 @@ api_key = config.create("pubg_tracker_network", "key",
                                 "https://pubgtracker.com/")
 
 
-@commands.create('pubg', cost=2, category='Search', params=[Word('name')])
+@commands.create('pubg', cost=2, category='Games', params=[Word('name')])
 @rate_limit()
 async def pubg(message, name):
     """
