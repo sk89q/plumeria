@@ -33,6 +33,7 @@ def get_sfx_names():
                 'name': name,
                 'triggers': get_words(name),
             })
+    names.sort(key=lambda e: e['name'])
     return names
 
 
