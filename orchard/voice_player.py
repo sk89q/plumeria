@@ -60,6 +60,7 @@ async def play(message, url):
         'format': 'webm[abr>0]/bestaudio/best',
         'prefer_ffmpeg': True,
         'source_address': source_address(),
+        'noplaylist': True,
     }
     ydl = youtube_dl.YoutubeDL(opts)
     func = functools.partial(ydl.extract_info, url, download=False)
@@ -84,7 +85,8 @@ async def play(message, url):
 
     # queue that stuff up
     async def factory(entry: QueueEntry):
-        return await voice_client.create_ytdl_player(url, ytdl_options=opts, after=entry.on_end)
+        return await voice_client.create_ytdl_player(url, ytdl_options=opts, after=entry.on_end,
+                                                     options=['-af', 'loudnorm=I=-16:TP=-1.5:LRA=11'])
 
     meta = EntryMeta(title=title, description=description, url=url)
     entry = await queue.add(factory, channel=voice_client.channel, meta=meta)
