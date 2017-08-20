@@ -35,7 +35,7 @@ async def on_message(message):
 
         response = await commands.execute(message, Context(), direct=True)
         if response:
-            if not len(response.content) and not len(response.attachments):
+            if not len(response.content) and not len(response.attachments) and not response.embed:
                 response = Response("\N{WARNING SIGN} Command returned empty text as a response.")
             tx_log.add_response(message, await message.respond(response))
 

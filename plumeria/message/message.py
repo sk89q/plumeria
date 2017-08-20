@@ -5,6 +5,7 @@ from typing import Union, Optional, List, Dict, Sequence
 from plumeria.message.attachment import *
 from plumeria.transport import Channel
 from plumeria.transport import Server
+from plumeria.transport.embed import Embed
 
 MAX_BODY_LENGTH = 1900
 MAX_LINES = 50
@@ -142,8 +143,8 @@ class Message:
 
             if len(response.attachments):
                 ret = await target_channel.send_file(io.BytesIO(await response.attachments[0].read()),
-                                                      filename=response.attachments[0].filename,
-                                                      content=truncated_body)
+                                                     filename=response.attachments[0].filename,
+                                                     content=truncated_body)
             else:
                 ret = await target_channel.send_file(io.BytesIO(body.encode("utf-8")),
                                                      filename="continued.txt",
@@ -154,7 +155,7 @@ class Message:
                                                      filename=response.attachments[0].filename,
                                                      content=response.content)
             else:
-                ret = await target_channel.send_message(response.content)
+                ret = await target_channel.send_message(response.content, embed=response.embed)
 
         if redirected:
             await self.channel.send_message(
@@ -219,6 +220,8 @@ class Response:
         Content of the message
     attachments : Optional[List[:class:`Attachment`]]
         List of attachments to respond with
+    embed : Optional[:class:`Embed`]
+        An embed
     registers : Optional[Dict[str, :class:`Message`]]
         Set of registers
     stack : Optional[Sequence[:class:`Message`]]
@@ -229,10 +232,11 @@ class Response:
     """
 
     def __init__(self, content: str = "", attachments: Optional[List[Attachment]] = None,
-                 registers: Optional[Dict[str, Message]] = None, stack: Optional[Sequence[Message]] = None,
-                 private: bool = False):
+                 embed: Optional[Embed] = None, registers: Optional[Dict[str, Message]] = None,
+                 stack: Optional[Sequence[Message]] = None, private: bool = False):
         self.content = content
         self.attachments = attachments or []
+        self.embed = embed
         self.registers = registers
         self.stack = stack
         self.private = private

@@ -158,8 +158,8 @@ class DiscordChannel(DiscordWrapper, Channel):
     async def send_file(self, fp, filename=None, content=None):
         return await self.transport.send_file(self.delegate, fp, filename=filename, content=content)
 
-    async def send_message(self, content, tts=False):
-        return await self.transport.send_message(self.delegate, content, tts=tts)
+    async def send_message(self, content, tts=False, embed=None):
+        return await self.transport.send_message(self.delegate, content, tts=tts, embed=embed)
 
     @property
     def multiple_participants(self):
