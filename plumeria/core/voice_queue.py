@@ -137,25 +137,43 @@ class Queue:
         await self.check_current()
         return entry
 
-    async def skip(self):
+    async def skip(self, index: int = 0):
         try:
-            top = self.queue[0]
-            if self.active == top:
-                await top._stop()
-                del self.queue[0]
-            else:
-                await self.active._stop()
-                try:
-                    self.queue.remove(self.active)
-                except ValueError:
-                    pass
-            self.active = None
+            top = self.queue[index]
+            del self.queue[index]
         except IndexError:
             return False
         await self.check_current()
         return top
 
+    async def skip_all(self, *, all: bool = False, name: Optional[str] = None):
+        skipped = []
+        i = 0
+        while i < len(self.queue):
+            remove = False
+
+            if all:
+                remove = True
+            elif name is not None and name.lower() in str(self.queue[i].meta).lower():
+                remove = True
+
+            if remove:
+                skipped.append(self.queue)
+                del self.queue[i]
+            else:
+                i += 1
+        await self.check_current()
+        return skipped
+
     async def check_current(self):
+        # just check if the active one is still in the queue
+        if self.active:
+            try:
+                self.queue.index(self.active)
+            except ValueError:
+                await self.active._stop()
+                self.active = None
+
         while True:
             try:
                 top = self.queue[0]

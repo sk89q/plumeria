@@ -1,6 +1,6 @@
 from plumeria.command import CommandError
 from plumeria.command import commands, channel_only
-from plumeria.command.parse import Float
+from plumeria.command.parse import Float, Text
 from plumeria.core.voice_queue import queue_map
 from plumeria.message.lists import build_list
 from plumeria.util.voice import voice_with_bot_only
@@ -70,6 +70,52 @@ async def skip(message):
     return "Skipped **{}**.".format(str(entry.meta))
 
 
+@commands.create('undo', category='Player', params=[Text("query", fallback=None)])
+@channel_only
+@voice_with_bot_only
+async def undo(message, query=None):
+    """
+    Skip the last queued track, or if a parameter is provided, skip tracks containing
+    the provided phrase in the name.
+
+    Example::
+
+        /undo
+        /undo parks
+
+    """
+    queue = queue_map.get(message.channel)
+    if query:
+        skipped = await queue.skip_all(name=query)
+        return "Skipped **{}**.".format(len(skipped))
+    else:
+        count = len(queue.queue)
+        if count == 0:
+            raise CommandError("Queue is empty.")
+        elif count == 1:
+            raise CommandError("Queue only has 1 item.")
+        else:
+            entry = await queue.skip(count - 1)
+            return "Skipped **{}**.".format(str(entry.meta))
+
+
+@commands.create('clear queue', 'clearqueue', category='Player', params=[])
+@channel_only
+@voice_with_bot_only
+async def clear_queue(message):
+    """
+    Completely empty the queue.
+
+    Example::
+
+        /clear queue
+
+    """
+    queue = queue_map.get(message.channel)
+    skipped = await queue.skip_all(all=True)
+    return "Removed **{}**. Queue is now empty.".format(len(skipped))
+
+
 @commands.create('volume', 'set volume', category='Player', params=[Float('volume')])
 @channel_only
 @voice_with_bot_only
@@ -96,4 +142,6 @@ def setup():
     commands.add(view_queue)
     commands.add(playing)
     commands.add(skip)
+    commands.add(undo)
+    commands.add(clear_queue)
     commands.add(set_volume)
