@@ -1,0 +1,32 @@
+{% extends "master.html" %}
+{% block content %}
+
+  <div class="contents">
+    <h1>Sound Effects List</h1>
+
+    <p>
+      The sfx command matches words, so if you search for 'arnold wtf',
+      all effects with the words 'arnold' and 'wtf' in them will be
+      matched. If more than one effect is matched, a random one
+      from that list will be chosen. Special characters
+      like apostrophes are stripped out when searching.
+    </p>
+
+    <table class="table table-bordered">
+      <tr>
+        <th>Name</th>
+        <th>Trigger Words</th>
+      </tr>
+      {% for entry in names %}
+        <tr>
+          <td>{{ entry.name }}</td>
+          <td>{{ entry.triggers|join(' ') }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+{% endblock %}
+{% block body_footer %}
+  <script src="/static/docs.js"></script>
+{% endblock %}

@@ -1,24 +1,27 @@
 import logging
 import os
+import random
 import re
-from difflib import SequenceMatcher
 
 from plumeria.command import commands, channel_only, CommandError
-from plumeria.command.parse import SafeFilename
+from plumeria.command.parse import Text
 from plumeria.core.voice_queue import queue_map, QueueEntry, EntryMeta
+from plumeria.core.webserver import app, render_template
+from plumeria.message import Response
 from plumeria.util.voice import get_voice_client
 
 __requires__ = ['plumeria.core.voice_queue']
 
 SFX_PATH = os.path.join("sfx")
 SFX_EXTS = {'.wav', '.mp3', '.mp4', '.ogg', '.m4a', '.flac'}
-STRIP_RE = re.compile("[^a-z0-9]", re.I)
+STRIP_RE = re.compile("[^a-z0-9\\s]", re.I)
+WORD_SPLIT_RE = re.compile("\s+")
 
 log = logging.getLogger(__name__)
 
 
-def normalize(name):
-    return STRIP_RE.sub('', name.lower())
+def get_words(name):
+    return set(WORD_SPLIT_RE.split(STRIP_RE.sub('', name.lower()).strip()))
 
 
 def get_sfx_names():
@@ -26,24 +29,27 @@ def get_sfx_names():
     for filename in os.listdir(SFX_PATH):
         name, ext = os.path.splitext(filename)
         if ext.lower() in SFX_EXTS:
-            names.append(name)
+            names.append({
+                'name': name,
+                'triggers': get_words(name),
+            })
     return names
 
 
 def find_sfx(expected):
-    expected_norm = normalize(expected)
-    choices = []
     try:
+        expected_words = get_words(expected)
+        choices = []
         for filename in os.listdir(SFX_PATH):
             name, ext = os.path.splitext(filename)
-            name_norm = normalize(name)
-            if ext.lower() in SFX_EXTS and expected_norm in name_norm:
-                ratio = SequenceMatcher(None, name_norm, expected_norm).ratio()
-                choices.append((os.path.abspath(os.path.join(SFX_PATH, filename)), ratio))
+            if ext.lower() in SFX_EXTS:
+                words = get_words(name)
+                common = words.intersection(expected_words)
+                if len(common) == len(expected_words):
+                    choices.append(os.path.abspath(os.path.join(SFX_PATH, filename)))
         if not len(choices):
             raise CommandError("Couldn't find the effect '{}'.".format(expected))
-        choices.sort(key=lambda entry: -entry[1])
-        return choices[0][0]
+        return random.choice(choices)
     except FileNotFoundError:
         raise CommandError("There isn't even a sound effect folder.")
 
@@ -55,20 +61,19 @@ async def sfx_list(message):
     Gets a list of usable SFX.
 
     """
-    names = get_sfx_names()
-    if not len(names):
-        raise CommandError("No SFX available.")
-    return "; ".join(names)
+    return Response(await app.get_base_url() + "/sfx-list/")
 
 
-@commands.create('sfx', 'sfx play', 'sfxplay', category='Player', params=[SafeFilename("name")])
+@commands.create('sfx', 'sfx play', 'sfxplay', category='Player', params=[Text("name")])
 @channel_only
 async def sfx(message, name):
     """
     Play a sound effect, which will play immediately even if there is music
     playing. (Sound effects preempt other queued items.)
 
-    You can provide partial names: i.e. 'drum' will match 'drums'.
+    The search matches words, so 'hello there' would match all effects with both
+    the words 'hello' and 'there' in their name. If there are multiple
+    matches, a random one would be chosen.
 
     Example::
 
@@ -97,6 +102,12 @@ async def sfx(message, name):
         return "Queued **{}** at position #{} for play.".format(meta, index)
 
 
+@app.route('/sfx-list/')
+async def handle(request):
+    return render_template("sfx_list.html", names=get_sfx_names())
+
+
 def setup():
     commands.add(sfx)
     commands.add(sfx_list)
+    app.add(handle)
