@@ -8,7 +8,7 @@ from plumeria.util.http import BadStatusCodeError
 from plumeria.util.ratelimit import rate_limit
 
 GENERAL_STATS = (
-    ('Played', 'time_played', '{:.0f}'),
+    ('Time Played', 'time_played', '{:.0f} hr'),
     ('K/D', 'kpd', '{:.2f}'),
     ('Dmg/t', 'all_damage_done_avg_per_10_min', '{:.0f}'),
     ('Best Streak', 'kill_streak_best', '{:.0f}'),
