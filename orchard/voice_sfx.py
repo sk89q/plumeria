@@ -88,7 +88,8 @@ async def sfx(message, name):
 
     # queue that stuff up
     async def factory(entry: QueueEntry):
-        return voice_client.create_ffmpeg_player(path, after=entry.on_end)
+        return voice_client.create_ffmpeg_player(path, after=entry.on_end,
+                                                 options=['-af', 'loudnorm=I=-16:TP=-1.5:LRA=11'])
 
     meta = EntryMeta(title="effect: {}".format(os.path.splitext(os.path.basename(path))[0]))
     entry = await queue.add(factory, channel=voice_client.channel, meta=meta, priority=-1)
