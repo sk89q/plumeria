@@ -1,6 +1,7 @@
 # Plumeria, the Discord bot
 
 [![Documentation Status](https://readthedocs.org/projects/plumeria/badge/?version=latest)](http://plumeria.readthedocs.io/en/latest/?badge=latest)
+[![Run on Repl.it](https://repl.it/badge/github/sk89q/plumeria)](https://repl.it/github/sk89q/plumeria)
 
 Plumeria is madness distilled into a Discord bot. Sure, you can do things like search YouTube for a video, look up osu! stats, and do all those things, ***but*** 
 
